@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View} from 'react-native';
-
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 const LoginPage = ({ handleLogin }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -11,17 +10,19 @@ const LoginPage = ({ handleLogin }) => {
 
     return (
         <View>
-            <Text style={[styles.title, styles.width]}>Login to Your Account</Text>
+            <Text style={styles.header}>ברגליים - נעים ללכת בעיר </Text>
+            <Text style={styles.userDetails}>שם משתמש</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Email"
+                placeholder="Username"
                 value={email}
                 onChangeText={setEmail}
                 maxLength={50} // set maxLength to the number of characters that fit in the box
                 numberOfLines={1} // set numberOfLines to 1 to keep the box size fixed
             />
+            <Text style={styles.userDetails}>סיסמא</Text>
             <TextInput
-                style={styles.input}
+                style={[styles.input, styles.marginBottom]}
                 placeholder="Password"
                 secureTextEntry={true}
                 value={password}
@@ -29,13 +30,28 @@ const LoginPage = ({ handleLogin }) => {
                 maxLength={50} // set maxLength to the number of characters that fit in the box
                 numberOfLines={1} // set numberOfLines to 1 to keep the box size fixed
             />
+            <TouchableOpacity onPress={handlePress}>
+                <Text style={{ fontSize: 15, color: '#AD40AF', marginBottom: 10 }}>שכחת סיסמא?</Text>
+            </TouchableOpacity>
+
         </View>
     );
 };
 
+
 const styles = StyleSheet.create({
-    width:{
-        width: '50%' 
+    userDetails: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        margin: 10,
+    },
+    header: {
+        fontSize: 20,
+        fontWeight: 'boldest',
+        // paddingBottom: 20,
+        color: '#1AA945',
+        textAlign: 'center',
     },
     container: {
         flex: 1,
@@ -46,21 +62,23 @@ const styles = StyleSheet.create({
     logo: {
         width: 10,
         height: 10,
-        marginBottom: 30,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 30,
+        // marginBottom: 10,
     },
     input: {
-        height: 40, // set a fixed height
-        padding: 10,
-        marginBottom: 20,
+        flex: 1,
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 5,
-      },
+        width: '100%',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'left',
+
+    },
+    marginBottom: {
+        marginBottom: 20,
+    }
 });
 
 export default LoginPage;

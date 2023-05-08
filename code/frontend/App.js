@@ -3,8 +3,14 @@ import React from 'react';
 import { SafeAreaView, ImageBackground, StyleSheet, Text, View } from 'react-native';
 import Buttons from './components/Buttons';
 import LoginPage from './components/LoginPage'; // import LoginPage component
-import SignupPage from './components/SignupPage';
 import kidsImage from './assets/kidsWalking.jpg';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from './components/HomeScreen';
+import ChildComponent from './components/ChildComponent';
+
+const Stack = createStackNavigator();
+
 
 export default function App() {
   const handleLogin = (email, password) => {
@@ -13,15 +19,33 @@ export default function App() {
   };
 
   return (
-    
-      <ImageBackground source={kidsImage} style={styles.image}>
-      {/* Render LoginPage component */}
-      <LoginPage/>
-      <Buttons color='red' press={() => console.log('login button pressed')} title='Login' />
-      <Buttons color='blue' press={() => console.log('signup button pressed')} title='Signup' />
-      <StatusBar style="auto" />
-      </ImageBackground>
 
+    <View style={styles.page} >
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={HomeScreen} />
+          {/* <Stack.Screen name="Profile" component={ChildComponent} /> */}
+        </Stack.Navigator>
+      </NavigationContainer>
+      {/* Render LoginPage component */}
+      <LoginPage />
+      <Buttons color='#4C8BCA' width={150} onPress={() => navigation.navigate('HomeScreen')} title='התחבר' />
+      <Buttons color='blue' width={150} press={() => console.log('signup button pressed')} title='הירשם' />
+      <ImageBackground source={kidsImage} style={styles.image}></ImageBackground>
+      {/* <StatusBar style="auto" /> */}
+      <Footer />
+    </View>
+  );
+}
+
+
+function Footer() {
+  return (
+    <View style={styles.footer}>
+      <Text style={styles.footerText}>
+        <small>©All rights reserved- Jerusalem Municipality</small>
+      </Text>
+    </View>
   );
 }
 
@@ -29,9 +53,14 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     resizeMode: 'cover',
-    width: null,
-    height: null,
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  page: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
