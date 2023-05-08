@@ -12,9 +12,11 @@ function Buttons(props) {
 
 const styles = StyleSheet.create({
   buttonStyle: {
-    borderRadius: 2,
-    padding: 5,
-    marginBottom: 15,
+    borderRadius: 130,
+    padding: 2,
+    marginBottom: 30,
+    marginTop: 10,
+    alignSelf: 'center',
   },
   buttonText: {
     fontSize: 20,
