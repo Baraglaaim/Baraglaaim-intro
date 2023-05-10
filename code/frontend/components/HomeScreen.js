@@ -2,9 +2,9 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import HeaderIcons from './HeaderIcons';
 
-const handleHomeScreen = () => {
-    
-};
+// const handleHomeScreen = () => {
+
+// };
 
 const HomeScreen = ({ navigation }) => {
     return (
