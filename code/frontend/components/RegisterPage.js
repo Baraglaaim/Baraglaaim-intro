@@ -63,7 +63,9 @@ const RegisterPage = ({ navigation }) => {
                     />
                     <Buttons
                         title="הירשם"
-                        onPress={handleRegistration}
+                        color="#AD40AF"
+                        width="50%"
+                        press={handleRegistration}
                     />
                 </View>
             </View>
