@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View, SafeAreaView } from 'react-native';
 import Buttons from './Buttons';
 import kidsImage from '../assets/kidsWalking.jpg';
 import { ImageBackground } from 'react-native';
@@ -13,8 +13,8 @@ const RegisterPage = ({ navigation }) => {
     const handleRegistration = () => {
         // Handle registration logic here
         console.log('Registering with username:', username, 'email:', email, 'password:', password);
-        // navigate to HomeScreen after registration process is complete
-        navigation.navigate('HomeScreen');
+        // navigate to LoginPage after registration process is complete
+        navigation.navigate('LoginPage');
     };
 
     return (
@@ -79,9 +79,8 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     overlay: {
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
         flex: 1,
-        padding: 30,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -103,7 +102,7 @@ const styles = StyleSheet.create({
         height: 50,
         paddingHorizontal: 10,
         marginBottom: 20,
-        direction: 'rtl', // Set text direction to right-to-left
+        textAlign: 'right', // Set text direction to right-to-left
     },
     marginBottom: {
         marginBottom: 40,

@@ -19,7 +19,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="HeaderIcons">
+      <Stack.Navigator initialRouteName="LoginPage">
         <Stack.Screen
           name="LoginPage"
           options={{ title: 'Login' }}

@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Pressable, Text, TouchableOpacity, Button, ImageBackground } from 'react-native';
+import { StyleSheet, Pressable, Text, TouchableOpacity, Button, ImageBackground, SafeAreaView } from 'react-native';
 
 
 function Buttons(props) {

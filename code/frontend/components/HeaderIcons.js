@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Text, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const HeaderIcons = ({ navigation }) => {
@@ -34,6 +34,14 @@ const HeaderIcons = ({ navigation }) => {
                     <View style={styles.iconWrapper}>
                         <Ionicons name="person-add" size={30} color="black" />
                         <Text style={styles.iconText}>הוסף ילד</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.iconContainer}>
+                <TouchableOpacity onPress={() => navigation.navigate('LoginPage')}>
+                    <View style={styles.iconWrapper}>
+                        <Ionicons name="log-out-outline" size={30} color="black" />
+                        <Text style={styles.iconText}>התנתק</Text>
                     </View>
                 </TouchableOpacity>
             </View>

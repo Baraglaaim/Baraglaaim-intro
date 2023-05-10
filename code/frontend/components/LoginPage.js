@@ -35,7 +35,7 @@ const LoginPage = ({ navigation }) => {
             <Buttons
                 title="התחבר"
                 color="#AD40AF"
-                width="50%"
+                width={150}
                 press={handleLogin}
             />
             <TouchableOpacity onPress={() => navigation.navigate('RegisterPage')}>
