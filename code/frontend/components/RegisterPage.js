@@ -3,7 +3,6 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import Buttons from './Buttons';
 import kidsImage from '../assets/kidsWalking.jpg';
 import { ImageBackground } from 'react-native';
-import HomeScreen from './HomeScreen';
 
 const RegisterPage = ({ navigation }) => {
     const [username, setUsername] = useState('');

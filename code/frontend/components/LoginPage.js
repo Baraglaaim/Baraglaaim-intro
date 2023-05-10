@@ -8,6 +8,8 @@ const LoginPage = ({ navigation }) => {
     const handleLogin = (email, password) => {
         // Handle login logic here
         console.log('Logging in with email:', email, 'and password:', password);
+        //if it's correct, navigate to HomeScreen
+        //TODO: login logic here
         navigation.navigate('HomeScreen');
 
     };
@@ -103,7 +105,7 @@ const styles = StyleSheet.create({
     loginButton: {
         backgroundColor: '#AD40AF',
         borderRadius: 10,
-        width: 300,
+        width: 100,
         height: 50,
         alignItems: 'center',
         justifyContent: 'center',
