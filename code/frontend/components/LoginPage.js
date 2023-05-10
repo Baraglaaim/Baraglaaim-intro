@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, SafeAreaView } from 'react-native';
 import Buttons from './Buttons';
 import kidsImage from '../assets/kidsWalking.jpg';
 import { ImageBackground } from 'react-native';
@@ -8,6 +8,8 @@ const LoginPage = ({ navigation }) => {
     const handleLogin = (email, password) => {
         // Handle login logic here
         console.log('Logging in with email:', email, 'and password:', password);
+        navigation.navigate('HomeScreen');
+
     };
 
     return (
@@ -28,9 +30,12 @@ const LoginPage = ({ navigation }) => {
                 maxLength={50}
                 numberOfLines={1}
             />
-            <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('HomeScreen')}>
-                <Text style={styles.loginButtonText}>התחבר</Text>
-            </TouchableOpacity>
+            <Buttons
+                title="התחבר"
+                color="#AD40AF"
+                width="50%"
+                press={handleLogin}
+            />
             <TouchableOpacity onPress={() => navigation.navigate('RegisterPage')}>
                 <Text style={{ textAlign: 'center', fontSize: 15, color: '#AD40AF', marginBottom: 10 }}>
                     אין לך חשבון? הרשם עכשיו

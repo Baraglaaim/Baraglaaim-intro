@@ -1,9 +1,11 @@
 import React from 'react';
 import { SafeAreaView, ImageBackground, StyleSheet, Text, View } from 'react-native';
-import LoginPage from './components/LoginPage';
-import RegisterPage from './components/RegisterPage'; // import RegisterPage component
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage'; // import RegisterPage component
 import HomeScreen from './components/HomeScreen';
 
 
