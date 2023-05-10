@@ -1,14 +1,13 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { SafeAreaView, ImageBackground, StyleSheet, Text, View } from 'react-native';
-import LoginPage from './components/LoginPage'; // import LoginPage component
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage'; // import RegisterPage component
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './components/HomeScreen';
-import ChildComponent from './components/ChildComponent';
+
 
 const Stack = createStackNavigator();
-
 
 export default function App() {
   const handleLogin = (email, password) => {
@@ -17,20 +16,28 @@ export default function App() {
   };
 
   return (
-
-    <View style={styles.page} >
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="Home" component={HomeScreen} />
-          {/* <Stack.Screen name="Profile" component={ChildComponent} /> */}
-        </Stack.Navigator>
-      </NavigationContainer>
-      {/* Render LoginPage component */}
-      <LoginPage />
-      {/* <StatusBar style="auto" /> */}
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="LoginPage">
+        <Stack.Screen
+          name="LoginPage"
+          options={{ title: 'Login' }}
+          component={LoginPage}
+        />
+        <Stack.Screen
+          name="RegisterPage"
+          options={{ title: 'Register' }}
+          component={RegisterPage}
+        />
+        <Stack.Screen
+          name="HomeScreen"
+          options={{ title: 'Home' }}
+          component={HomeScreen}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
+
 
 
 const styles = StyleSheet.create({

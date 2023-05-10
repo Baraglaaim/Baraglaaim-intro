@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Buttons from './Buttons';
 import kidsImage from '../assets/kidsWalking.jpg';
 import { ImageBackground } from 'react-native';
-const LoginPage = ({ handleLogin }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
 
-    const handlePress = () => {
-        handleLogin(email, password);
+const LoginPage = ({ navigation }) => {
+    const handleLogin = (email, password) => {
+        // Handle login logic here
+        console.log('Logging in with email:', email, 'and password:', password);
     };
 
     return (
@@ -18,27 +17,23 @@ const LoginPage = ({ handleLogin }) => {
             <TextInput
                 style={styles.input}
                 placeholder="הכנס שם משתמש"
-                value={email}
-                onChangeText={setEmail}
-                maxLength={50} // set maxLength to the number of characters that fit in the box
-                numberOfLines={1} // set numberOfLines to 1 to keep the box size fixed
+                maxLength={50}
+                numberOfLines={1}
             />
             <Text style={styles.userDetails}>סיסמא</Text>
             <TextInput
                 style={[styles.input, styles.marginBottom]}
                 placeholder="הכנס סיסמא"
                 secureTextEntry={true}
-                value={password}
-                onChangeText={setPassword}
-                maxLength={50} // set maxLength to the number of characters that fit in the box
-                numberOfLines={1} // set numberOfLines to 1 to keep the box size fixed
+                maxLength={50}
+                numberOfLines={1}
             />
-            <Buttons color='#4C8BCA' width={150} onPress={() => navigation.navigate('HomeScreen')} title='התחבר' />
-            <Buttons color='blue' width={150} press={() => console.log('signup button pressed')} title='הירשם' />
-
-            <TouchableOpacity onPress={handlePress}>
+            <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('HomeScreen')}>
+                <Text style={styles.loginButtonText}>התחבר</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('RegisterPage')}>
                 <Text style={{ textAlign: 'center', fontSize: 15, color: '#AD40AF', marginBottom: 10 }}>
-                    שכחתי סיסמא
+                    אין לך חשבון? הרשם עכשיו
                 </Text>
             </TouchableOpacity>
             <ImageBackground source={kidsImage} style={styles.image}></ImageBackground>
@@ -46,12 +41,11 @@ const LoginPage = ({ handleLogin }) => {
         </View >
     );
 };
+
 function Footer() {
     return (
         <View style={styles.footer}>
-            <Text style={styles.footerText}>
-                ©All rights reserved- Jerusalem Municipality
-            </Text>
+            <Text style={styles.footerText}></Text>
         </View>
     );
 }
@@ -92,13 +86,29 @@ const styles = StyleSheet.create({
     },
     marginBottom: {
         marginBottom: 20,
-    }, image: {
+    },
+    image: {
         flex: 1,
         resizeMode: 'cover',
         width: '100%',
         height: '130%',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    loginButton: {
+        backgroundColor: '#AD40AF',
+        borderRadius: 10,
+        width: 300,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        marginTop: 20,
+    },
+    loginButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });
 
