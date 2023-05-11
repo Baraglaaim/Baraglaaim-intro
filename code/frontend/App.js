@@ -9,7 +9,7 @@ import RegisterPage from './components/RegisterPage'; // import RegisterPage com
 import HomeScreen from './components/HomeScreen';
 import HeaderIcons from './components/HeaderIcons';
 import AddChild from './components/AddChild';
-
+import WatchMyChild from './components/watchMyChild';
 
 const Stack = createStackNavigator();
 
@@ -53,9 +53,9 @@ export default function App() {
           component={HeaderIcons}
         />
         <Stack.Screen
-          name="WatchMyKid"
-          options={{ title: 'Watch My Kid' }}
-          component={HeaderIcons}
+          name="WatchMyChild"
+          options={{ title: 'Watch My Child' }}
+          component={WatchMyChild}
         />
         <Stack.Screen
           name="AddChild"

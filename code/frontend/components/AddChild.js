@@ -5,7 +5,6 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker'
 
 const AddChild = ({ navigation }) => {
     const [name, setName] = useState('');
-    const [age, setAge] = useState('');
     const [gender, setGender] = useState('');
     const [phone, setPhone] = useState('');
     const [dob, setDob] = useState('');

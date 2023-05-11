@@ -22,7 +22,7 @@ const HeaderIcons = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             <View style={styles.iconContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate('WatchMyKid')}>
+                <TouchableOpacity onPress={() => navigation.navigate('WatchMyChild')}>
                     <View style={styles.iconWrapper}>
                         <Ionicons name="eye" size={30} color="black" />
                         <Text style={styles.iconText}>צפה בילדים שלי</Text>
