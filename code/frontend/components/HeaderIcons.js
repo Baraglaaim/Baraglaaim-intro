@@ -17,7 +17,7 @@ const HeaderIcons = ({ navigation }) => {
                 <TouchableOpacity onPress={() => navigation.navigate('CreateCommunity')}>
                     <View style={styles.iconWrapper}>
                         <Ionicons name="add" size={30} color="black" />
-                        <Text style={styles.iconText}>צור קהילה</Text>
+                        <Text style={styles.iconText}>צור קבוצת הליכה</Text>
                     </View>
                 </TouchableOpacity>
             </View>

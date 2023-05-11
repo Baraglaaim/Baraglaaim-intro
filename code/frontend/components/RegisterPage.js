@@ -63,7 +63,7 @@ const RegisterPage = ({ navigation }) => {
                     <Buttons
                         title="הירשם"
                         color="#AD40AF"
-                        width="50%"
+                        width={150}
                         press={handleRegistration}
                     />
                 </View>
