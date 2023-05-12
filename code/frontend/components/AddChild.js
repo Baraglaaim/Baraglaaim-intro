@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import HeaderIcons from './HeaderIcons';
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 const AddChild = ({ navigation }) => {
     const [name, setName] = useState('');
@@ -48,8 +50,11 @@ const AddChild = ({ navigation }) => {
                     placeholder="מספר הטלפון של הילד"
                 />
 
-                <TouchableOpacity style={styles.input} onPress={showDatePicker}>
-                    <Text style={{ color: dob ? '#000' : '#aaa' }}>{dob || 'תאריך לידה של הילד'}</Text>
+
+                <TouchableOpacity
+                    style={styles.datePickerContainer} onPress={showDatePicker}>
+                    <Icon name="calendar" size={20} color={dob ? '#000' : '#aaa'} />
+                    <Text style={[styles.inputDate, styles.datePickerText, { color: dob ? '#000' : '#aaa', marginLeft: 10 }]}>{dob || 'תאריך לידה של הילד'}</Text>
                 </TouchableOpacity>
 
                 <TextInput
@@ -76,13 +81,17 @@ const AddChild = ({ navigation }) => {
                 <TouchableOpacity style={styles.addButton} onPress={addChild}>
                     <Text style={styles.addButtonLabel}>הוסף ילד</Text>
                 </TouchableOpacity>
-                <DateTimePickerModal
-                    isVisible={isDatePickerVisible}
-                    mode="date"
-                    onConfirm={handleDateConfirm}
-                    onCancel={hideDatePicker}
-                />
             </View>
+            <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleDateConfirm}
+                onCancel={hideDatePicker}
+                locale="he-IL"
+                headerTextIOS="בחירת תאריך לידה"
+                cancelTextIOS="ביטול"
+                confirmTextIOS="אישור"
+            />
         </View>
     );
 };
@@ -90,28 +99,39 @@ const AddChild = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        alignItems: 'center',
         paddingHorizontal: 20,
-        paddingTop: 60,
+        paddingTop: 30,
+        alignItems: 'center',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginVertical: 20,
+        marginBottom: 20,
     },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
         borderRadius: 5,
+        borderColor: '#ddd',
+        width: '100%',
         padding: 10,
         marginVertical: 10,
-        width: '100%',
-        textAlign: 'center',
+        fontSize: 16,
+        textAlign: 'right',
+    },
+    inputDate: {
+        borderWidth: 1,
+        borderRadius: 5,
+        borderColor: '#ddd',
+        width: '90%',
+        padding: 10,
+        marginVertical: 10,
+        fontSize: 16,
+        textAlign: 'right',
     },
     label: {
         fontSize: 18,
         fontWeight: 'bold',
+        alignSelf: 'flex-start',
         marginVertical: 10,
     },
     genderContainer: {
@@ -121,30 +141,44 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     genderButton: {
-        backgroundColor: '#ccc',
-        padding: 10,
+        borderWidth: 1,
+        borderColor: '#ddd',
         borderRadius: 5,
-        width: '48%',
+        padding: 10,
+        width: '45%',
         alignItems: 'center',
     },
     selectedGenderButton: {
-        backgroundColor: '#6d9eeb',
+        backgroundColor: '#ddd',
     },
     genderLabel: {
         fontSize: 16,
-        fontWeight: 'bold',
-        color: '#fff',
     },
     addButton: {
-        backgroundColor: '#6d9eeb',
-        padding: 10,
+        backgroundColor: '#00509D',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
         borderRadius: 5,
-        marginVertical: 20,
+        marginTop: 20,
     },
     addButtonLabel: {
         color: '#fff',
-        fontSize: 20,
-        fontWeight: 'bold',
+        fontSize: 18,
+        textAlign: 'center',
+    },
+    datePickerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderRadius: 5,
+        borderColor: '#ddd',
+        width: '100%',
+        padding: 10,
+        marginVertical: 10,
+    },
+    datePickerText: {
+        fontSize: 16,
+        textAlign: 'right',
     },
 });
 
