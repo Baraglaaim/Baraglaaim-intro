@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Text, SafeAreaView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
+// import { footstepsOutline } from 'ionicons/icons';
 const HeaderIcons = ({ navigation }) => {
     return (
         <View style={styles.navigationBar}>
             <View style={styles.iconContainer}>
                 <TouchableOpacity onPress={() => navigation.navigate('JoinCommunity')}>
                     <View style={styles.iconWrapper}>
-                        <Ionicons name="people" size={30} color="black" />
+                        <Ionicons name="school-outline" size={30} color="black" />
                         <Text style={styles.iconText}>הצטרף לקהילה</Text>
                     </View>
                 </TouchableOpacity>
@@ -16,15 +16,15 @@ const HeaderIcons = ({ navigation }) => {
             <View style={styles.iconContainer}>
                 <TouchableOpacity onPress={() => navigation.navigate('CreateCommunity')}>
                     <View style={styles.iconWrapper}>
-                        <Ionicons name="add" size={30} color="black" />
-                        <Text style={styles.iconText}>צור קבוצת הליכה</Text>
+                        <Ionicons name="walk-outline" size={30} color="black" />
+                        <Text style={styles.iconText}>קבוצות הליכה</Text>
                     </View>
                 </TouchableOpacity>
             </View>
             <View style={styles.iconContainer}>
-                <TouchableOpacity onPress={() => navigation.navigate('WatchMyChild')}>
+                <TouchableOpacity onPress={() => navigation.navigate('WatchMyChilds')}>
                     <View style={styles.iconWrapper}>
-                        <Ionicons name="eye" size={30} color="black" />
+                        <Ionicons name="people-outline" size={30} color="black" />
                         <Text style={styles.iconText}>צפה בילדים שלי</Text>
                     </View>
                 </TouchableOpacity>
@@ -32,7 +32,7 @@ const HeaderIcons = ({ navigation }) => {
             <View style={styles.iconContainer}>
                 <TouchableOpacity onPress={() => navigation.navigate('AddChild')}>
                     <View style={styles.iconWrapper}>
-                        <Ionicons name="person-add" size={30} color="black" />
+                        <Ionicons name="person-add-outline" size={30} color="black" />
                         <Text style={styles.iconText}>הוסף ילד</Text>
                     </View>
                 </TouchableOpacity>
@@ -48,6 +48,7 @@ const HeaderIcons = ({ navigation }) => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {

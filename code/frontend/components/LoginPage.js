@@ -7,7 +7,6 @@ import { ImageBackground } from 'react-native';
 const LoginPage = ({ navigation }) => {
     const handleLogin = (email, password) => {
         // Handle login logic here
-        console.log('Logging in with email:', email, 'and password:', password);
         //if it's correct, navigate to HomeScreen
         //TODO: login logic here
         navigation.navigate('HomeScreen');

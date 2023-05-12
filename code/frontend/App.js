@@ -9,60 +9,63 @@ import RegisterPage from './components/RegisterPage'; // import RegisterPage com
 import HomeScreen from './components/HomeScreen';
 import HeaderIcons from './components/HeaderIcons';
 import AddChild from './components/AddChild';
-import WatchMyChild from './components/watchMyChild';
+import WatchMyChilds from './components/WatchMyChilds';
+import JoinCommunity from './components/JoinCommunity';
+import CreateCommunity from './components/CreateCommunity';
 
 const Stack = createStackNavigator();
 
-export default function App() {
-  const handleLogin = (email, password) => {
-    // Handle login logic here
-    console.log('Logging in with email:', email, 'and password:', password);
-  };
 
+function AppStack() {
+  return (
+    <Stack.Navigator initialRouteName="LoginPage">
+      <Stack.Screen
+        name="LoginPage"
+        options={{ title: 'Login' }}
+        component={LoginPage}
+      />
+      <Stack.Screen
+        name="RegisterPage"
+        options={{ title: 'Register' }}
+        component={RegisterPage}
+      />
+      <Stack.Screen
+        name="HomeScreen"
+        options={{ title: 'Home' }}
+        component={HomeScreen}
+      />
+      <Stack.Screen
+        name="HeaderIcons"
+        options={{ title: 'Home' }}
+        component={HomeScreen}
+      />
+      <Stack.Screen
+        name="JoinCommunity"
+        options={{ title: 'Join Community' }}
+        component={HeaderIcons}
+      />
+      <Stack.Screen
+        name="CreateCommunity"
+        options={{ title: 'Create Community' }}
+        component={HeaderIcons}
+      />
+      <Stack.Screen
+        name="WatchMyChilds"
+        options={{ title: 'Watch My Childs' }}
+        component={WatchMyChilds}
+      />
+      <Stack.Screen
+        name="AddChild"
+        options={{ title: 'Add Child' }}
+        component={AddChild}
+      />
+    </Stack.Navigator>
+  );
+}
+export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="AddChild">
-        <Stack.Screen
-          name="LoginPage"
-          options={{ title: 'Login' }}
-          component={LoginPage}
-        />
-        <Stack.Screen
-          name="RegisterPage"
-          options={{ title: 'Register' }}
-          component={RegisterPage}
-        />
-        <Stack.Screen
-          name="HomeScreen"
-          options={{ title: 'Home' }}
-          component={HomeScreen}
-        />
-        <Stack.Screen
-          name="HeaderIcons"
-          options={{ title: 'Home' }}
-          component={HomeScreen}
-        />
-        <Stack.Screen
-          name="JoinCommunity"
-          options={{ title: 'Join Community' }}
-          component={HeaderIcons}
-        />
-        <Stack.Screen
-          name="CreateCommunity"
-          options={{ title: 'Create Community' }}
-          component={HeaderIcons}
-        />
-        <Stack.Screen
-          name="WatchMyChild"
-          options={{ title: 'Watch My Child' }}
-          component={WatchMyChild}
-        />
-        <Stack.Screen
-          name="AddChild"
-          options={{ title: 'Add Child' }}
-          component={AddChild}
-        />
-      </Stack.Navigator>
+      <AppStack />
     </NavigationContainer>
   );
 }

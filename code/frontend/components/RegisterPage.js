@@ -12,7 +12,7 @@ const RegisterPage = ({ navigation }) => {
 
     const handleRegistration = () => {
         // Handle registration logic here
-        console.log('Registering with username:', username, 'email:', email, 'password:', password);
+        // console.log('Registering with username:', username, 'email:', email, 'password:', password);
         // navigate to LoginPage after registration process is complete
         navigation.navigate('LoginPage');
     };
