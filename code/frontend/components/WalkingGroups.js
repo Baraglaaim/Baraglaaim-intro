@@ -96,7 +96,7 @@ const WalkingGroups = ({ navigation }) => {
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.button}
-                            onPress={() => navigation.navigate('MyWalkingGroups')}
+                            onPress={() => navigation.navigate('MyWalkingGroup')}
                         >
                             <Text style={styles.buttonText}>הקבוצות שלי</Text>
                         </TouchableOpacity>

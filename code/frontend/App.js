@@ -12,6 +12,8 @@ import AddChild from './components/AddChild';
 import WatchMyChilds from './components/WatchMyChilds';
 import MyCommunity from './components/MyCommunity';
 import WalkingGroups from './components/WalkingGroups';
+import JoinWalkingGroup from './components/JoinWalkingGroup';
+import MyWalkingGroup from './components/MyWalkingGroup';
 
 const Stack = createStackNavigator();
 
@@ -36,8 +38,8 @@ function AppStack() {
       />
       <Stack.Screen
         name="HeaderIcons"
-        options={{ title: 'Home' }}
-        component={HomeScreen}
+        options={{ title: 'Header' }}
+        component={HeaderIcons}
       />
       <Stack.Screen
         name="MyCommunity"
@@ -58,6 +60,16 @@ function AppStack() {
         name="AddChild"
         options={{ title: 'Add Child' }}
         component={AddChild}
+      />
+      <Stack.Screen
+        name="MyWalkingGroup"
+        options={{ title: 'My Walking Group' }}
+        component={MyWalkingGroup}
+      />
+      <Stack.Screen
+        name="JoinWalkingGroup"
+        options={{ title: 'Join Walking Group' }}
+        component={JoinWalkingGroup}
       />
     </Stack.Navigator>
   );
