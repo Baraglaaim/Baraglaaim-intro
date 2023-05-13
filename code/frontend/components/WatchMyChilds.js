@@ -86,7 +86,9 @@ const WatchMyChilds = ({ navigation }) => {
                     <Text style={styles.kidName}>{name}</Text>
                     <Text style={styles.kidLocation}>{location}</Text>
                     <Text style={styles.kidTime}>
-                        {isArrived ? `הגיע ב${arrivalTime}:יצא ב${departureTime}` : `יצא ב${departureTime}`}
+                        {isArrived
+                            ? `הגיע ב-${arrivalTime}, יצא ב-${departureTime}`
+                            : `יצא ב-${departureTime}`}
                     </Text>
                     {!isArrived && (
                         <TouchableOpacity
