@@ -27,7 +27,7 @@ const AddChild = ({ navigation }) => {
         hideDatePicker();
     };
 
-    const addChild = async () => {
+    const addChild = async (parent) => {
         // Code to add a child to the database
     };
 

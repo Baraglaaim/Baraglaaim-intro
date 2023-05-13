@@ -62,9 +62,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     title: {
-        fontSize: 40,
-        fontWeight: "bold",
-        marginBottom: 20,
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginVertical: 15,
     },
     communityContainer: {
         alignItems: "center",

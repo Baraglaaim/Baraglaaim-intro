@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import LoginPage from './components/LoginPage';
-import RegisterPage from './components/RegisterPage'; // import RegisterPage component
+import RegisterPage from './components/RegisterPage';
 import HomeScreen from './components/HomeScreen';
 import HeaderIcons from './components/HeaderIcons';
 import AddChild from './components/AddChild';
@@ -20,7 +20,7 @@ const Stack = createStackNavigator();
 
 function AppStack() {
   return (
-    <Stack.Navigator initialRouteName="LoginPage">
+    <Stack.Navigator initialRouteName="MyWalkingGroup">
       <Stack.Screen
         name="LoginPage"
         options={{ title: 'Login' }}

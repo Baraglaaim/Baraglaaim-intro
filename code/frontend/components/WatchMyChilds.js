@@ -5,7 +5,6 @@ import {
     TouchableOpacity,
     StyleSheet,
     Alert,
-    Linking,
     Platform,
     FlatList,
 } from 'react-native';

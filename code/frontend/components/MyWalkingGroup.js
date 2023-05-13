@@ -21,20 +21,26 @@ const walkingGroups = [
 
 const WalkingGroupItem = ({ group, onPress }) => {
     return (
-        <TouchableOpacity style={styles.groupItem} onPress={onPress}>
-            <View style={styles.groupItemHeader}>
-                <Text style={styles.groupItemTitle}>{group.name}</Text>
-                <Text style={styles.groupItemSubtitle}>{group.children.join(", ")}</Text>
-            </View>
-            <View style={styles.groupItemFooter}>
-                <Text style={styles.groupItemFooterText}>
-                    {group.parentCompanion} המלווה
-                </Text>
-                <Text style={styles.groupItemFooterText}>
-                    ההליכה הקרובה: {group.nextAccompany}
-                </Text>
-            </View>
-        </TouchableOpacity>
+        <View>
+            <TouchableOpacity style={styles.groupItem} onPress={onPress}>
+                <View style={styles.groupItemHeader}>
+                    <Text style={[styles.groupItemTitle, { textAlign: 'left' }]}>
+                        {group.name}
+                    </Text>
+                    <Text style={styles.groupItemSubtitle}>
+                        {group.children.join(", ")}
+                    </Text>
+                </View>
+                <View style={styles.groupItemFooter}>
+                    <Text style={styles.groupItemFooterText}>
+                        המלווה: {group.parentCompanion}
+                    </Text>
+                    <Text style={styles.groupItemFooterText}>
+                        ההליכה הקרובה: {group.nextAccompany}
+                    </Text>
+                </View>
+            </TouchableOpacity>
+        </View>
     );
 };
 
@@ -47,10 +53,10 @@ const MyWalkingGroup = ({ navigation }) => {
     };
 
     return (
-        <View>
+        <View style={{ marginRight: 16 }}>
             <HeaderIcons navigation={navigation} />
             <SafeAreaView style={styles.container}>
-                <Text style={styles.title}>קבוצות ההליכה שלי</Text>
+                <Text style={[styles.title, { marginLeft: 16 }]}>קבוצות ההליכה שלי</Text>
                 <View style={styles.groupList}>
                     {walkingGroups.map((group) => (
                         <WalkingGroupItem
@@ -88,32 +94,30 @@ const styles = StyleSheet.create({
     groupItem: {
         backgroundColor: "#fff",
         borderRadius: 16,
-        marginVertical: 8,
-        padding: 16
+        marginBottom: 16,
+        padding: 16,
     },
     groupItemHeader: {
-        flexDirection: "column",
-        alignItems: "flex-start",
-        marginBottom: 16
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
     },
     groupItemTitle: {
-        fontSize: 24,
-        fontWeight: "bold"
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 4,
     },
     groupItemSubtitle: {
-        fontSize: 18,
-        color: "#666"
+        fontSize: 14,
+        color: "#999",
     },
     groupItemFooter: {
-        flexDirection: "column",
-        alignItems: "flex-start",
-        marginTop: 16
+        marginTop: 8,
     },
     groupItemFooterText: {
-        fontSize: 16,
+        fontSize: 14,
         color: "#999",
-        marginBottom: 4
-    }
+    },
 });
 
 export default MyWalkingGroup;

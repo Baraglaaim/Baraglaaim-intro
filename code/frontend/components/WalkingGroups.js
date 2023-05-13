@@ -64,7 +64,7 @@ const WalkingGroups = ({ navigation }) => {
         setSelectedDate('');
     };
 
-    const readWalkGroup = () => {
+    const readWalkingGroup = () => {
         // Code to read a walking group
     };
 
