@@ -1,8 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, SafeAreaView, ImageBackground } from 'react-native';
 import Buttons from './Buttons';
 import kidsImage from '../assets/kidsWalking.jpg';
-import { ImageBackground } from 'react-native';
 
 const LoginPage = ({ navigation }) => {
     const handleLogin = (email, password) => {

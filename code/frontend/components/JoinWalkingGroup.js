@@ -61,21 +61,21 @@ const JoinWalkingGroup = ({ navigation }) => {
     };
 
     return (
-        <View>
+        <SafeAreaView style={styles.container}>
             <HeaderIcon navigation={navigation} />
-                <View style={styles.header}>
-                    <Text style={styles.title}>הצטרף לקבוצת הליכה</Text>
-                </View>
-                <View style={styles.groupList}>
-                    {walkingGroups.map((group) => (
-                        <WalkingGroupItem
-                            key={group.id}
-                            group={group}
-                            onPress={() => handleGroupPress(group)}
-                        />
-                    ))}
-                </View>
-        </View>
+            <View style={styles.header}>
+                <Text style={styles.title}>הצטרף לקבוצת הליכה</Text>
+            </View>
+            <View style={styles.groupList}>
+                {walkingGroups.map((group) => (
+                    <WalkingGroupItem
+                        key={group.id}
+                        group={group}
+                        onPress={() => handleGroupPress(group)}
+                    />
+                ))}
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -86,48 +86,43 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "flex-end",
-        height: 60,
-        paddingHorizontal: 10,
-        backgroundColor: "#f8f8f8"
+        justifyContent: "center",
+        paddingVertical: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: "#ccc",
     },
     title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginVertical: 15,
+        fontSize: 24,
+        fontWeight: "bold",
     },
     groupList: {
-        flex: 1,
         paddingHorizontal: 20,
-        paddingVertical: 10
+        paddingVertical: 10,
     },
     groupItem: {
-        backgroundColor: "#f8f8f8",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 10,
+        padding: 10,
         marginBottom: 10,
-        padding: 10
     },
     groupItemHeader: {
-        marginBottom: 5
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: 10,
     },
     groupItemTitle: {
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: "bold",
-        marginBottom: 5
     },
     groupItemSubtitle: {
-        fontSize: 14,
-        fontWeight: "bold"
+        fontSize: 16,
     },
-    groupItemFooter: {
-        borderTopWidth: 1,
-        borderTopColor: "#ddd",
-        paddingTop: 5
-    },
+    groupItemFooter: {},
     groupItemFooterText: {
         fontSize: 14,
-        marginBottom: 3
-    }
+    },
 });
 
 export default JoinWalkingGroup;

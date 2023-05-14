@@ -53,9 +53,9 @@ const MyWalkingGroup = ({ navigation }) => {
     };
 
     return (
-        <View style={{ marginRight: 16 }}>
-            <HeaderIcons navigation={navigation} />
-            <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container}>
+            <View style={{ marginRight: 16 }}>
+                <HeaderIcons navigation={navigation} />
                 <Text style={[styles.title, { marginLeft: 16 }]}>קבוצות ההליכה שלי</Text>
                 <View style={styles.groupList}>
                     {walkingGroups.map((group) => (
@@ -66,11 +66,10 @@ const MyWalkingGroup = ({ navigation }) => {
                         />
                     ))}
                 </View>
-            </SafeAreaView >
-        </View>
+            </View>
+        </SafeAreaView >
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,

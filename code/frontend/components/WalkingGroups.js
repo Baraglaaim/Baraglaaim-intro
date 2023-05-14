@@ -1,9 +1,8 @@
+
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import HeaderIcons from './HeaderIcons';
-import DateTimePickerModal from 'react-native-modal-datetime-picker'
-import Icon from 'react-native-vector-icons/FontAwesome';
-
+// import Icon from 'react-native-vector-icons/FontAwesome';
 
 const WalkingGroups = ({ navigation }) => {
     const [showForm, setShowForm] = useState(false);
@@ -14,25 +13,10 @@ const WalkingGroups = ({ navigation }) => {
     const [groupManagerPhone, setGroupManagerPhone] = useState('');
     const [groupManagerEmail, setGroupManagerEmail] = useState('');
     const [groupManagerAddress, setGroupManagerAddress] = useState('');
-    const [GroupUserChildName, setGroupUserChildName] = useState('');
-    const [GroupUserChildPhone, setGroupUserChildPhone] = useState('');
-    const [GroupUserChildAge, setGroupUserChildAge] = useState('');
-    const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-    const [selectedDate, setSelectedDate] = useState('');
+    const [groupUserChildName, setGroupUserChildName] = useState('');
+    const [groupUserChildPhone, setGroupUserChildPhone] = useState('');
+    const [groupUserChildAge, setGroupUserChildAge] = useState('');
     const [walkingGroups, setWalkingGroups] = useState([]);
-
-    const showDatePicker = () => {
-        setIsDatePickerVisible(true);
-    };
-
-    const hideDatePicker = () => {
-        setIsDatePickerVisible(false);
-    };
-
-    const handleConfirmDate = (date) => {
-        setSelectedDate(date.toDateString());
-        hideDatePicker();
-    };
 
     const createWalkingGroup = () => {
         const newWalkingGroup = {
@@ -43,10 +27,9 @@ const WalkingGroups = ({ navigation }) => {
             groupManagerPhone,
             groupManagerEmail,
             groupManagerAddress,
-            GroupUserChildName,
-            GroupUserChildPhone,
-            GroupUserChildAge,
-            selectedDate
+            groupUserChildName,
+            groupUserChildPhone,
+            groupUserChildAge
         };
         setWalkingGroups([...walkingGroups, newWalkingGroup]);
         setShowForm(false);
@@ -61,10 +44,9 @@ const WalkingGroups = ({ navigation }) => {
         setGroupUserChildName('');
         setGroupUserChildPhone('');
         setGroupUserChildAge('');
-        setSelectedDate('');
     };
 
-    const readWalkingGroup = () => {
+    const readWalkGroup = () => {
         // Code to read a walking group
     };
 
@@ -103,221 +85,147 @@ const WalkingGroups = ({ navigation }) => {
                     </View>
                 ) : (
                     <View>
-                        <View style={styles.inputContainer}>
+                        <View style={styles.formContainer}>
+                            <Text style={styles.formTitle}>צור קבוצת הליכה חדשה</Text>
                             <TextInput
                                 style={styles.input}
-                                placeholder="שם קבוצת ההליכה"
+                                placeholder="שם הקבוצה"
                                 value={groupName}
                                 onChangeText={setGroupName}
                             />
-                        </View>
-                        <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="מנהל קבוצת ההליכה"
+                                placeholder="מנהל הקבוצה"
                                 value={groupManager}
                                 onChangeText={setGroupManager}
                             />
-                        </View>
-                        <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="מספר מינימלי של ילדים בקבוצה"
+                                placeholder="מספר משתתפי ילדים מינימלי"
                                 value={groupMinKids}
                                 onChangeText={setGroupMinKids}
                                 keyboardType="numeric"
                             />
-                        </View>
-                        <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="מספר מקסימלי של ילדים בקבוצה"
+                                placeholder="מספר משתתפי ילדים מקסימלי"
                                 value={groupMaxKids}
                                 onChangeText={setGroupMaxKids}
                                 keyboardType="numeric"
                             />
-                        </View>
-                        <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="מספר הטלפון של מנהל קבוצת ההליכה"
+                                placeholder="טלפון מנהל הקבוצה"
                                 value={groupManagerPhone}
                                 onChangeText={setGroupManagerPhone}
                                 keyboardType="phone-pad"
                             />
-                        </View>
-                        <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="האימייל של מנהל קבוצת ההליכה"
+                                placeholder="דואר אלקטרוני מנהל הקבוצה"
                                 value={groupManagerEmail}
                                 onChangeText={setGroupManagerEmail}
                                 keyboardType="email-address"
                             />
-                        </View>
-                        <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="כתובת מנהל קבוצת ההליכה"
+                                placeholder="כתובת מנהל הקבוצה"
                                 value={groupManagerAddress}
                                 onChangeText={setGroupManagerAddress}
                             />
-                        </View>
-                        <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="שם הילד"
-                                value={GroupUserChildName}
+                                placeholder="שם הילד שלך"
+                                value={groupUserChildName}
                                 onChangeText={setGroupUserChildName}
                             />
-                        </View>
-                        <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="מספר הטלפון של הילד"
-                                value={GroupUserChildPhone}
+                                placeholder="טלפון הילד שלך"
+                                value={groupUserChildPhone}
                                 onChangeText={setGroupUserChildPhone}
                                 keyboardType="phone-pad"
                             />
-                        </View>
-                        <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="גיל הילד"
-                                value={GroupUserChildAge}
+                                placeholder="גיל הילד שלך"
+                                value={groupUserChildAge}
                                 onChangeText={setGroupUserChildAge}
                                 keyboardType="numeric"
                             />
-                        </View>
-                        <View style={styles.inputContainer}>
                             <TouchableOpacity
-                                style={styles.datePickerButton}
-                                onPress={showDatePicker}
+                                style={styles.createButton}
+                                onPress={createWalkingGroup}
                             >
-                                <Text style={styles.datePickerButtonText}>בחר תאריך</Text>
-                                <Icon name="calendar" size={25} style={styles.datePickerIcon} />
-                            </TouchableOpacity>
-                        </View>
-                        {selectedDate !== '' && (
-                            <View style={styles.dateContainer}>
-                                <Text style={styles.dateText}>{selectedDate}</Text>
-                            </View>
-                        )}
-                        <View style={styles.buttonsContainer}>
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={() => {
-                                    createWalkingGroup();
-                                    setShowForm(false);
-                                }}
-                            >
-                                <Text style={styles.buttonText}>צור קבוצה</Text>
+                                <Text style={styles.createButtonText}>צור קבוצה חדשה</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={styles.button}
+                                style={styles.cancelButton}
                                 onPress={() => setShowForm(false)}
                             >
-                                <Text style={styles.buttonText}>ביטול</Text>
+                                <Text style={styles.cancelButtonText}>בטל</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 )}
             </View>
-            <DateTimePickerModal
-                isVisible={isDatePickerVisible}
-                mode="date"
-                onConfirm={handleConfirmDate}
-                onCancel={hideDatePicker}
-            />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        padding: 10,
-        marginTop: 20,
-    },
-    inputContainer: {
-        marginVertical: 10,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        padding: 10,
-        borderRadius: 5,
-        fontSize: 18,
-    },
-    datePickerButton: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        padding: 10,
-        borderRadius: 5,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    datePickerButtonText: {
-        fontSize: 18,
-        marginRight: 10,
-    },
-    datePickerIcon: {
-        color: '#ccc',
+        padding: 20,
+        height: '100%',
     },
     buttonsContainer: {
         flexDirection: 'column',
-        justifyContent: 'space-between',
-        marginTop: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
     },
     button: {
-        backgroundColor: '#b5e5ff',
-        padding: 10,
-        borderRadius: 5,
-        flex: 1,
-        marginVertical: 15,
+        backgroundColor: '#1E6738',
+        width: '80%',
+        height: 50,
         alignItems: 'center',
         justifyContent: 'center',
+        marginVertical: 10,
+        borderRadius: 5,
     },
     buttonText: {
-        fontWeight: 'bold',
-        fontSize: 16,
+        color: '#fff',
+        fontSize: 18,
     },
-    inputContainer: {
+    formContainer: {
+        marginVertical: 20,
+    },
+    formTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
         marginBottom: 20,
     },
     input: {
-        height: 40,
-        borderColor: '#b5e5ff',
+        borderColor: '#ccc',
         borderWidth: 1,
         borderRadius: 5,
-        paddingLeft: 10,
-        paddingRight: 10,
+        padding: 10,
+        marginBottom: 10,
         textAlign: 'right',
     },
-    datePickerButton: {
-        flexDirection: 'row',
-        backgroundColor: '#b5e5ff',
+    createButton: {
+        backgroundColor: '#1E6738',
+        borderRadius: 10,
         padding: 10,
-        borderRadius: 5,
         alignItems: 'center',
+        marginTop: 10,
     },
-    datePickerButtonText: {
-        flex: 1,
+    createButtonText: {
+        color: '#fff',
         fontWeight: 'bold',
-        fontSize: 16,
-    },
-    datePickerIcon: {
-        marginLeft: 10,
-    },
-    dateContainer: {
-        marginTop: 20,
-        marginBottom: 20,
-    },
-    dateText: {
         fontSize: 18,
-        fontWeight: 'bold',
-        // text to be on in center of the box:
-        textAlign: 'center',
     },
 });
+
 
 export default WalkingGroups;

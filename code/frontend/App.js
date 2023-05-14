@@ -14,13 +14,15 @@ import MyCommunity from './components/MyCommunity';
 import WalkingGroups from './components/WalkingGroups';
 import JoinWalkingGroup from './components/JoinWalkingGroup';
 import MyWalkingGroup from './components/MyWalkingGroup';
+import GroupProfile from './components/GroupProfile';
+
 
 const Stack = createStackNavigator();
 
 
 function AppStack() {
   return (
-    <Stack.Navigator initialRouteName="MyWalkingGroup">
+    <Stack.Navigator initialRouteName="LoginPage">
       <Stack.Screen
         name="LoginPage"
         options={{ title: 'Login' }}
@@ -71,6 +73,10 @@ function AppStack() {
         options={{ title: 'Join Walking Group' }}
         component={JoinWalkingGroup}
       />
+      <Stack.Screen
+        name="GroupProfile"
+        options={{ title: 'Group profile' }}
+        component={GroupProfile} />
     </Stack.Navigator>
   );
 }

@@ -7,7 +7,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 const AddChild = ({ navigation }) => {
     const [name, setName] = useState('');
-    const [age, setAge] = useState('');
     const [gender, setGender] = useState('');
     const [phone, setPhone] = useState('');
     const [dob, setDob] = useState('');
@@ -40,7 +39,7 @@ const AddChild = ({ navigation }) => {
                     style={styles.input}
                     value={name}
                     onChangeText={setName}
-                    placeholder="שם הילד/הילדה"
+                    placeholder="שם הילד או הילדה"
                 />
 
                 <TextInput

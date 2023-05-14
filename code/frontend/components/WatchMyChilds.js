@@ -1,15 +1,15 @@
 import React, { useState, useCallback } from 'react';
+
 import {
     View,
     Text,
     TouchableOpacity,
     StyleSheet,
     Alert,
-    Platform,
     FlatList,
 } from 'react-native';
 import HeaderIcons from './HeaderIcons';
-import { ToastAndroid } from 'react-native';
+
 
 const childrenData = [
     {
@@ -49,20 +49,15 @@ const childrenData = [
 
 const WatchMyChilds = ({ navigation }) => {
     const [selectedKidIndex, setSelectedKidIndex] = useState(-1);
+
     const handleKidPress = useCallback(
         (index) => {
             setSelectedKidIndex(index);
             // Code to show kid location on map
             Alert.alert(
                 'התראה',
-                `אתה מנסה לצפות במיקום של ${childrenData[index].name}. האם אתה רוצה לפנות להורה המלווה?`,
+                `${childrenData[index].name}`,
                 [
-                    {
-                        text: 'כן',
-                        onPress: () => {
-                            ToastAndroid.show(`אתה מנסה לצפות במיקום של ${childrenData[index].name}. האם אתה רוצה לפנות למלווה ההורים?`, ToastAndroid.LONG);
-                        },
-                    },
                     {
                         text: 'לא',
                         style: 'cancel',
@@ -72,6 +67,7 @@ const WatchMyChilds = ({ navigation }) => {
         },
         [setSelectedKidIndex],
     );
+
 
     const renderKid = useCallback(
         ({ item: { name, location, departureTime, arrivalTime, isArrived, coordinates }, index }) => {
@@ -86,8 +82,8 @@ const WatchMyChilds = ({ navigation }) => {
                     <Text style={styles.kidLocation}>{location}</Text>
                     <Text style={styles.kidTime}>
                         {isArrived
-                            ? `הגיע ב-${arrivalTime}, יצא ב-${departureTime}`
-                            : `יצא ב-${departureTime}`}
+                            ? `הגיע ב - ${arrivalTime}, יצא ב - ${departureTime}`
+                            : `יצא ב - ${departureTime}`}
                     </Text>
                     {!isArrived && (
                         <TouchableOpacity
@@ -120,7 +116,7 @@ const WatchMyChilds = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: Platform.OS === 'android' ? 25 : 0,
+        paddingTop: 25,
     },
     title: {
         fontSize: 20,
