@@ -39,6 +39,7 @@ const childrenData = [
         location: 'ממלכתי א',
         departureTime: '07:55',
         arrivalTime: '08:10',
+
         isArrived: true,
         coordinates: {
             latitude: 123.7749,

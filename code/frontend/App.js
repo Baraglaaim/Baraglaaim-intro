@@ -22,7 +22,7 @@ const Stack = createStackNavigator();
 
 function AppStack() {
   return (
-    <Stack.Navigator initialRouteName="LoginPage">
+    <Stack.Navigator initialRouteName="MyWalkingGroup">
       <Stack.Screen
         name="LoginPage"
         options={{ title: 'Login' }}
