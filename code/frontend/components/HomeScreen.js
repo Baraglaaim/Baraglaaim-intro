@@ -1,23 +1,46 @@
-import React from 'react';
-import { View, StyleSheet, SafeAreaView } from 'react-native';
-import HeaderIcons from './HeaderIcons';
-
-// const handleHomeScreen = () => {
-
-// };
+import React from "react";
+import { Text, View, Image, StyleSheet, SafeAreaView } from "react-native";
+import HeaderIcons from "./HeaderIcons";
+import Footer from "./Footer";
+import kidsImage from "../assets/kidsWalking.jpg";
 
 const HomeScreen = ({ navigation }) => {
-    return (
-        <View style={styles.container}>
-            <HeaderIcons navigation={navigation} />
-        </View>
-    );
+  return (
+    <SafeAreaView style={styles.container}>
+      <HeaderIcons navigation={navigation} />
+      <View style={styles.overlay}>
+        <Text style={styles.header}>ברוך הבא, יוסי</Text>
+        <Image source={kidsImage} style={styles.image} />
+      </View>
+      <Footer />
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
+  container: {
+    flex: 1,
+  },
+  overlay: {
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  header: {
+    color: "white",
+    fontSize: 35,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  image: {
+    flex: 1,
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+  },
 });
 
 export default HomeScreen;
