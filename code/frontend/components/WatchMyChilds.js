@@ -97,7 +97,7 @@ const WatchMyChilds = ({ navigation }) => {
             <TouchableOpacity
               style={styles.viewOnMapButton}
               onPress={() => {
-                // Code to show kid location on map
+                navigation.navigate("AlmogItayMap");
               }}
             >
               <Text style={styles.viewOnMapButtonText}>צפה במפה</Text>

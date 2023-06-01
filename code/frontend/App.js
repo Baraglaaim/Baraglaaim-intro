@@ -23,8 +23,26 @@ import MyWalkingGroup from "./components/MyWalkingGroup";
 import GroupProfile from "./components/GroupProfile";
 import WelcomePage from "./components/WelcomePage";
 import CreateWalkingGroup from "./components/CreateWalkingGroup";
+import { initializeApp } from "firebase/app";
+
+// Initialize Firebase app
+const firebaseConfig = {
+  apiKey: "AIzaSyBpaY7Ds0ypV7P6yJocAARhQqSDqcZnKJs",
+  authDomain: "baraglaaim.firebaseapp.com",
+  databaseURL:
+    "https://baraglaaim-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "baraglaaim",
+  storageBucket: "baraglaaim.appspot.com",
+  messagingSenderId: "941901960409",
+  appId: "1:941901960409:web:7bf3e5793bbed7753adac8",
+  measurementId: "G-8GJP6EDXGZ",
+};
+// import DataBase from "./DataBase/DataBase";
+// import AlmogItayMap from "./DataBase/Dar";
 
 const Stack = createStackNavigator();
+
+const app = initializeApp(firebaseConfig);
 
 function AppStack() {
   return (
@@ -34,6 +52,11 @@ function AppStack() {
         options={{ title: "Login" }}
         component={LoginPage}
       />
+      {/* <Stack.Screen
+        name="DataBase"
+        options={{ title: "Data" }}
+        component={DataBase}
+      /> */}
       <Stack.Screen
         name="RegisterPage"
         options={{ title: "Register" }}
@@ -94,6 +117,11 @@ function AppStack() {
         options={{ title: "Group profile" }}
         component={GroupProfile}
       />
+      {/* <Stack.Screen
+        name="AlmogItayMap"
+        options={{ title: "almog" }}
+        component={AlmogItayMap}
+      /> */}
     </Stack.Navigator>
   );
 }

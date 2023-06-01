@@ -1,23 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   SafeAreaView,
-  Image,
   View,
-  Dimensions,
 } from "react-native";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import Buttons from "./Buttons";
-import Footer from "./Footer";
 
 const LoginPage = ({ navigation }) => {
-  const handleLogin = (email, password) => {
-    // Handle login logic here
-    // if it's correct, navigate to HomeScreen
-    // TODO: login logic here
-    navigation.navigate("HomeScreen");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleLogin = () => {
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        // Login successful
+        console.log("Logged in user:", auth.currentUser);
+        navigation.navigate("HomeScreen");
+      })
+      .catch((error) => {
+        // Login failed
+        const errorMessage = error.message;
+        setErrorMessage(errorMessage);
+      });
   };
 
   return (
@@ -30,6 +40,7 @@ const LoginPage = ({ navigation }) => {
           placeholder="הכנס שם משתמש"
           maxLength={50}
           numberOfLines={1}
+          onChangeText={(text) => setEmail(text)}
         />
         <Text style={styles.userDetails}>סיסמא</Text>
         <TextInput
@@ -38,29 +49,27 @@ const LoginPage = ({ navigation }) => {
           secureTextEntry={true}
           maxLength={50}
           numberOfLines={1}
+          onChangeText={(text) => setPassword(text)}
         />
         <Buttons title="התחבר" color="orange" width={150} press={handleLogin} />
+        {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
         <TouchableOpacity onPress={() => navigation.navigate("RegisterPage")}>
           <Text style={styles.signupNow}>אין לך חשבון? הרשם עכשיו</Text>
         </TouchableOpacity>
       </View>
-      <Footer />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  signupNow: {
-    textAlign: "center",
-    fontSize: 15,
-    color: "orange",
-    marginBottom: 10,
+  container: {
+    flex: 1,
   },
-  userDetails: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    margin: 10,
+  overlay: {
+    backgroundColor: "rgb(70, 130, 180)",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   header: {
     fontSize: 30,
@@ -69,20 +78,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textAlign: "center",
   },
-  container: {
-    flex: 1,
-  },
-  image: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
-  },
-  overlay: {
-    backgroundColor: "rgb(70, 130, 180)",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    // paddingBottom: windowHeight * 0.1, // Adjust the paddingBottom to 10% of the screen height
+  userDetails: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    margin: 10,
   },
   input: {
     backgroundColor: "white",
@@ -97,6 +97,19 @@ const styles = StyleSheet.create({
   },
   marginBottom: {
     marginBottom: 20,
+  },
+
+  error: {
+    fontSize: 18,
+    color: "red",
+    marginTop: 10,
+    textAlign: "center",
+  },
+  signupNow: {
+    textAlign: "center",
+    fontSize: 15,
+    color: "orange",
+    marginBottom: 10,
   },
 });
 
