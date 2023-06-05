@@ -4,12 +4,14 @@ import HeaderIcons from "./HeaderIcons";
 import Footer from "./Footer";
 import kidsImage from "../assets/kidsWalking.jpg";
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, route }) => {
+  const { username } = route.params;
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderIcons navigation={navigation} />
       <View style={styles.overlay}>
-        <Text style={styles.header}>ברוך הבא, יוסי</Text>
+        <Text style={styles.header}>ברוך הבא {username}</Text>
         <Image source={kidsImage} style={styles.image} />
       </View>
       <Footer />

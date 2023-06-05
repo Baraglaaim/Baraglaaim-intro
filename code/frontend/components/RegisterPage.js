@@ -1,89 +1,143 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  SafeAreaView,
-  ImageBackground,
-  Dimensions,
-  Image,
-} from "react-native";
+import { StyleSheet, Text, TextInput, View, SafeAreaView } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Buttons from "./Buttons";
 import Footer from "./Footer";
+import { addDoc, collection, query, getDocs, where } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { db } from "../App";
 
 const RegisterPage = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleRegistration = () => {
-    // Handle registration logic here
-    // console.log('Registering with username:', username, 'email:', email, 'password:', password);
-    // navigate to LoginPage after the registration process is complete
-    navigation.navigate("WelcomePage");
+  const handleRegistration = async () => {
+    try {
+      if (password !== confirmPassword) {
+        alert("Passwords do not match");
+        return;
+      }
+
+      const q = query(collection(db, "Users"), where("email", "==", email));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        alert("User already exists");
+        return;
+      }
+
+      const auth = getAuth();
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const uid = userCredential.user.uid;
+
+      const docRef = await addDoc(collection(db, "Users"), {
+        uid: uid,
+        username: username,
+        email: email,
+        address: address,
+        phone: phone,
+      });
+
+      console.log("Document written with ID: ", docRef.id);
+
+      navigation.navigate("WelcomePage", { username }); // Pass username to WelcomePage
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.overlay}>
-        <View>
-          <Text style={styles.header}>הרשמה - ברגליים</Text>
-          <Text style={styles.userDetails}>שם משתמש</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.input, { color: "black" }]}
-              placeholder="הכנס שם משתמש"
-              value={username}
-              onChangeText={setUsername}
-              maxLength={50}
-              numberOfLines={1}
+      <ScrollView>
+        <View style={styles.overlay}>
+          <View>
+            <Text style={styles.header}>הרשמה</Text>
+            <Text style={styles.userDetails}>שם משתמש</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, { color: "black" }]}
+                placeholder="שם משתמש"
+                value={username}
+                onChangeText={setUsername}
+                maxLength={50}
+                numberOfLines={1}
+              />
+            </View>
+            <Text style={styles.userDetails}>כתובת אימייל</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, { color: "black" }]}
+                placeholder="אימייל"
+                value={email}
+                onChangeText={setEmail}
+                maxLength={50}
+                numberOfLines={1}
+              />
+            </View>
+            <Text style={styles.userDetails}>טלפון</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, { color: "black" }]}
+                placeholder="טלפון"
+                value={phone}
+                onChangeText={setPhone}
+                maxLength={10}
+                numberOfLines={1}
+              />
+            </View>
+            <Text style={styles.userDetails}>כתובת מגורים</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, { color: "black" }]}
+                placeholder="כתובת מגורים"
+                value={address}
+                onChangeText={setAddress}
+                maxLength={50}
+                numberOfLines={1}
+              />
+            </View>
+            <Text style={styles.userDetails}>סיסמא</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, { color: "black" }]}
+                placeholder="סיסמא"
+                secureTextEntry={true}
+                value={password}
+                onChangeText={setPassword}
+                maxLength={50}
+                numberOfLines={1}
+              />
+            </View>
+            <Text style={styles.userDetails}>אימות סיסמא</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={[styles.input, styles.marginBottom, { color: "black" }]}
+                placeholder="אימות סיסמא"
+                secureTextEntry={true}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                maxLength={50}
+                numberOfLines={1}
+              />
+            </View>
+
+            <Buttons
+              title="הרשמה"
+              color="orange"
+              width={150}
+              press={handleRegistration}
             />
           </View>
-          <Text style={styles.userDetails}>כתובת אימייל</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.input, { color: "black" }]}
-              placeholder="הכנס אימייל"
-              value={email}
-              onChangeText={setEmail}
-              maxLength={50}
-              numberOfLines={1}
-            />
-          </View>
-          <Text style={styles.userDetails}>סיסמא</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.input, { color: "black" }]}
-              placeholder="הכנס סיסמא"
-              secureTextEntry={true}
-              value={password}
-              onChangeText={setPassword}
-              maxLength={50}
-              numberOfLines={1}
-            />
-          </View>
-          <Text style={styles.userDetails}>אימות סיסמא</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={[styles.input, styles.marginBottom, { color: "black" }]}
-              placeholder="הכנס סיסמא שוב"
-              secureTextEntry={true}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              maxLength={50}
-              numberOfLines={1}
-            />
-          </View>
-          <Buttons
-            title="הירשם"
-            color="orange"
-            width={150}
-            press={handleRegistration}
-          />
         </View>
-      </View>
+      </ScrollView>
       <Footer />
     </SafeAreaView>
   );
@@ -93,22 +147,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  image: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
-  },
   overlay: {
-    backgroundColor: "rgb(70, 130, 180)", // Updated color
+    backgroundColor: "rgb(70, 130, 180)",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
   header: {
     color: "white",
-    fontSize: 35,
+    marginTop: 20,
+    fontSize: 45,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 2,
     textAlign: "center",
   },
   userDetails: {
@@ -118,7 +168,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   inputContainer: {
-    width: "100%", // Set width to 100%
+    width: "100%",
     alignItems: "center",
   },
   input: {
@@ -127,7 +177,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 10,
     width: 300,
-    height: 50,
+    height: 40,
     textAlign: "center",
     alignSelf: "center",
     padding: 10,

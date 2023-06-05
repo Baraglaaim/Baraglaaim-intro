@@ -23,7 +23,13 @@ import MyWalkingGroup from "./components/MyWalkingGroup";
 import GroupProfile from "./components/GroupProfile";
 import WelcomePage from "./components/WelcomePage";
 import CreateWalkingGroup from "./components/CreateWalkingGroup";
+
+// import firebase from "react-native-firebase";
+
 import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
 
 // Initialize Firebase app
 const firebaseConfig = {
@@ -37,12 +43,15 @@ const firebaseConfig = {
   appId: "1:941901960409:web:7bf3e5793bbed7753adac8",
   measurementId: "G-8GJP6EDXGZ",
 };
+export const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const storage = getStorage(app);
+export const db = getFirestore(app);
+
 // import DataBase from "./DataBase/DataBase";
 // import AlmogItayMap from "./DataBase/Dar";
 
 const Stack = createStackNavigator();
-
-const app = initializeApp(firebaseConfig);
 
 function AppStack() {
   return (

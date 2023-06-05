@@ -7,37 +7,61 @@ import {
   SafeAreaView,
   View,
 } from "react-native";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { db } from "../App";
 import Buttons from "./Buttons";
+import { query, addDoc, collection, getDocs, where } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 const LoginPage = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        // Login successful
-        console.log("Logged in user:", auth.currentUser);
-        navigation.navigate("HomeScreen");
-      })
-      .catch((error) => {
-        // Login failed
-        const errorMessage = error.message;
-        setErrorMessage(errorMessage);
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      // Login successful
+      const user = userCredential.user;
+      console.log("Logged in user:", user.uid);
+      const userUid = user.uid;
+      const q = query(collection(db, "Users"), where("uid", "==", userUid));
+      const querySnapshot = await getDocs(q);
+      console.log(
+        "Logged in user name:",
+        querySnapshot.docs[0].data().username
+      );
+
+      if (querySnapshot.empty) {
+        alert("User does not exist");
+        return;
+      }
+
+      navigation.navigate("HomeScreen", {
+        username: querySnapshot.docs[0].data().username,
+        // userName: user.uid,
       });
+    } catch (error) {
+      // Login failed
+      const errorMessage = error.message;
+      setErrorMessage(errorMessage);
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.overlay}>
-        <Text style={styles.header}>ברגליים - נעים ללכת בעיר</Text>
-        <Text style={styles.userDetails}>שם משתמש</Text>
+        <Text style={styles.header}>אוטובוס הליכה</Text>
+        <Text style={styles.userDetails}>מייל</Text>
         <TextInput
           style={[styles.input, { color: "black" }]}
-          placeholder="הכנס שם משתמש"
+          placeholder="מייל"
           maxLength={50}
           numberOfLines={1}
           onChangeText={(text) => setEmail(text)}
@@ -45,17 +69,25 @@ const LoginPage = ({ navigation }) => {
         <Text style={styles.userDetails}>סיסמא</Text>
         <TextInput
           style={[styles.input, styles.marginBottom, { color: "black" }]}
-          placeholder="הכנס סיסמא"
+          placeholder="סיסמא"
           secureTextEntry={true}
           maxLength={50}
           numberOfLines={1}
           onChangeText={(text) => setPassword(text)}
         />
-        <Buttons title="התחבר" color="orange" width={150} press={handleLogin} />
+        <Buttons
+          title="התחברות"
+          color="orange"
+          width={150}
+          press={handleLogin}
+        />
         {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-        <TouchableOpacity onPress={() => navigation.navigate("RegisterPage")}>
-          <Text style={styles.signupNow}>אין לך חשבון? הרשם עכשיו</Text>
-        </TouchableOpacity>
+        <View style={styles.signupContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate("RegisterPage")}>
+            <Text style={styles.signupLink}> להרשמה</Text>
+          </TouchableOpacity>
+          <Text style={styles.signupNow}>אין לך חשבון? </Text>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -76,6 +108,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     marginTop: 20,
+    marginBottom: 20,
     textAlign: "center",
   },
   userDetails: {
@@ -105,11 +138,20 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: "center",
   },
+  signupContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+  },
   signupNow: {
-    textAlign: "center",
     fontSize: 15,
     color: "orange",
-    marginBottom: 10,
+  },
+  signupLink: {
+    textDecorationLine: "underline",
+    color: "orange",
+    marginLeft: 5,
   },
 });
 

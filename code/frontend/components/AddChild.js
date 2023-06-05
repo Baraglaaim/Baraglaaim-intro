@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,124 +6,157 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
+  KeyboardAvoidingView,
+  ScrollView,
+  TouchableWithoutFeedback,
 } from "react-native";
+// import firebase from "firebase/app";
+// import "firebase/firestore";
+import { db } from "../App";
+import { collection, doc, getDocs } from "firebase/firestore";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Buttons from "./Buttons";
 import Footer from "./Footer";
 import HeaderIcons from "./HeaderIcons";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import MyWalkingGroup from "./MyWalkingGroup";
+import { Picker } from "@react-native-picker/picker";
 
 const AddChild = ({ navigation }) => {
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [phone, setPhone] = useState("");
-  const [dob, setDob] = useState("");
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [classChild, setClassChild] = useState("");
+  const [school, setSchool] = useState("");
   const [grade, setGrade] = useState("");
+  const [schoolList, setSchoolList] = useState([]);
 
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
+  useEffect(() => {
+    // Fetch the school data from Firestore
+    fetchSchools();
+  }, []);
 
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-
-  const handleDateConfirm = (date) => {
-    setDob(date.toLocaleDateString("he-IL"));
-    hideDatePicker();
-  };
+  async function fetchSchools() {
+    try {
+      const schoolsCollection = collection(db, "School");
+      const schoolsSnapshot = await getDocs(schoolsCollection);
+      const schoolsData = schoolsSnapshot.docs.map((doc) => {
+        // console.log(doc.id, " => ", doc.data().name);
+        return { name: doc.data().name };
+      });
+      setSchoolList(schoolsData);
+    } catch (error) {
+      console.log("Error fetching school data:", error);
+    }
+  }
 
   const addChild = async (parent) => {
     // Code to add a child to the database
   };
 
+  const [isPickerVisible, setIsPickerVisible] = useState(false);
+
+  const togglePicker = () => {
+    setIsPickerVisible(!isPickerVisible);
+  };
+
+  const selectSchool = (itemValue) => {
+    setSchool(itemValue);
+    setIsPickerVisible(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderIcons navigation={navigation} />
-      <View style={styles.overlay}>
-        <Text style={styles.title}>הוספת ילד חדש</Text>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>שם הילד או הילדה:</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="שם הילד או הילדה"
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>מספר הטלפון של הילד:</Text>
-          <TextInput
-            style={styles.input}
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="מספר הטלפון של הילד"
-          />
-        </View>
-        <Text style={styles.label}>תאריך לידה:</Text>
-        <TouchableOpacity
-          style={styles.datePickerContainer}
-          onPress={showDatePicker}
-        >
-          <Icon name="calendar" size={20} color={dob ? "#000" : "#aaa"} />
-          <Text
-            style={[
-              styles.inputDate,
-              { color: dob ? "#000" : "#aaa", marginLeft: 10 },
-            ]}
-          >
-            {dob || "תאריך לידה של הילד"}
-          </Text>
-        </TouchableOpacity>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>כיתת הילד:</Text>
-          <TextInput
-            style={styles.input}
-            value={grade}
-            onChangeText={setGrade}
-            placeholder="כיתת הילד"
-          />
-        </View>
-
-        <Text style={styles.label}>מין הילד:</Text>
-        <View style={styles.genderContainer}>
-          <TouchableOpacity
-            style={[
-              styles.genderButton,
-              gender === "זכר" ? styles.selectedGenderButton : null,
-            ]}
-            onPress={() => setGender("זכר")}
-          >
-            <Text style={styles.genderLabel}>זכר</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.genderButton,
-              gender === "נקבה" ? styles.selectedGenderButton : null,
-            ]}
-            onPress={() => setGender("נקבה")}
-          >
-            <Text style={styles.genderLabel}>נקבה</Text>
-          </TouchableOpacity>
-        </View>
-
-        <Buttons title="הוסף ילד" color="orange" width={150} press={addChild} />
-      </View>
+      <KeyboardAvoidingView style={styles.contentContainer} behavior="padding">
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <View style={styles.overlay}>
+            <Text style={styles.title}>הוספת צועדת/צועדת</Text>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>שם הצועד/צועדת:</Text>
+              <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+                placeholder="שם הצועד/צועדת"
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>מספר הטלפון של הצועד/צועדת:</Text>
+              <TextInput
+                style={styles.input}
+                value={phone}
+                onChangeText={setPhone}
+                placeholder="מספר הטלפון של הצועד/צועדת, במידה ויש נייד"
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>בית ספר:</Text>
+              <View style={styles.dropdownContainer}>
+                <TouchableWithoutFeedback onPress={togglePicker}>
+                  <View style={styles.pickerButton}>
+                    <Text style={styles.pickerButtonText}>
+                      {school ? school : "בחר בית ספר"}
+                    </Text>
+                    <Icon name="chevron-down" size={16} color="black" />
+                  </View>
+                </TouchableWithoutFeedback>
+                {isPickerVisible && (
+                  <Picker
+                    style={styles.dropdown}
+                    selectedValue={school}
+                    onValueChange={selectSchool}
+                  >
+                    <Picker.Item label="בחר בית ספר" value="" />
+                    {schoolList.map((school) => (
+                      <Picker.Item
+                        key={school.id} // Use the id of the school
+                        label={school.name}
+                        value={school.id}
+                      />
+                    ))}
+                  </Picker>
+                )}
+              </View>
+            </View>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>כיתה:</Text>
+              <TextInput
+                style={styles.input}
+                value={classChild}
+                onChangeText={setClassChild}
+                placeholder="כיתה"
+              />
+            </View>
+            <View style={styles.genderContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  gender === "👦" ? styles.selectedGenderButton : null,
+                ]}
+                onPress={() => setGender("👦")}
+              >
+                <Text style={styles.genderLabel}>👦</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.genderButton,
+                  gender === "👧" ? styles.selectedGenderButton : null,
+                ]}
+                onPress={() => setGender("👧")}
+              >
+                <Text style={styles.genderLabel}>👧</Text>
+              </TouchableOpacity>
+            </View>
+            <Buttons
+              title="הוסף צועד/צועדת"
+              color="orange"
+              width={200}
+              press={() => MyWalkingGroup()}
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
       <Footer />
-      <DateTimePickerModal
-        isVisible={isDatePickerVisible}
-        mode="date"
-        onConfirm={handleDateConfirm}
-        onCancel={hideDatePicker}
-        locale="he-IL"
-        headerTextIOS="בחירת תאריך לידה"
-        cancelTextIOS="ביטול"
-        confirmTextIOS="אישור"
-      />
     </SafeAreaView>
   );
 };
@@ -131,6 +164,13 @@ const AddChild = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    paddingBottom: 100, // Adjust this value to leave enough space for the footer
+  },
+  scrollViewContent: {
+    flexGrow: 1,
   },
   overlay: {
     backgroundColor: "rgb(70, 130, 180)",
@@ -167,20 +207,34 @@ const styles = StyleSheet.create({
     height: 35,
     paddingHorizontal: 10,
   },
-  datePickerContainer: {
+  dropdownContainer: {
+    position: "relative",
+    width: "100%",
+  },
+  pickerButton: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "white",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
-    padding: 10,
-    backgroundColor: "white",
-    marginBottom: 10,
+    height: 35,
+    paddingHorizontal: 10,
   },
-  inputDate: {
+  pickerButtonText: {
     flex: 1,
-    fontSize: 16,
-    textAlign: "right",
+    marginRight: 5,
+  },
+  dropdown: {
+    position: "absolute",
+    top: "100%",
+    width: "100%",
+    height: 150,
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
   },
   genderContainer: {
     flexDirection: "row",

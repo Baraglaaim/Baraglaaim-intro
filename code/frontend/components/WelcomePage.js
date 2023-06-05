@@ -8,17 +8,19 @@ import {
   Dimensions,
 } from "react-native";
 import Footer from "./Footer";
+// import RegisterPage from "./RegisterPage";
 
-const WelcomePage = ({ navigation }) => {
+const WelcomePage = ({ navigation, route }) => {
+  const { username } = route.params;
+
   const handleContinue = () => {
-    // Handle continue logic here
-    navigation.navigate("HomeScreen");
+    navigation.navigate("HomeScreen", { username });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.overlay}>
-        <Text style={styles.header}>ברוך הבא!</Text>
+        <Text style={styles.header}>ברוך הבא {username}!</Text>
         <Text style={styles.subheader}>אנחנו שמחים שהצטרפת אלינו</Text>
         <Text style={styles.description}>תהליך ההרשמה הסתיים בהצלחה.</Text>
         <Text style={styles.description}>
