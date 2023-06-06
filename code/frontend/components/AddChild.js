@@ -12,8 +12,7 @@ import {
   Modal,
 } from "react-native";
 import { db, auth } from "../App";
-import { addDoc, collection, doc, getDocs, updateDoc } from "firebase/firestore";
-// import { addDoc, collection, query, getDocs, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, updateDoc, query, where } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Buttons from "./Buttons";
@@ -75,7 +74,12 @@ const AddChild = ({ navigation }) => {
     // Code to add a child to the database
     console.log("Adding child to database...");
     const currentUser = auth.currentUser;
-    console.log("user: ", currentUser);
+   
+    const q = query(collection(db, "Users"), where("uid", "==", currentUser.uid));
+    const querySnapshot = await getDocs(q);
+    const userDocRef = querySnapshot.docs[0];
+    const userDocId = userDocRef.id;
+  
     //add child to db:
     const childDocRef = await addDoc(collection(db, "Children"), {
       name: name,
@@ -83,27 +87,26 @@ const AddChild = ({ navigation }) => {
       class: classChild,
       gender: gender,
       phone: phone,
-      parent: currentUser.uid,
+      parent: userDocId,
     });
+
+    let newChildId = childDocRef.id;
+    console.log(newChildId);
+    console.log(userDocId);
     //check if user has already children in db:
-
-    // const q querySnapshot.empty) {
-    //   alert("User already exists");
-    //   return;
-    // }
-    if (currentUser.Children) {
-      //if user has children, add child to children array:
-      const children = currentUser.children;
-      children.push(childDocRef.id);
-      await updateDoc(currentUser, children);
-    } else {
-      //if user doesn't have children, create children array and add child to it:
-      const children = [childDocRef.id];
-      await updateDoc(currentUser, children);
+    // Assuming you have already initialized Firebase and have a reference to the Firestore database
+    console.log(userDocRef.data());
+    if (userDocRef.data().children){
+      updateDoc(doc(db, `Users/${userDocId}`), {
+        children: [...userDocRef.data().children  , newChildId],
+      });
     }
-   
-
-
+    else {
+      updateDoc(doc(db, `Users/${userDocId}`), {
+        children: [newChildId],
+      });
+    }
+    
   };
 
   const toggleSchoolPicker = () => {
@@ -115,7 +118,7 @@ const AddChild = ({ navigation }) => {
   };
 
   const selectSchool = (itemValue) => {
-    setSchool(itemValue);
+    setSchool(schoolList.find((school) => school.id === itemValue)?.name || "");
     setIsSchoolPickerVisible(false);
 
     // Fetch the classes for the selected school
@@ -234,18 +237,19 @@ const AddChild = ({ navigation }) => {
               <TouchableOpacity
                 style={[
                   styles.genderButton,
-                  gender === "👦" ? styles.selectedGenderButton : null,
+                  gender === "male" ? styles.selectedGenderButton : null,
                 ]}
-                onPress={() => setGender("👦")}
+                onPress={() => setGender("male")}
               >
                 <Text style={styles.genderLabel}>👦</Text>
               </TouchableOpacity>
+                
               <TouchableOpacity
                 style={[
                   styles.genderButton,
-                  gender === "👧" ? styles.selectedGenderButton : null,
+                  gender === "female" ? styles.selectedGenderButton : null,
                 ]}
-                onPress={() => setGender("👧")}
+                onPress={() => setGender("female")}
               >
                 <Text style={styles.genderLabel}>👧</Text>
               </TouchableOpacity>
@@ -256,7 +260,7 @@ const AddChild = ({ navigation }) => {
               width={200}
               press={addChildToDB}
             />
-          </View>
+          </View>  
         </ScrollView>
       </KeyboardAvoidingView>
       <Footer />
