@@ -12,36 +12,34 @@ import Footer from "./Footer";
 import CreateWalkingGroup from "./CreateWalkingGroup";
 
 const WalkingGroups = ({ navigation }) => {
-  const [showForm, setShowForm] = useState(false);
+  // const [showForm, setShowForm] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
       <HeaderIcons navigation={navigation} />
       <View style={styles.overlay}>
-        {!showForm ? (
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setShowForm(true)}
-            >
-              <Text style={styles.buttonText}>צור קבוצת הליכה חדשה</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.navigate("JoinWalkingGroup")}
-            >
-              <Text style={styles.buttonText}>הצטרף לקבוצת הליכה</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.navigate("MyWalkingGroup")}
-            >
-              <Text style={styles.buttonText}>הקבוצות שלי</Text>
-            </TouchableOpacity>
+     
+          <View>
+            <Buttons
+            title="צור קבוצת הליכה חדשה"
+            color="orange"
+            width={300}
+            press={() => navigation.navigate("CreateWalkingGroup")}
+          />
+            <Buttons
+              title="הצטרף לקבוצת הליכה"
+              color="orange"
+              width={300}
+              press={() => navigation.navigate("JoinWalkingGroup")}
+            />
+            <Buttons
+              title="הקבוצות שלי"
+              color="orange"
+              width={300}
+              press={() => navigation.navigate("MyWalkingGroup")}
+            />
           </View>
-        ) : (
-          <CreateWalkingGroup setShowForm={setShowForm} />
-        )}
+     
       </View>
       <Footer />
     </SafeAreaView>
@@ -58,21 +56,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  buttonsContainer: {
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-  },
-  button: {
-    backgroundColor: "#1E6738",
-    width: "80%",
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 10,
-    borderRadius: 5,
-  },
+  // buttonsContainer: {
+  //   flexDirection: "column",
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   height: "100%",
+  // },
+  // button: {
+  //   backgroundColor: "#1E6738",
+  //   width: "80%",
+  //   height: 50,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   marginVertical: 10,
+  //   borderRadius: 5,
+  // },
   buttonText: {
     color: "#fff",
     fontSize: 18,

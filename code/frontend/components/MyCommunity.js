@@ -9,60 +9,64 @@ import {
 } from "react-native";
 import Buttons from "./Buttons";
 import Footer from "./Footer";
+import { db, auth } from "../App";
+import { query, addDoc, collection, getDocs, where } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import HeaderIcons from "./HeaderIcons";
+import ListContainer from "./ListContainer";
+
 
 const MyCommunity = ({ navigation }) => {
   const handleJoinPress = () => {
     console.log("Join button pressed");
   };
 
+  // currentUser = auth.auth().currentUser;
+  //todo - need to write querry to get list of schools
+  async function getCommunityList() {
+    const q = query(collection(db, "Users"), where("uid", "==", userUid));
+    const querySnapshot = await getDocs(q);
+    console.log("querySnapshot:", querySnapshot);
+  }
+
+  function CommunityList(arr) {
+    let communityArr = [];
+    arr.map((community) =>
+      communityArr.push(CommunityButton(community))
+    );
+    return communityArr;
+  }
+
+  function CommunityButton(name) {
+    return (
+      <TouchableOpacity
+        style={styles.communityContainer}
+        onPress={handleJoinPress}
+      >
+        <Text style={styles.title}>{name}</Text>
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <HeaderIcons navigation={navigation} />
       <View style={styles.overlay}>
-        <Text style={styles.title}>My Communities</Text>
-        <View style={styles.communityContainer}>
-          <Buttons
-            title="אורנים"
-            color="grey"
-            width={150}
-            press={handleJoinPress}
+        <View style={styles.communityList}>
+          <ListContainer
+            width={0.9}
+            height={0.5}
+            data={CommunityList([
+              "אורנים",
+              "גוננים",
+              "School 3",
+              "School 4",
+            ])}
+            separatorColor="black"
+            backgroundColor="pink"
+            style={styles.list}
           />
         </View>
-        <View style={styles.communityContainer}>
-          <Buttons
-            title="ממלכתי דתי"
-            color="grey"
-            width={150}
-            press={handleJoinPress}
-          />
-        </View>
-        <View style={styles.communityContainer}>
-          <Buttons
-            title="סתם ביהס"
-            color="grey"
-            width={150}
-            press={handleJoinPress}
-          />
-        </View>
-        <Buttons
-          style={styles.joinBtn}
-          title="הצטרף לקהילה חדשה"
-          color="orange"
-          width={220}
-          press={handleJoinPress}
-        />
-
-        <Buttons
-          style={styles.joinBtn}
-          title="מסך הבית"
-          color="green"
-          width={140}
-          onPress={handleJoinPress}
-        />
-        <TouchableOpacity onPress={() => navigation.navigate("LoginPage")}>
-          <Text style={styles.backToLogin}>חזור להתחברות</Text>
-        </TouchableOpacity>
       </View>
       <Footer />
     </SafeAreaView>
@@ -78,6 +82,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  communityList: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "50%",
+  },
+  list: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "50%",
   },
   header: {
     fontSize: 30,
@@ -95,8 +112,8 @@ const styles = StyleSheet.create({
   },
   communityContainer: {
     alignItems: "center",
-    width: "80%",
-    // marginVertical: 10,
+   backgroundColor: "orange",
+   width: 300,
   },
   joinBtn: {
     marginVertical: 10,
