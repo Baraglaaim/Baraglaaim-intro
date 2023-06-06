@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingTop: 20,
+        backgroundColor: "#9EAEBA",
     },
     iconContainer: {
         alignItems: 'center',

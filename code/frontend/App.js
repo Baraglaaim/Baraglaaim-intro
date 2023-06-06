@@ -55,17 +55,14 @@ const Stack = createStackNavigator();
 
 function AppStack() {
   return (
-    <Stack.Navigator initialRouteName="LoginPage">
+    // <Stack.Navigator initialRouteName="LoginPage">
+    <Stack.Navigator initialRouteName="MyCommunity">
       <Stack.Screen
         name="LoginPage"
         options={{ title: "Login" }}
         component={LoginPage}
       />
-      {/* <Stack.Screen
-        name="DataBase"
-        options={{ title: "Data" }}
-        component={DataBase}
-      /> */}
+
       <Stack.Screen
         name="RegisterPage"
         options={{ title: "Register" }}

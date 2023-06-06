@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import Buttons from "./Buttons";
 
-const CreateWalkingGroup = ({ setShowForm }) => {
+const CreateWalkingGroup = ({ navigation }) => {
   const [groupName, setGroupName] = useState("");
   const [groupManager, setGroupManager] = useState("");
   const [groupMinKids, setGroupMinKids] = useState("");
@@ -130,7 +130,7 @@ const CreateWalkingGroup = ({ setShowForm }) => {
       />
       <TouchableOpacity
         style={styles.cancelButton}
-        onPress={() => setShowForm(false)}
+        onPress={() => navigation.navigate("WalkingGroups")}
       >
         <Text style={styles.cancelButtonText}>בטל</Text>
       </TouchableOpacity>
