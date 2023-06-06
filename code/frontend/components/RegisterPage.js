@@ -46,9 +46,17 @@ const RegisterPage = ({ navigation }) => {
         phone: phone,
       });
 
-      console.log("Document written with ID: ", docRef.id);
+      const document = {
+        id: docRef.id,
+        uid: uid,
+        username: username,
+        email: email,
+        address: address,
+        phone: phone,
+      };
+      console.log("Document written with ID: ", document);
 
-      navigation.navigate("WelcomePage", { username }); // Pass username to WelcomePage
+      navigation.navigate("WelcomePage", document); // Pass username to WelcomePage
     } catch (error) {
       console.error("Error adding document: ", error);
     }
