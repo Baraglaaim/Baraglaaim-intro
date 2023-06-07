@@ -18,10 +18,11 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import Buttons from "./Buttons";
 import Footer from "./Footer";
 import HeaderIcons from "./HeaderIcons";
-import MyWalkingGroup from "./MyWalkingGroup";
 import { Picker } from "@react-native-picker/picker";
 
+
 const AddChild = ({ navigation }) => {
+
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [phone, setPhone] = useState("");
@@ -106,7 +107,8 @@ const AddChild = ({ navigation }) => {
         children: [newChildId],
       });
     }
-    
+    //navigate the user to WatchMyChild screen:
+                     navigation.navigate("WatchMyChilds");
   };
 
   const toggleSchoolPicker = () => {
