@@ -4,7 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import Constants from 'expo-constants';
 
-export default function App() {
+export default function Map() {
   const [initialPosition, setInitialPosition] = useState(null);
   const [markers, setMarkers] = useState([]);
 
@@ -66,3 +66,4 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+

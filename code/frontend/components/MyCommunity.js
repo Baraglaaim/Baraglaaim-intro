@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Buttons from "./Buttons";
 import Footer from "./Footer";
-import { db, auth } from "../App";
+import { db, auth } from "../FireBaseConsts";
 import { query, addDoc, collection, getDocs, where } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import HeaderIcons from "./HeaderIcons";

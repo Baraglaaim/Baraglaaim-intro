@@ -5,7 +5,7 @@ import Buttons from "./Buttons";
 import Footer from "./Footer";
 import { addDoc, collection, query, getDocs, where } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { db } from "../App";
+import { db } from "../FireBaseConsts";
 
 const RegisterPage = ({ navigation }) => {
   const [username, setUsername] = useState("");
