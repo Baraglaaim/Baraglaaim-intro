@@ -7,7 +7,7 @@ import {
   SafeAreaView,
   View,
 } from "react-native";
-import { db } from "../App";
+import { db } from "../FireBaseConsts";
 import Buttons from "./Buttons";
 import { query, addDoc, collection, getDocs, where } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";

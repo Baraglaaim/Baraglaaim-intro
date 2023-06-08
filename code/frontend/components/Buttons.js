@@ -3,9 +3,10 @@ import { StyleSheet, Pressable, Text, TouchableOpacity, Button, ImageBackground,
 
 
 function Buttons(props) {
+  const textcolor = props.textColor ? props.textColor : '#fff';
   return (
     <TouchableOpacity style={[styles.buttonStyle, { backgroundColor: props.color, width: props.width }]} onPress={props.press}>
-      <Text style={styles.buttonText}>{props.title}</Text>
+      <Text style={[styles.buttonText,{color:textcolor}]}>{props.title}</Text>
     </TouchableOpacity>
   );
 }
@@ -20,7 +21,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 20,
-    color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
   },
