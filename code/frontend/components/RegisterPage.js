@@ -56,7 +56,7 @@ const RegisterPage = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView style={{marginBottom:100}}>
         <View style={styles.overlay}>
           <View>
             <Text style={styles.header}>הרשמה</Text>

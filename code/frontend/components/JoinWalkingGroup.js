@@ -1,151 +1,177 @@
-import React from "react";
+//--------------------------------- import area ----------------------------------
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
   Text,
   View,
+  ScrollView,
   TouchableOpacity,
 } from "react-native";
 import Buttons from "./Buttons";
 import Footer from "./Footer";
-
-const walkingGroups = [
-  {
-    id: 1,
-    name: "קבוצת הליכה אל סלוודור",
-    childrenCount: 5,
-    manager: "אורטל",
-    departureTime: "8:00",
-    parentCompanionRequired: false,
-    distance: 150,
-  },
-  {
-    id: 2,
-    name: "קבוצת הליכה רוטשילד 20",
-    childrenCount: 8,
-    manager: "נועם",
-    departureTime: "7:30",
-    parentCompanionRequired: true,
-    distance: 250,
-  },
-  {
-    id: 3,
-    name: "קבוצת הליכה וייצמן 12",
-    childrenCount: 4,
-    manager: "טלי",
-    departureTime: "8:15",
-    parentCompanionRequired: false,
-    distance: 400,
-  },
-];
-
-const WalkingGroupItem = ({ group, onPress }) => {
-  return (
-    <TouchableOpacity style={styles.groupItem} onPress={onPress}>
-      <View style={styles.groupItemHeader}>
-        <Text style={styles.groupItemTitle}>{group.name}</Text>
-        <Text style={styles.groupItemSubtitle}>
-          ילדים בקבוצה: {group.childrenCount}
-        </Text>
-      </View>
-      <View style={styles.groupItemFooter}>
-        <Text style={styles.groupItemFooterText}>
-          מנהל הקבוצה: {group.manager}
-        </Text>
-        <Text style={styles.groupItemFooterText}>
-          שעת יציאה: {group.departureTime}
-        </Text>
-        <Text style={styles.groupItemFooterText}>
-          {group.parentCompanionRequired
-            ? "נדרש הורה מלווה"
-            : "לא נדרש הורה מלווה"}
-        </Text>
-        <Text style={styles.groupItemFooterText}>
-          מרחק: {group.distance} מטרים
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
-};
+import HeaderIcons from "./HeaderIcons";
+import { db, auth } from "../FireBaseConsts";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  updateDoc,
+  query,
+  where,
+} from "firebase/firestore";
 
 const JoinWalkingGroup = ({ navigation }) => {
-  const handleGroupPress = (group) => {
-    navigation.navigate("GroupProfile", { id: group.id });
+  //--------------------------------- define variables area ----------------------------------
+
+  const [groupsList, setGroupsList] = useState([]);
+
+  //--------------------------------- Back-End area ----------------------------------
+  /**
+   * This function is called when the component is rendered.
+   * It fetches the school data from Firestore.
+   * @returns {void}
+   */
+  useEffect(() => {
+    fetchGroupsList();
+  }, []);
+
+  async function fetchGroupsList() {
+    try {
+      const currentUser = auth.currentUser;
+      const q = query(
+        collection(db, "Users"),
+        where("uid", "==", currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      const userDocRef = querySnapshot.docs[0];
+      const userDocId = userDocRef.id;
+
+      const childs = userDocRef.data().children;
+      if (!childs) return;
+      const schoolList = [];
+      for (const child of childs) {
+        const childDoc = doc(db, "Children", child);
+        const childDocRef = await getDoc(childDoc);
+        const school = childDocRef.data().school;
+        if (!schoolList.includes(school)) {
+          schoolList.push(school);
+        }
+      }
+      console.log("school list is: ", schoolList);
+
+      const q2 = query(
+        collection(db, "Groups"),
+        where("school", "in", schoolList)
+      );
+      const groupsCollection = await getDocs(q2);
+      console.log("groups collection is: ", groupsCollection);
+      // const groupsCollection = collection(db, "Groups");
+      // const groupsSnapshot = await getDocs(groupsCollection);
+      const groupsSnapshot = groupsCollection.docs;
+      const groupsData = [];
+      for (const groupDoc of groupsSnapshot) {
+        const managerID = groupDoc.data().busManager;
+        const managerDocRef = doc(db, "Users", managerID);
+        const managerDoc = await getDoc(managerDocRef);
+        const managerName = managerDoc.data().username;
+        const name = groupDoc.data().name;
+        const school = groupDoc.data().school;
+        const managerPhone = groupDoc.data().busManagerPhone;
+        const startLocation = groupDoc.data().startLocation;
+        const startTime = groupDoc.data().startTime;
+        const groupItem = {
+          name: name,
+          school: school,
+          manager: managerName,
+          managerPhone: managerPhone,
+          startLocation: startLocation,
+          startTime: startTime,
+        };
+        groupsData.push(groupItem);
+      }
+      setGroupsList(groupsData);
+      console.log("groups data is: ", groupsData);
+    } catch (error) {
+      console.log("Error fetching group list:", error);
+    }
+  }
+
+  const handleGroupPress = (index) => {
+    console.log("group index is: ", index);
+    navigation.navigate("GroupProfile", { groupIndex: index });
   };
 
+  const renderGroup = ({ item, index }) => {
+    const { name, manager, managerPhone, startLocation } = item;
+    return (
+      <TouchableOpacity
+        style={styles.groupContainer}
+        onPress={() => handleGroupPress(index)}
+      >
+        <Text>Walking Group Name: {name}</Text>
+        <Text>Manager: {manager}</Text>
+        <Text>Manager's Phone: {managerPhone}</Text>
+        <Text>Meeting Point: {startLocation}</Text>
+        <TouchableOpacity
+          style={styles.joinButton}
+          onPress={() => handleJoinGroup(index)}
+        >
+          <Text style={styles.joinButtonText}>Join</Text>
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
+  };
+
+  // ------------------------Front-End area:------------------------
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.overlay}>
-        <Text style={styles.header}>הצטרף לקבוצת הליכה</Text>
-        <View style={styles.groupList}>
-          {walkingGroups.map((group) => (
-            <WalkingGroupItem
-              key={group.id}
-              group={group}
-              onPress={() => handleGroupPress(group)}
-            />
-          ))}
-        </View>
-      </View>
-      <Footer />
-    </SafeAreaView>
+    <View style={styles.container}>
+      {/* <View style={styles.headerIconsContainer}>
+        <HeaderIcons />
+      </View> */}
+      <ScrollView>
+        {groupsList.map((item, index) => (
+          <View key={index}>{renderGroup({ item, index })}</View>
+        ))}
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  signupNow: {
-    textAlign: "center",
-    fontSize: 15,
-    color: "orange",
-    marginBottom: 10,
-  },
-  header: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "white",
-    marginTop: 20,
-    textAlign: "center",
-  },
-  container: {
-    flex: 1,
-  },
-  overlay: {
-    backgroundColor: "rgb(70, 130, 180)",
-    flex: 1,
-    justifyContent: "center",
+  groupContainer: {
     alignItems: "center",
-  },
-  groupList: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    marginBottom: 10,
-  },
-  groupItem: {
+    textAlign: "center",
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "grey",
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
   },
-  groupItemHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 10,
+  joinButton: {
+    backgroundColor: "blue",
+    padding: 10,
+    marginTop: 10,
+    borderRadius: 5,
   },
-  groupItemTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
+  joinButtonText: {
     color: "white",
-  },
-  groupItemSubtitle: {
+    textAlign: "center",
     fontSize: 16,
-    color: "white",
+    fontWeight: "bold",
   },
-  groupItemFooter: {},
-  groupItemFooterText: {
-    fontSize: 14,
-    color: "white",
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+  headerIconsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 10,
+    paddingHorizontal: 20,
   },
 });
 
