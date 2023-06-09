@@ -7,7 +7,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Modal,
   Alert,
 } from "react-native";
 import Buttons from "./Buttons";
@@ -16,6 +15,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   updateDoc,
   query,
@@ -24,7 +24,6 @@ import {
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { format } from "date-fns";
 import Icon from "react-native-vector-icons/FontAwesome";
-import ListContainer from "./ListContainer";
 import { Picker } from "@react-native-picker/picker";
 
 const CreateWalkingGroup = ({ navigation }) => {
@@ -36,6 +35,8 @@ const CreateWalkingGroup = ({ navigation }) => {
   const [showPicker, setShowPicker] = useState(false);
   const [school, setSchool] = useState("");
   const [schoolList, setSchoolList] = useState([]);
+  const [child, setChild] = useState("");
+  const [childList, setChildList] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [formattedTime, setFormattedTime] = useState("");
 
@@ -48,6 +49,7 @@ const CreateWalkingGroup = ({ navigation }) => {
   useEffect(() => {
     // Fetch the school data from Firestore
     fetchSchools();
+    fetchChilds();
   }, []);
 
   /**
@@ -57,14 +59,63 @@ const CreateWalkingGroup = ({ navigation }) => {
    */
   async function fetchSchools() {
     try {
-      const schoolsCollection = collection(db, "School");
-      const schoolsSnapshot = await getDocs(schoolsCollection);
-      const schoolsData = schoolsSnapshot.docs.map((doc) => {
-        return { id: doc.id, name: doc.data().name };
-      });
+      const currentUser = auth.currentUser;
+      const q = query(
+        collection(db, "Users"),
+        where("uid", "==", currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      const userDocRef = querySnapshot.docs[0];
+      const childs = userDocRef.data().children;
+      if (!childs) return;
+      const schoolList = [];
+      for (const child of childs) {
+        const childDoc = doc(db, "Children", child);
+        const childDocRef = await getDoc(childDoc);
+        const school = childDocRef.data().school;
+        if (!schoolList.includes(school)) {
+          schoolList.push(school);
+        }
+      }
+      const schoolsData = [];
+      for (const schoolId of schoolList) {
+        const schoolDoc = doc(db, "School", schoolId);
+        const docRef = await getDoc(schoolDoc);
+        const name = docRef.data().name;
+        schoolsData.push({ id: docRef.id, name: name });
+      }
       setSchoolList(schoolsData);
     } catch (error) {
-      console.log("Error fetching school data:", error);
+      console.log("Error fetching schools data:", error);
+    }
+  }
+
+  /**
+   * This function fetches the childs data from Firestore.
+   * @returns {void}
+   * @throws {error} error - Firebase error
+   */
+  async function fetchChilds() {
+    try {
+      const currentUser = auth.currentUser;
+      const q = query(
+        collection(db, "Users"),
+        where("uid", "==", currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      const userDocRef = querySnapshot.docs[0];
+      const childs = userDocRef.data().children;
+      if (!childs) return;
+      const childsList = [];
+      for (const child of childs) {
+        const childDoc = doc(db, "Children", child);
+        const childDocRef = await getDoc(childDoc);
+        const name = childDocRef.data().name;
+        childsList.push({ id: childDocRef.id, name: name });
+      }
+      setChildList(childsList);
+    } catch (error) {
+      console.log("Error fetching childs data:", error);
     }
   }
 
@@ -74,12 +125,20 @@ const CreateWalkingGroup = ({ navigation }) => {
    * @throws {error} error - Firebase error
    */
   async function addWalkingGroupToDB() {
+    if (childList.length === 0) {
+      Alert.alert("שגיאה", "אין לך ילדים רשומים, אנא הוסף ילד וחזור לנסות", [
+        { text: "הבנתי" },
+      ]);
+      return;
+    }
     if (busName === "") {
       Alert.alert("שגיאה", "אנא הכנס/י שם לקבוצה", [{ text: "הבנתי" }]);
       return;
     }
     if (busMaxKids > 10 || busMaxKids < 1 || busMaxKids === "") {
-      Alert.alert("שגיאה", "אנא הכנס/י מספר ילדים מרבי בין 1 ל-10", [{ text: "הבנתי" }]);
+      Alert.alert("שגיאה", "אנא הכנס/י מספר ילדים מרבי בין 1 ל-10", [
+        { text: "הבנתי" },
+      ]);
       return;
     }
     if (busStartLocation === "") {
@@ -92,6 +151,10 @@ const CreateWalkingGroup = ({ navigation }) => {
     }
     if (school === "") {
       Alert.alert("שגיאה", "אנא בחר/י בית ספר", [{ text: "הבנתי" }]);
+      return;
+    }
+    if (child === "") {
+      Alert.alert("שגיאה", "אנא בחר/י ילד", [{ text: "הבנתי" }]);
       return;
     }
     const currentUser = auth.currentUser;
@@ -109,6 +172,8 @@ const CreateWalkingGroup = ({ navigation }) => {
       maxKids: busMaxKids,
       startLocation: busStartLocation,
       startTime: formattedTime,
+      school: school,
+      children: [child],
     });
     const groupDocId = groupDocRef.id;
     if (userDocRef.data().groups) {
@@ -122,7 +187,8 @@ const CreateWalkingGroup = ({ navigation }) => {
     }
     Alert.alert("הקבוצה נוצרה בהצלחה!", "ברכותינו", [{ text: "אישור" }]);
     navigation.navigate("HomeScreen", {
-      username: userDocRef.data().username,});
+      username: userDocRef.data().username,
+    });
   }
 
   // ------------------------funcions area:------------------------
@@ -153,6 +219,15 @@ const CreateWalkingGroup = ({ navigation }) => {
    */
   const selectSchool = (itemValue) => {
     setSchool(itemValue);
+  };
+
+  /**
+   * This function is called when the user selects a child from the child picker.
+   * @param {string} itemValue - The selected child id
+   * @returns {void}
+   */
+  const selectChild = (itemValue) => {
+    setChild(itemValue);
   };
 
   // ------------------------Front-End area:------------------------
@@ -220,6 +295,21 @@ const CreateWalkingGroup = ({ navigation }) => {
                   key={school.id}
                   label={school.name}
                   value={school.id}
+                />
+              ))}
+            </Picker>
+          </View>
+          <View style={styles.inputContainer}>
+            <Picker
+              style={styles.input}
+              selectedValue={child}
+              onValueChange={selectChild}
+            >
+              {childList.map((child) => (
+                <Picker.Item
+                  key={child.id}
+                  label={child.name}
+                  value={child.id}
                 />
               ))}
             </Picker>
