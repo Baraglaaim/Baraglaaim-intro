@@ -7,10 +7,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  KeyboardAvoidingView,
   ScrollView,
-  TouchableWithoutFeedback,
-  Modal,
+  ActivityIndicator,
 } from "react-native";
 import { db, auth } from "../FireBaseConsts";
 import {
@@ -22,69 +20,106 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import Icon from "react-native-vector-icons/FontAwesome";
 import Buttons from "./Buttons";
 import Footer from "./Footer";
 import HeaderIcons from "./HeaderIcons";
-import MyWalkingGroup from "./MyWalkingGroup";
 import { Picker } from "@react-native-picker/picker";
 
 const AddChild = ({ navigation }) => {
-// ------------------------Back-End area:------------------------
+  // ------------------------Back-End area:------------------------
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [phone, setPhone] = useState("");
   const [classChild, setClassChild] = useState("");
   const [school, setSchool] = useState("");
-  const [grade, setGrade] = useState("");
   const [schoolList, setSchoolList] = useState([]);
   const [classList, setClassList] = useState([]);
-  const [isSchoolPickerVisible, setIsSchoolPickerVisible] = useState(false);
-  const [isClassPickerVisible, setIsClassPickerVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingClasses, setIsLoadingClasses] = useState(false);
 
+  /**
+   * Fetches the schools from the database and updates the school list
+   * @returns {<void>}
+   */
   useEffect(() => {
-    // Fetch the school data from Firestore
     fetchSchools();
   }, []);
 
+  /**
+   * Fetches the schools from the database and updates the school list
+   * @returns {<void>}
+   */
   async function fetchSchools() {
     try {
+      setIsLoading(true);
       const schoolsCollection = collection(db, "School");
       const schoolsSnapshot = await getDocs(schoolsCollection);
       const schoolsData = schoolsSnapshot.docs.map((doc) => {
-        console.log(doc.id, "=>", doc.data());
-        console.log(doc.data().name);
-        return { id: doc.id, name: doc.data().name }; // Include the id property
+        return { id: doc.id, name: doc.data().name };
       });
+      setIsLoading(false);
       setSchoolList(schoolsData);
     } catch (error) {
       console.log("Error fetching school data:", error);
+      setIsLoading(false);
     }
   }
 
+  /**
+   * Fetches the classes for the selected school from the database and updates the class list
+   * @param {string} schoolID - The id of the selected school
+   * @returns {<void>}
+   */
   async function fetchClasses(schoolID) {
+    setIsLoadingClasses(true);
     try {
-      console.log("Fetching classes for school:");
       const schoolDocRef = doc(db, "School", schoolID);
       const classesCollection = collection(schoolDocRef, "classes");
       const classesSnapshot = await getDocs(classesCollection);
       const classesData = classesSnapshot.docs.map((doc) => {
-        console.log(doc.id, "=>", doc.data());
-        console.log(doc.data().name);
         return { id: doc.id, name: doc.data().name }; // Include the id property
       });
       setClassList(classesData);
+      setIsLoadingClasses(false);
     } catch (error) {
       console.log("Error fetching classes data:", error);
+      setIsLoadingClasses(false);
     }
   }
 
+  /**
+   * Adds the child to the database and updates the user's children list
+   * @returns {<void>}
+   */
   async function addChildToDB() {
-    // Code to add a child to the database
-    console.log("Adding child to database...");
-    const currentUser = auth.currentUser;
+    setIsLoading(true);
+    if (!name) {
+      alert("יש להזין שם");
+      setIsLoading(false);
+      return;
+    }
+    if (school === "") {
+      alert("יש לבחור בית ספר");
+      setIsLoading(false);
+      return;
+    }
+    if (classChild === "") {
+      alert("יש לבחור כיתה");
+      setIsLoading(false);
+      return;
+    }
+    if (gender === "") {
+      alert("יש לבחור מין");
+      setIsLoading(false);
+      return;
+    }
+    if (phone && phone.length !== 10) {
+      alert("מספר הטלפון חייב להיות בעל 10 ספרות");
+      setIsLoading(false);
+      return;
+    }
 
+    const currentUser = auth.currentUser;
     const q = query(
       collection(db, "Users"),
       where("uid", "==", currentUser.uid)
@@ -92,8 +127,6 @@ const AddChild = ({ navigation }) => {
     const querySnapshot = await getDocs(q);
     const userDocRef = querySnapshot.docs[0];
     const userDocId = userDocRef.id;
-
-    //add child to db:
     const childDocRef = await addDoc(collection(db, "Children"), {
       name: name,
       school: school,
@@ -102,13 +135,7 @@ const AddChild = ({ navigation }) => {
       phone: phone,
       parent: userDocId,
     });
-
     let newChildId = childDocRef.id;
-    console.log(newChildId);
-    console.log(userDocId);
-    //check if user has already children in db:
-    // Assuming you have already initialized Firebase and have a reference to the Firestore database
-    console.log(userDocRef.data());
     if (userDocRef.data().children) {
       updateDoc(doc(db, `Users/${userDocId}`), {
         children: [...userDocRef.data().children, newChildId],
@@ -118,41 +145,61 @@ const AddChild = ({ navigation }) => {
         children: [newChildId],
       });
     }
+    setIsLoading(false);
+    alert("ילדך נוסף/ה בהצלחה");
+    navigation.navigate("HomeScreen", {
+      username: userDocRef.data().username,
+    });
   }
 
   //-----------------------------functions area:-----------------------------//
-  const toggleSchoolPicker = () => {
-    setIsSchoolPickerVisible(!isSchoolPickerVisible);
-  };
+  /**
+   * Toggles the school picker visibility
+   * @returns {<void>}
+   */
+  // const toggleSchoolPicker = () => {
+  //   setIsSchoolPickerVisible(!isSchoolPickerVisible);
+  // };
 
-  const toggleClassPicker = () => {
-    setIsClassPickerVisible(!isClassPickerVisible);
-  };
+  /**
+   * Toggles the class picker visibility
+   * @returns {<void>}
+   */
+  // const toggleClassPicker = () => {
+  //   setIsClassPickerVisible(!isClassPickerVisible);
+  // };
 
-  const selectSchool = (itemValue) => {
-    setSchool(schoolList.find((school) => school.id === itemValue)?.name || "");
-    setIsSchoolPickerVisible(false);
+  /**
+   * Selects the school from the school picker
+   * @param {string} itemValue - The id of the selected school
+   * @returns {<void>}
+   */
+  function selectSchool(itemValue) {
+    setSchool(itemValue);
+    fetchClasses(itemValue);
+  }
 
-    // Fetch the classes for the selected school
-    if (itemValue) {
-      fetchClasses(itemValue);
-    } else {
-      setClassList([]); // Clear the class list if no school is selected
-    }
-  };
-
+  /**
+   * Selects the class from the class picker
+   * @param {string} itemValue - The id of the selected class
+   * @returns {<void>}
+   */
   const selectClass = (itemValue) => {
     setClassChild(itemValue);
-    setIsClassPickerVisible(false);
   };
 
   return (
     // ------------------------Front-End area:------------------------
     <SafeAreaView style={styles.container}>
       <HeaderIcons navigation={navigation} />
-      <KeyboardAvoidingView style={styles.contentContainer} behavior="padding">
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <View style={styles.overlay}>
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.header}>טוען נתונים...</Text>
+          <ActivityIndicator size="large" color="#4682B4" />
+        </View>
+      ) : (
+        <ScrollView style={styles.formContainer}>
+          <View style={styles.contentContainer}>
             <Text style={styles.title}>הוספת צועדת/צועדת</Text>
             <View style={styles.inputContainer}>
               <Text style={styles.label}>שם הצועד/צועדת:</Text>
@@ -170,81 +217,53 @@ const AddChild = ({ navigation }) => {
                 value={phone}
                 onChangeText={setPhone}
                 placeholder="מספר הטלפון של הצועד/צועדת, במידה ויש נייד"
+                keyboardType="numeric"
               />
             </View>
             <View style={styles.inputContainer}>
               <Text style={styles.label}>בית ספר:</Text>
-              <TouchableOpacity
-                style={styles.pickerButton}
-                onPress={toggleSchoolPicker}
-              >
-                <Text style={styles.pickerButtonText}>
-                  {school ? school : "בחר בית ספר"}
-                </Text>
-                <Icon name="chevron-down" size={16} color="black" />
-              </TouchableOpacity>
-              <Modal
-                visible={isSchoolPickerVisible}
-                animationType="slide"
-                transparent={true}
-                onRequestClose={() => setIsSchoolPickerVisible(false)}
-              >
-                <View style={styles.modalContainer}>
-                  <View style={styles.modalContent}>
-                    <Picker
-                      style={styles.dropdown}
-                      selectedValue={school}
-                      onValueChange={selectSchool}
-                    >
-                      <Picker.Item label="בחר בית ספר" value="" />
-                      {schoolList.map((school) => (
-                        <Picker.Item
-                          key={school.id}
-                          label={school.name}
-                          value={school.id}
-                        />
-                      ))}
-                    </Picker>
-                  </View>
-                </View>
-              </Modal>
+              <View style={styles.inputContainer}>
+                <Picker
+                  style={styles.input}
+                  selectedValue={school}
+                  onValueChange={selectSchool}
+                >
+                  <Picker.Item label="בחר בית ספר" value="" />
+                  {schoolList.map((school) => (
+                    <Picker.Item
+                      key={school.id}
+                      label={school.name}
+                      value={school.id}
+                    />
+                  ))}
+                </Picker>
+              </View>
             </View>
             <View style={styles.inputContainer}>
               <Text style={styles.label}>כיתה:</Text>
-              <TouchableOpacity
-                style={styles.pickerButton}
-                onPress={toggleClassPicker}
-              >
-                <Text style={styles.pickerButtonText}>
-                  {classChild ? classChild : "בחר כיתה"}
-                </Text>
-                <Icon name="chevron-down" size={16} color="black" />
-              </TouchableOpacity>
-              <Modal
-                visible={isClassPickerVisible}
-                animationType="slide"
-                transparent={true}
-                onRequestClose={() => setIsClassPickerVisible(false)}
-              >
-                <View style={styles.modalContainer}>
-                  <View style={styles.modalContent}>
-                    <Picker
-                      style={styles.dropdown}
-                      selectedValue={classChild}
-                      onValueChange={selectClass}
-                    >
-                      <Picker.Item label="בחר כיתה" value="" />
-                      {classList.map((classItem) => (
-                        <Picker.Item
-                          key={classItem.id}
-                          label={classItem.name}
-                          value={classItem.id}
-                        />
-                      ))}
-                    </Picker>
-                  </View>
+              {isLoadingClasses ? (
+                <View style={styles.loadingContainer}>
+                  <Text style={styles.header}>טוען כיתות...</Text>
+                  <ActivityIndicator size="large" color="#4682B4" />
                 </View>
-              </Modal>
+              ) : (
+                <View style={styles.inputContainer}>
+                  <Picker
+                    style={styles.input}
+                    selectedValue={classChild}
+                    onValueChange={selectClass}
+                  >
+                    <Picker.Item label="בחר כיתה" value="" />
+                    {classList.map((classItem) => (
+                      <Picker.Item
+                        key={classItem.id}
+                        label={classItem.name}
+                        value={classItem.id}
+                      />
+                    ))}
+                  </Picker>
+                </View>
+              )}
             </View>
             <View style={styles.genderContainer}>
               <TouchableOpacity
@@ -267,54 +286,64 @@ const AddChild = ({ navigation }) => {
                 <Text style={styles.genderLabel}>👧</Text>
               </TouchableOpacity>
             </View>
-            <Buttons
-              title="הוסף צועד/צועדת"
-              color="orange"
-              width={200}
-              press={addChildToDB}
-            />
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
-      {/* <Footer /> */}
+      )}
+      <Buttons
+        title="הוסף צועד/צועדת"
+        color="orange"
+        width={200}
+        press={addChildToDB}
+        style={{ marginBottom: 100 }}
+      />
+      <Footer />
     </SafeAreaView>
   );
 };
 
 // -----------------------------styles area:-----------------------------//
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  contentContainer: {
-    flex: 1,
-    paddingBottom: 100, // Adjust this value to leave enough space for the footer
-  },
-  scrollViewContent: {
-    flexGrow: 1,
-  },
-  overlay: {
-    backgroundColor: "rgb(70, 130, 180)",
+  loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 30,
+    backgroundColor: "#F5F5F5",
+  },
+  formContainer: {
+    backgroundColor: "#F5F5F5",
+    marginBottom: 20,
+    height: "80%",
+    width: "90%",
+    borderRadius: 20,
+  },
+  container: {
+    backgroundColor: "#F5F5F5",
+    flex: 1,
+    height: "100%",
+    width: "100%",
+    justifyContent: "center",
+  },
+  contentContainer: {
+    flex: 1,
+    paddingBottom: 100,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
-    color: "white",
+    color: "black",
     marginBottom: 20,
   },
   inputContainer: {
     width: "100%",
+    marginTop: 20,
     marginBottom: 20,
+    alignItems: "center",
   },
   label: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "white",
+    color: "black",
     textAlign: "center",
     marginBottom: 5,
   },
@@ -327,43 +356,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 35,
     paddingHorizontal: 10,
-  },
-  dropdownContainer: {
-    position: "relative",
-    width: "100%",
-  },
-  pickerButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    height: 35,
-    paddingHorizontal: 10,
-  },
-  pickerButtonText: {
-    flex: 1,
-    marginRight: 5,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    width: "80%",
-    maxHeight: "80%",
-    padding: 10,
-  },
-  dropdown: {
-    height: 150,
   },
   genderContainer: {
     flexDirection: "row",

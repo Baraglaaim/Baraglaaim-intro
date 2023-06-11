@@ -9,7 +9,9 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+import Footer from "./Footer";
 import Buttons from "./Buttons";
+import HeaderIcons from "./HeaderIcons";
 import { db, auth } from "../FireBaseConsts";
 import {
   addDoc,
@@ -234,86 +236,81 @@ const CreateWalkingGroup = ({ navigation }) => {
   return (
     // ------------------------JSX area:------------------------
     <View style={styles.page}>
+      <HeaderIcons navigation={navigation} />
       <ScrollView style={styles.formContainer}>
-        <View style={styles.container}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>שם הקבוצה</Text>
-            <TextInput
-              style={styles.input}
-              value={busName}
-              onChangeText={setBusName}
-              placeholder="הקלד/י שם לקבוצה"
-            />
-          </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>שם הקבוצה</Text>
+          <TextInput
+            style={styles.input}
+            value={busName}
+            onChangeText={setBusName}
+            placeholder="הקלד/י שם לקבוצה"
+          />
+        </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>מספר ילדים מרבי</Text>
-            <TextInput
-              style={styles.input}
-              value={busMaxKids}
-              onChangeText={setBusMaxKids}
-              placeholder="הקלד/י את מספר הילדים המרבי"
-              keyboardType="numeric"
-            />
-          </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>מספר ילדים מרבי</Text>
+          <TextInput
+            style={styles.input}
+            value={busMaxKids}
+            onChangeText={setBusMaxKids}
+            placeholder="הקלד/י את מספר הילדים המרבי"
+            keyboardType="numeric"
+          />
+        </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>מקום יציאה</Text>
-            <TextInput
-              style={styles.input}
-              value={busStartLocation}
-              onChangeText={setBusStartLocation}
-              placeholder="הקלד/י מקום יציאה"
-            />
-          </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>מקום יציאה</Text>
+          <TextInput
+            style={styles.input}
+            value={busStartLocation}
+            onChangeText={setBusStartLocation}
+            placeholder="הקלד/י מקום יציאה"
+          />
+        </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>שעת יציאה</Text>
-            <TouchableOpacity style={styles.input} onPress={showDateTimePicker}>
-              <Icon name="clock-o" size={25} color="grey" style={styles.icon} />
-              <Text style={styles.pickerText}>{formattedTime || "hh:mm"}</Text>
-            </TouchableOpacity>
-            <DateTimePickerModal
-              isVisible={showPicker}
-              mode="time"
-              is24Hour
-              date={date}
-              display={Platform.OS === "android" ? "spinner" : undefined}
-              onConfirm={handleDateChange}
-              onCancel={() => setShowPicker(false)}
-            />
-          </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>שעת יציאה</Text>
+          <TouchableOpacity style={styles.input} onPress={showDateTimePicker}>
+            <Icon name="clock-o" size={25} color="grey" style={styles.icon} />
+            <Text style={styles.pickerText}>{formattedTime || "hh:mm"}</Text>
+          </TouchableOpacity>
+          <DateTimePickerModal
+            isVisible={showPicker}
+            mode="time"
+            is24Hour
+            date={date}
+            display={Platform.OS === "android" ? "spinner" : undefined}
+            onConfirm={handleDateChange}
+            onCancel={() => setShowPicker(false)}
+          />
+        </View>
 
-          <View style={styles.inputContainer}>
-            <Picker
-              style={styles.input}
-              selectedValue={school}
-              onValueChange={selectSchool}
-            >
-              {schoolList.map((school) => (
-                <Picker.Item
-                  key={school.id}
-                  label={school.name}
-                  value={school.id}
-                />
-              ))}
-            </Picker>
-          </View>
-          <View style={styles.inputContainer}>
-            <Picker
-              style={styles.input}
-              selectedValue={child}
-              onValueChange={selectChild}
-            >
-              {childList.map((child) => (
-                <Picker.Item
-                  key={child.id}
-                  label={child.name}
-                  value={child.id}
-                />
-              ))}
-            </Picker>
-          </View>
+        <View style={styles.inputContainer}>
+          <Picker
+            style={styles.input}
+            selectedValue={school}
+            onValueChange={selectSchool}
+          >
+            {schoolList.map((school) => (
+              <Picker.Item
+                key={school.id}
+                label={school.name}
+                value={school.id}
+              />
+            ))}
+          </Picker>
+        </View>
+        <View style={styles.inputContainer}>
+          <Picker
+            style={styles.input}
+            selectedValue={child}
+            onValueChange={selectChild}
+          >
+            {childList.map((child) => (
+              <Picker.Item key={child.id} label={child.name} value={child.id} />
+            ))}
+          </Picker>
         </View>
       </ScrollView>
       <Buttons
@@ -321,7 +318,9 @@ const CreateWalkingGroup = ({ navigation }) => {
         color="orange"
         width={220}
         press={addWalkingGroupToDB}
+        style={{ marginBottom: 100 }}
       />
+      <Footer />
     </View>
   );
 };
@@ -334,7 +333,6 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     justifyContent: "center",
-    alignItems: "center",
   },
   title: {
     fontSize: 30,
@@ -350,8 +348,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     backgroundColor: "#F5F5F5",
-    marginBottom: 20,
-    height: "80%",
+    height: "100%",
     width: "90%",
     borderRadius: 20,
   },
