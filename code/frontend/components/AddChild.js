@@ -276,7 +276,7 @@ const AddChild = ({ navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <Footer />
+      {/* <Footer /> */}
     </SafeAreaView>
   );
 };
