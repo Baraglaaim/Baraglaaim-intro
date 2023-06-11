@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, View, SafeAreaView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  SafeAreaView,
+  ActivityIndicator,
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Buttons from "./Buttons";
 import Footer from "./Footer";
@@ -15,11 +22,14 @@ const RegisterPage = ({ navigation }) => {
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRegistration = async () => {
     try {
+      setIsLoading(true);
       if (password !== confirmPassword) {
         alert("Passwords do not match");
+        setIsLoading(false);
         return;
       }
 
@@ -27,6 +37,7 @@ const RegisterPage = ({ navigation }) => {
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
         alert("User already exists");
+        setIsLoading(false);
         return;
       }
 
@@ -46,106 +57,125 @@ const RegisterPage = ({ navigation }) => {
         phone: phone,
       });
 
-      console.log("Document written with ID: ", docRef.id);
-
+      setIsLoading(false);
       navigation.navigate("WelcomePage", { username }); // Pass username to WelcomePage
     } catch (error) {
       console.error("Error adding document: ", error);
+      setIsLoading(false);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={{marginBottom:100}}>
-        <View style={styles.overlay}>
-          <View>
-            <Text style={styles.header}>הרשמה</Text>
-            <Text style={styles.userDetails}>שם משתמש</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.input, { color: "black" }]}
-                placeholder="שם משתמש"
-                value={username}
-                onChangeText={setUsername}
-                maxLength={50}
-                numberOfLines={1}
-              />
-            </View>
-            <Text style={styles.userDetails}>כתובת אימייל</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.input, { color: "black" }]}
-                placeholder="אימייל"
-                value={email}
-                onChangeText={setEmail}
-                maxLength={50}
-                numberOfLines={1}
-              />
-            </View>
-            <Text style={styles.userDetails}>טלפון</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.input, { color: "black" }]}
-                placeholder="טלפון"
-                value={phone}
-                onChangeText={setPhone}
-                maxLength={10}
-                numberOfLines={1}
-              />
-            </View>
-            <Text style={styles.userDetails}>כתובת מגורים</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.input, { color: "black" }]}
-                placeholder="כתובת מגורים"
-                value={address}
-                onChangeText={setAddress}
-                maxLength={50}
-                numberOfLines={1}
-              />
-            </View>
-            <Text style={styles.userDetails}>סיסמא</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.input, { color: "black" }]}
-                placeholder="סיסמא"
-                secureTextEntry={true}
-                value={password}
-                onChangeText={setPassword}
-                maxLength={50}
-                numberOfLines={1}
-              />
-            </View>
-            <Text style={styles.userDetails}>אימות סיסמא</Text>
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={[styles.input, styles.marginBottom, { color: "black" }]}
-                placeholder="אימות סיסמא"
-                secureTextEntry={true}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                maxLength={50}
-                numberOfLines={1}
-              />
-            </View>
-
-            <Buttons
-              title="הרשמה"
-              color="orange"
-              width={150}
-              press={handleRegistration}
-            />
-          </View>
+    <View style={styles.container}>
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.header}>כמה רגעים...</Text>
+          <ActivityIndicator size="large" color="#F5F5F5" />
         </View>
-      </ScrollView>
-      <Footer />
-    </SafeAreaView>
+      ) : (
+        <SafeAreaView style={styles.container}>
+          <ScrollView style={{ marginBottom: 100 }}>
+            <View style={styles.overlay}>
+              <View>
+                <Text style={styles.header}>הרשמה</Text>
+                <Text style={styles.userDetails}>שם משתמש</Text>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={[styles.input, { color: "black" }]}
+                    placeholder="שם משתמש"
+                    value={username}
+                    onChangeText={setUsername}
+                    maxLength={50}
+                    numberOfLines={1}
+                  />
+                </View>
+                <Text style={styles.userDetails}>כתובת אימייל</Text>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={[styles.input, { color: "black" }]}
+                    placeholder="אימייל"
+                    value={email}
+                    onChangeText={setEmail}
+                    maxLength={50}
+                    numberOfLines={1}
+                  />
+                </View>
+                <Text style={styles.userDetails}>טלפון</Text>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={[styles.input, { color: "black" }]}
+                    placeholder="טלפון"
+                    value={phone}
+                    onChangeText={setPhone}
+                    maxLength={10}
+                    numberOfLines={1}
+                  />
+                </View>
+                <Text style={styles.userDetails}>כתובת מגורים</Text>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={[styles.input, { color: "black" }]}
+                    placeholder="כתובת מגורים"
+                    value={address}
+                    onChangeText={setAddress}
+                    maxLength={50}
+                    numberOfLines={1}
+                  />
+                </View>
+                <Text style={styles.userDetails}>סיסמא</Text>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={[styles.input, { color: "black" }]}
+                    placeholder="סיסמא"
+                    secureTextEntry={true}
+                    value={password}
+                    onChangeText={setPassword}
+                    maxLength={50}
+                    numberOfLines={1}
+                  />
+                </View>
+                <Text style={styles.userDetails}>אימות סיסמא</Text>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={[
+                      styles.input,
+                      styles.marginBottom,
+                      { color: "black" },
+                    ]}
+                    placeholder="אימות סיסמא"
+                    secureTextEntry={true}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    maxLength={50}
+                    numberOfLines={1}
+                  />
+                </View>
+
+                <Buttons
+                  title="הרשמה"
+                  color="orange"
+                  width={150}
+                  press={handleRegistration}
+                />
+              </View>
+            </View>
+          </ScrollView>
+          <Footer />
+        </SafeAreaView>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgb(70, 130, 180)',
   },
   overlay: {
     backgroundColor: "rgb(70, 130, 180)",

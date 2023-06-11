@@ -1,6 +1,5 @@
 //--------------------------------- import area ----------------------------------
 import React, { useState, useEffect } from "react";
-import Buttons from "./Buttons";
 import {
   SafeAreaView,
   StyleSheet,
@@ -22,7 +21,7 @@ import {
   where,
 } from "firebase/firestore";
 
-const JoinWalkingGroup = ({ navigation }) => {
+const JoinCerteinGroup = ({ navigation, route}) => {
   //--------------------------------- define variables area ----------------------------------
 
   const [groupsList, setGroupsList] = useState([]);
@@ -48,6 +47,7 @@ const JoinWalkingGroup = ({ navigation }) => {
       );
       const querySnapshot = await getDocs(q);
       const userDocRef = querySnapshot.docs[0];
+      const userDocId = userDocRef.id;
 
       const childs = userDocRef.data().children;
       if (!childs) {
@@ -75,28 +75,18 @@ const JoinWalkingGroup = ({ navigation }) => {
         const managerDocRef = doc(db, "Users", managerID);
         const managerDoc = await getDoc(managerDocRef);
         const managerName = managerDoc.data().username;
-        const groupID = groupDoc.id;
-        const name = groupDoc.data().busName;
+        const name = groupDoc.data().name;
         const school = groupDoc.data().school;
         const managerPhone = groupDoc.data().busManagerPhone;
         const startLocation = groupDoc.data().startLocation;
         const startTime = groupDoc.data().startTime;
-        const maxCapacity = groupDoc.data().maxKids;
-        const currentCapacity = groupDoc.data().children.length;
-        const alreadyJoined = childs.some((child) => {
-          return groupDoc.data().children.includes(child);
-        });
         const groupItem = {
-          groupID: groupID,
           name: name,
           school: school,
           manager: managerName,
           managerPhone: managerPhone,
           startLocation: startLocation,
           startTime: startTime,
-          maxCapacity: maxCapacity,
-          currentCapacity: currentCapacity,
-          alreadyJoined: alreadyJoined,
         };
         groupsData.push(groupItem);
       }
@@ -109,38 +99,29 @@ const JoinWalkingGroup = ({ navigation }) => {
     }
   }
 
-  const handleGroupPress = ({ groupID, index }) => {
-    console.log("groupID is: ", groupID);
-    // navigation.navigate("JoinGroupDetails", { groupID: groupID });
+  const handleGroupPress = (index) => {
+    console.log("group index is: ", index);
+    navigation.navigate("GroupProfile", { groupIndex: index });
   };
 
   const renderGroup = ({ item, index }) => {
     const { name, manager, managerPhone, startLocation } = item;
     return (
-      <View style={styles.groupContainer}>
-        <Text style={{ fontWeight: "bold", fontSize: 20 }}>{name}</Text>
-        <Text>מנהל: {manager}</Text>
-        <Text>טלפון מנהל: {managerPhone}</Text>
-        <Text>נקודת מפגש: {startLocation}</Text>
-        <Text>שעת יציאה: {item.startTime}</Text>
-        <Text>
-          כמות משתתפים: {item.currentCapacity} / {item.maxCapacity}
-        </Text>
-        {item.alreadyJoined ? (
-          <Text style={{ color: "green", fontWeight: "bold" }}>
-            כבר הצטרפת לקבוצה זו
-          </Text>
-        ) : (
-          <Buttons
-            title="הצטרף לקבוצה"
-            color="orange"
-            width={220}
-            press={() =>
-              handleGroupPress({ groupID: item.groupID, index: index })
-            }
-          />
-        )}
-      </View>
+      <TouchableOpacity
+        style={styles.groupContainer}
+        onPress={() => handleGroupPress(index)}
+      >
+        <Text>Walking Group Name: {name}</Text>
+        <Text>Manager: {manager}</Text>
+        <Text>Manager's Phone: {managerPhone}</Text>
+        <Text>Meeting Point: {startLocation}</Text>
+        <TouchableOpacity
+          style={styles.joinButton}
+          onPress={() => handleJoinGroup(index)}
+        >
+          <Text style={styles.joinButtonText}>Join</Text>
+        </TouchableOpacity>
+      </TouchableOpacity>
     );
   };
 
@@ -208,4 +189,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default JoinWalkingGroup;
+export default JoinCerteinGroup;
