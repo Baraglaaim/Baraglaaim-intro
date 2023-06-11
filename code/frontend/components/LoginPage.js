@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   View,
+  ActivityIndicator,
 } from "react-native";
 import { db } from "../FireBaseConsts";
 import Buttons from "./Buttons";
@@ -16,8 +17,10 @@ const LoginPage = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
+    setIsLoading(true);
     const auth = getAuth();
 
     try {
@@ -40,6 +43,7 @@ const LoginPage = ({ navigation }) => {
 
       if (querySnapshot.empty) {
         alert("User does not exist");
+        setIsLoading(false);
         return;
       }
 
@@ -47,55 +51,76 @@ const LoginPage = ({ navigation }) => {
         username: querySnapshot.docs[0].data().username,
         // userName: user.uid,
       });
+      setIsLoading(false);
     } catch (error) {
       // Login failed
       const errorMessage = error.message;
       setErrorMessage(errorMessage);
+      setIsLoading(false);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.overlay}>
-        <Text style={styles.header}>אוטובוס הליכה</Text>
-        <Text style={styles.userDetails}>מייל</Text>
-        <TextInput
-          style={[styles.input, { color: "black" }]}
-          placeholder="מייל"
-          maxLength={50}
-          numberOfLines={1}
-          onChangeText={(text) => setEmail(text)}
-        />
-        <Text style={styles.userDetails}>סיסמא</Text>
-        <TextInput
-          style={[styles.input, styles.marginBottom, { color: "black" }]}
-          placeholder="סיסמא"
-          secureTextEntry={true}
-          maxLength={50}
-          numberOfLines={1}
-          onChangeText={(text) => setPassword(text)}
-        />
-        <Buttons
-          title="התחברות"
-          color="orange"
-          width={150}
-          press={handleLogin}
-        />
-        {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-        <View style={styles.signupContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate("RegisterPage")}>
-            <Text style={styles.signupLink}> להרשמה</Text>
-          </TouchableOpacity>
-          <Text style={styles.signupNow}>אין לך חשבון? </Text>
+    <View style={styles.container}>
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.header}>כמה רגעים...</Text>
+          <ActivityIndicator size="large" color="#F5F5F5" />
         </View>
-      </View>
-    </SafeAreaView>
+      ) : (
+        <SafeAreaView style={styles.container}>
+          <View style={styles.overlay}>
+            <Text style={styles.header}>אוטובוס הליכה</Text>
+            <Text style={styles.userDetails}>מייל</Text>
+            <TextInput
+              style={[styles.input, { color: "black" }]}
+              placeholder="מייל"
+              maxLength={50}
+              numberOfLines={1}
+              onChangeText={(text) => setEmail(text)}
+            />
+            <Text style={styles.userDetails}>סיסמא</Text>
+            <TextInput
+              style={[styles.input, styles.marginBottom, { color: "black" }]}
+              placeholder="סיסמא"
+              secureTextEntry={true}
+              maxLength={50}
+              numberOfLines={1}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <Buttons
+              title="התחברות"
+              color="orange"
+              width={150}
+              press={handleLogin}
+            />
+            {errorMessage ? (
+              <Text style={styles.error}>{errorMessage}</Text>
+            ) : null}
+            <View style={styles.signupContainer}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("RegisterPage")}
+              >
+                <Text style={styles.signupLink}> להרשמה</Text>
+              </TouchableOpacity>
+              <Text style={styles.signupNow}>אין לך חשבון? </Text>
+            </View>
+          </View>
+        </SafeAreaView>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgb(70, 130, 180)',
   },
   overlay: {
     backgroundColor: "rgb(70, 130, 180)",
