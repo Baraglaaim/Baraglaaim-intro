@@ -10,6 +10,8 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
+  Modal,
+  FlatList,
 } from "react-native";
 import { db, auth } from "../FireBaseConsts";
 import {
@@ -37,6 +39,10 @@ const AddChild = ({ navigation }) => {
   const [classList, setClassList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingClasses, setIsLoadingClasses] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("");
+  const [isClassModalVisible, setIsClassModalVisible] = useState(false);
+  const [selectedClassValue, setSelectedClassValue] = useState("");
 
   /**
    * Fetches the schools from the database and updates the school list
@@ -95,27 +101,37 @@ const AddChild = ({ navigation }) => {
   async function addChildToDB() {
     setIsLoading(true);
     if (!name) {
-      Alert.alert("שגיאה", "יש להזין שם", [{ text: "הבנתי", onPress: () => setName("") } ]);
+      Alert.alert("שגיאה", "יש להזין שם", [
+        { text: "הבנתי", onPress: () => setName("") },
+      ]);
       setIsLoading(false);
       return;
     }
     if (school === "") {
-      Alert.alert("שגיאה", "יש לבחור בית ספר", [{ text: "הבנתי", onPress: () => setSchool("") } ]);
+      Alert.alert("שגיאה", "יש לבחור בית ספר", [
+        { text: "הבנתי", onPress: () => setSchool("") },
+      ]);
       setIsLoading(false);
       return;
     }
     if (classChild === "") {
-      Alert.alert("שגיאה", "יש לבחור כיתה", [{ text: "הבנתי", onPress: () => setClassChild("") } ]);
+      Alert.alert("שגיאה", "יש לבחור כיתה", [
+        { text: "הבנתי", onPress: () => setClassChild("") },
+      ]);
       setIsLoading(false);
       return;
     }
     if (gender === "") {
-      Alert.alert("שגיאה", "יש לבחור מין", [{ text: "הבנתי", onPress: () => setGender("") } ]);
+      Alert.alert("שגיאה", "יש לבחור מין", [
+        { text: "הבנתי", onPress: () => setGender("") },
+      ]);
       setIsLoading(false);
       return;
     }
     if (phone && phone.length !== 10) {
-      Alert.alert("שגיאה", "מספר הטלפון חייב להיות בעל 10 ספרות", [{ text: "הבנתי", onPress: () => setPhone("") } ]);
+      Alert.alert("שגיאה", "מספר הטלפון חייב להיות בעל 10 ספרות", [
+        { text: "הבנתי", onPress: () => setPhone("") },
+      ]);
       setIsLoading(false);
       return;
     }
@@ -147,7 +163,7 @@ const AddChild = ({ navigation }) => {
       });
     }
     setIsLoading(false);
-    Alert.alert("ברכות", "הצועד/צועדת נוסף/ה בהצלחה", [{ text: "אישור", onPress: () => navigation.navigate("HomeScreen")} ]);
+    Alert.alert("ברכות", "הצועד/צועדת נוסף/ה בהצלחה", [{ text: "אישור" }]);
     navigation.navigate("HomeScreen", {
       username: userDocRef.data().username,
     });
@@ -172,6 +188,18 @@ const AddChild = ({ navigation }) => {
    */
   const selectClass = (itemValue) => {
     setClassChild(itemValue);
+  };
+  const selectOption = (item) => {
+    setSelectedValue(item.name);
+    selectSchool(item.id);
+    setIsModalVisible(false);
+  };
+
+  const selectClassOption = (item) => {
+    // console.log(item);
+    setSelectedClassValue(item.name);
+    selectClass(item.id);
+    setIsClassModalVisible(false);
   };
 
   return (
@@ -208,49 +236,137 @@ const AddChild = ({ navigation }) => {
             </View>
             <View style={styles.inputContainer}>
               <Text style={styles.label}>בית ספר:</Text>
-              <View style={styles.inputContainer}>
-                <Picker
-                  style={styles.input}
-                  selectedValue={school}
-                  onValueChange={selectSchool}
-                >
-                  <Picker.Item label="בחר בית ספר" value="" />
-                  {schoolList.map((school) => (
-                    <Picker.Item
-                      key={school.id}
-                      label={school.name}
-                      value={school.id}
-                    />
-                  ))}
-                </Picker>
-              </View>
-            </View>
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>כיתה:</Text>
-              {isLoadingClasses ? (
-                <View style={styles.loadingContainer}>
-                  <Text style={styles.header}>טוען כיתות...</Text>
-                  <ActivityIndicator size="large" color="#4682B4" />
+              {Platform.OS === "ios" ? (
+                <View style={styles.inputPickerContainer}>
+                  <TouchableOpacity
+                    style={styles.input}
+                    onPress={() => setIsModalVisible(true)}
+                  >
+                    <Text styles={{ textAlign: "right" }}>
+                      {selectedValue ? selectedValue : "בחר בית ספר"}
+                    </Text>
+                  </TouchableOpacity>
+                  <Modal
+                    visible={isModalVisible}
+                    animationType="slide"
+                    style={styles.modal}
+                  >
+                    <SafeAreaView style={styles.modalContainer}>
+                      <FlatList
+                        data={schoolList}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                          <TouchableOpacity
+                            style={styles.optionContainer}
+                            onPress={() => selectOption(item)}
+                          >
+                            <Text style={styles.optionText}>{item.name}</Text>
+                          </TouchableOpacity>
+                        )}
+                      />
+                      <Buttons
+                        title="סגור"
+                        color="red"
+                        width={200}
+                        press={() => setIsModalVisible(false)}
+                      />
+                    </SafeAreaView>
+                  </Modal>
                 </View>
               ) : (
                 <View style={styles.inputContainer}>
                   <Picker
                     style={styles.input}
-                    selectedValue={classChild}
-                    onValueChange={selectClass}
+                    selectedValue={school}
+                    onValueChange={selectSchool}
                   >
-                    <Picker.Item label="בחר כיתה" value="" />
-                    {classList.map((classItem) => (
+                    <Picker.Item label="בחר בית ספר" value="" />
+                    {schoolList.map((school) => (
                       <Picker.Item
-                        key={classItem.id}
-                        label={classItem.name}
-                        value={classItem.id}
+                        key={school.id}
+                        label={school.name}
+                        value={school.id}
                       />
                     ))}
                   </Picker>
                 </View>
               )}
             </View>
+            {Platform.OS === "ios" ? (
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>כיתה:</Text>
+                {isLoadingClasses ? (
+                  <View style={styles.loadingContainer}>
+                    <Text style={styles.header}>טוען כיתות...</Text>
+                    <ActivityIndicator size="large" color="#4682B4" />
+                  </View>
+                ) : (
+                  <View style={styles.inputPickerContainer}>
+                    <TouchableOpacity
+                      style={styles.input}
+                      onPress={() => setIsClassModalVisible(true)}
+                    >
+                      <Text styles={{ textAlign: "right" }}>
+                        {selectedClassValue ? selectedClassValue : "בחר כיתה"}
+                      </Text>
+                    </TouchableOpacity>
+                    <Modal
+                      visible={isClassModalVisible}
+                      animationType="slide"
+                      style={styles.modal}
+                    >
+                      <SafeAreaView style={styles.modalContainer}>
+                        <FlatList
+                          data={classList}
+                          keyExtractor={(item) => item.id}
+                          renderItem={({ item }) => (
+                            <TouchableOpacity
+                              style={styles.optionContainer}
+                              onPress={() => selectClassOption(item)}
+                            >
+                              <Text style={styles.optionText}>{item.name}</Text>
+                            </TouchableOpacity>
+                          )}
+                        />
+                        <Buttons
+                          title="סגור"
+                          color="red"
+                          width={200}
+                          press={() => setIsClassModalVisible(false)}
+                        />
+                      </SafeAreaView>
+                    </Modal>
+                  </View>
+                )}
+              </View>
+            ) : (
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>כיתה:</Text>
+                {isLoadingClasses ? (
+                  <View style={styles.loadingContainer}>
+                    <Text style={styles.header}>טוען כיתות...</Text>
+                    <ActivityIndicator size="large" color="#4682B4" />
+                  </View>
+                ) : (
+                  <View style={styles.inputContainer}>
+                    <Picker
+                      style={styles.input}
+                      selectedClassValue={classChild}
+                      onValueChange={selectClass}
+                    >
+                      <Picker.Item label="בחר כיתה" value="" />
+                      {classList.map((classItem) => (
+                        <Picker.Item
+                          key={classItem.id}
+                          label={classItem.name}
+                          value={classItem.id}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
+                )}
+              </View>
+            )}
             <View style={styles.genderContainer}>
               <TouchableOpacity
                 style={[
@@ -295,12 +411,35 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#F5F5F5",
   },
+  // modal: {
+  //   height: 450,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   backgroundColor: "#F5F5F5",
+  // },
+  modalContainer: {
+    marginTop: "10%",
+    height: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "F5F5F5",
+  },
+  optionContainer: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#CCCCCC",
+  },
+  optionText: {
+    fontSize: 40,
+  },
   formContainer: {
     backgroundColor: "#F5F5F5",
     marginBottom: 20,
     height: "80%",
     width: "90%",
     borderRadius: 20,
+    alignSelf: "center",
   },
   container: {
     backgroundColor: "#F5F5F5",
@@ -322,8 +461,11 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: "100%",
-    marginTop: 20,
     marginBottom: 20,
+    alignItems: "center",
+  },
+  inputPickerContainer: {
+    width: "100%",
     alignItems: "center",
   },
   label: {
