@@ -23,6 +23,7 @@ import MyWalkingGroup from "./components/MyWalkingGroup";
 import GroupProfile from "./components/GroupProfile";
 import WelcomePage from "./components/WelcomePage";
 import CreateWalkingGroup from "./components/CreateWalkingGroup";
+import JoinCertainGroup from "./components/JoinCertainGroup";
 
 
 // import AlmogItayMap from "./DataBase/Dar";
@@ -35,28 +36,28 @@ function AppStack() {
     <Stack.Navigator initialRouteName="LoginPage">
       <Stack.Screen
         name="LoginPage"
-        options={{ title: "Login" }}
+        options={{ title: "התחברות" }}
         component={LoginPage}
       />
 
       <Stack.Screen
         name="RegisterPage"
-        options={{ title: "Register" }}
+        options={{ title: "הרשמה" }}
         component={RegisterPage}
       />
       <Stack.Screen
         name="CreateWalkingGroup"
-        options={{ title: "CreateWalkingGroup" }}
+        options={{ title: "יצירת קובצת הליכה" }}
         component={CreateWalkingGroup}
       />
       <Stack.Screen
         name="WelcomePage"
-        options={{ title: "Welcome" }}
+        options={{ title: "ברוך הבא" }}
         component={WelcomePage}
       />
       <Stack.Screen
         name="HomeScreen"
-        options={{ title: "Home" }}
+        options={{ title: "בית" }}
         component={HomeScreen}
       />
       <Stack.Screen
@@ -71,39 +72,39 @@ function AppStack() {
       />
       <Stack.Screen
         name="WalkingGroups"
-        options={{ title: "Walking Groups" }}
+        options={{ title: "קבוצות הליכה" }}
         component={WalkingGroups}
       />
       <Stack.Screen
         name="WatchMyChilds"
-        options={{ title: "Watch My Childs" }}
+        options={{ title: "הילדים שלי" }}
         component={WatchMyChilds}
       />
       <Stack.Screen
         name="AddChild"
-        options={{ title: "Add Child" }}
+        options={{ title: "הוספת ילד/ה" }}
         component={AddChild}
       />
       <Stack.Screen
         name="MyWalkingGroup"
-        options={{ title: "My Walking Group" }}
+        options={{ title: "קבוצות ההליכה שלי" }}
         component={MyWalkingGroup}
       />
       <Stack.Screen
         name="JoinWalkingGroup"
-        options={{ title: "Join Walking Group" }}
+        options={{ title: "הרשמה לקבוצת הליכה" }}
         component={JoinWalkingGroup}
       />
       <Stack.Screen
         name="GroupProfile"
-        options={{ title: "Group profile" }}
+        options={{ title: "פרופיל קבוצה" }}
         component={GroupProfile}
       />
-      {/* <Stack.Screen
-        name="AlmogItayMap"
-        options={{ title: "almog" }}
-        component={AlmogItayMap}
-      /> */}
+      <Stack.Screen
+        name="JoinCertainGroup"
+        options={{ title: "הרשמה לקבוצה" }}
+        component={JoinCertainGroup}
+      />
     </Stack.Navigator>
   );
 }

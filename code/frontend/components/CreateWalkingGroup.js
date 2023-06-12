@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import Footer from "./Footer";
 import Buttons from "./Buttons";
@@ -24,7 +25,7 @@ import {
   where,
 } from "firebase/firestore";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
 
@@ -41,6 +42,7 @@ const CreateWalkingGroup = ({ navigation }) => {
   const [childList, setChildList] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [formattedTime, setFormattedTime] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   //--------------------------------- Back-End area ----------------------------------
   /**
@@ -49,48 +51,8 @@ const CreateWalkingGroup = ({ navigation }) => {
    * @returns {void}
    */
   useEffect(() => {
-    // Fetch the school data from Firestore
-    fetchSchools();
     fetchChilds();
   }, []);
-
-  /**
-   * This function fetches the school data from Firestore.
-   * @returns {void}
-   * @throws {error} error - Firebase error
-   */
-  async function fetchSchools() {
-    try {
-      const currentUser = auth.currentUser;
-      const q = query(
-        collection(db, "Users"),
-        where("uid", "==", currentUser.uid)
-      );
-      const querySnapshot = await getDocs(q);
-      const userDocRef = querySnapshot.docs[0];
-      const childs = userDocRef.data().children;
-      if (!childs) return;
-      const schoolList = [];
-      for (const child of childs) {
-        const childDoc = doc(db, "Children", child);
-        const childDocRef = await getDoc(childDoc);
-        const school = childDocRef.data().school;
-        if (!schoolList.includes(school)) {
-          schoolList.push(school);
-        }
-      }
-      const schoolsData = [];
-      for (const schoolId of schoolList) {
-        const schoolDoc = doc(db, "School", schoolId);
-        const docRef = await getDoc(schoolDoc);
-        const name = docRef.data().name;
-        schoolsData.push({ id: docRef.id, name: name });
-      }
-      setSchoolList(schoolsData);
-    } catch (error) {
-      console.log("Error fetching schools data:", error);
-    }
-  }
 
   /**
    * This function fetches the childs data from Firestore.
@@ -98,6 +60,7 @@ const CreateWalkingGroup = ({ navigation }) => {
    * @throws {error} error - Firebase error
    */
   async function fetchChilds() {
+    setIsLoading(true);
     try {
       const currentUser = auth.currentUser;
       const q = query(
@@ -107,17 +70,23 @@ const CreateWalkingGroup = ({ navigation }) => {
       const querySnapshot = await getDocs(q);
       const userDocRef = querySnapshot.docs[0];
       const childs = userDocRef.data().children;
-      if (!childs) return;
+      if (!childs) {
+        setIsLoading(false);
+        return;
+      }
       const childsList = [];
       for (const child of childs) {
         const childDoc = doc(db, "Children", child);
         const childDocRef = await getDoc(childDoc);
         const name = childDocRef.data().name;
-        childsList.push({ id: childDocRef.id, name: name });
+        const school = childDocRef.data().school;
+        childsList.push({ id: childDocRef.id, name: name, school: school });
       }
       setChildList(childsList);
+      setIsLoading(false);
     } catch (error) {
       console.log("Error fetching childs data:", error);
+      setIsLoading(false);
     }
   }
 
@@ -127,36 +96,44 @@ const CreateWalkingGroup = ({ navigation }) => {
    * @throws {error} error - Firebase error
    */
   async function addWalkingGroupToDB() {
+    setIsLoading(true);
     if (childList.length === 0) {
       Alert.alert("שגיאה", "אין לך ילדים רשומים, אנא הוסף ילד וחזור לנסות", [
         { text: "הבנתי" },
       ]);
+      setIsLoading(false);
       return;
     }
     if (busName === "") {
       Alert.alert("שגיאה", "אנא הכנס/י שם לקבוצה", [{ text: "הבנתי" }]);
+      setIsLoading(false);
       return;
     }
-    if (busMaxKids > 10 || busMaxKids < 1 || busMaxKids === "") {
-      Alert.alert("שגיאה", "אנא הכנס/י מספר ילדים מרבי בין 1 ל-10", [
+    if (busMaxKids > 30 || busMaxKids < 1 || busMaxKids === "") {
+      Alert.alert("שגיאה", "אנא הכנס/י מספר ילדים מרבי בין 1 ל-30", [
         { text: "הבנתי" },
       ]);
+      setIsLoading(false);
       return;
     }
     if (busStartLocation === "") {
       Alert.alert("שגיאה", "אנא הכנס/י מקום יציאה", [{ text: "הבנתי" }]);
+      setIsLoading(false);
       return;
     }
     if (formattedTime === "") {
       Alert.alert("שגיאה", "אנא הכנס/י שעת יציאה", [{ text: "הבנתי" }]);
+      setIsLoading(false);
       return;
     }
     if (school === "") {
       Alert.alert("שגיאה", "אנא בחר/י בית ספר", [{ text: "הבנתי" }]);
+      setIsLoading(false);
       return;
     }
     if (child === "") {
       Alert.alert("שגיאה", "אנא בחר/י ילד", [{ text: "הבנתי" }]);
+      setIsLoading(false);
       return;
     }
     const currentUser = auth.currentUser;
@@ -187,6 +164,7 @@ const CreateWalkingGroup = ({ navigation }) => {
         groups: [groupDocId],
       });
     }
+    setIsLoading(false);
     Alert.alert("הקבוצה נוצרה בהצלחה!", "ברכותינו", [{ text: "אישור" }]);
     navigation.navigate("HomeScreen", {
       username: userDocRef.data().username,
@@ -230,6 +208,9 @@ const CreateWalkingGroup = ({ navigation }) => {
    */
   const selectChild = (itemValue) => {
     setChild(itemValue);
+    if (itemValue) {
+      setSchool(childList.find((child) => child.id === itemValue).school);
+    }
   };
 
   // ------------------------Front-End area:------------------------
@@ -237,82 +218,78 @@ const CreateWalkingGroup = ({ navigation }) => {
     // ------------------------JSX area:------------------------
     <View style={styles.page}>
       <HeaderIcons navigation={navigation} />
-      <ScrollView style={styles.formContainer}>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>שם הקבוצה</Text>
-          <TextInput
-            style={styles.input}
-            value={busName}
-            onChangeText={setBusName}
-            placeholder="הקלד/י שם לקבוצה"
-          />
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.header}>טוען נתונים...</Text>
+          <ActivityIndicator size="large" color="#4682B4" />
         </View>
+      ) : (
+        <ScrollView style={styles.formContainer}>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>שם הקבוצה</Text>
+            <TextInput
+              style={styles.input}
+              value={busName}
+              onChangeText={setBusName}
+              placeholder="הקלד/י שם לקבוצה"
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>מספר ילדים מרבי</Text>
-          <TextInput
-            style={styles.input}
-            value={busMaxKids}
-            onChangeText={setBusMaxKids}
-            placeholder="הקלד/י את מספר הילדים המרבי"
-            keyboardType="numeric"
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>מספר ילדים מרבי</Text>
+            <TextInput
+              style={styles.input}
+              value={busMaxKids}
+              onChangeText={setBusMaxKids}
+              placeholder="הקלד/י את מספר הילדים המרבי"
+              keyboardType="numeric"
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>מקום יציאה</Text>
-          <TextInput
-            style={styles.input}
-            value={busStartLocation}
-            onChangeText={setBusStartLocation}
-            placeholder="הקלד/י מקום יציאה"
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>מקום יציאה</Text>
+            <TextInput
+              style={styles.input}
+              value={busStartLocation}
+              onChangeText={setBusStartLocation}
+              placeholder="הקלד/י מקום יציאה"
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>שעת יציאה</Text>
-          <TouchableOpacity style={styles.input} onPress={showDateTimePicker}>
-            <Icon name="clock-o" size={25} color="grey" style={styles.icon} />
-            <Text style={styles.pickerText}>{formattedTime || "hh:mm"}</Text>
-          </TouchableOpacity>
-          <DateTimePickerModal
-            isVisible={showPicker}
-            mode="time"
-            is24Hour
-            date={date}
-            display={Platform.OS === "android" ? "spinner" : undefined}
-            onConfirm={handleDateChange}
-            onCancel={() => setShowPicker(false)}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Picker
-            style={styles.input}
-            selectedValue={school}
-            onValueChange={selectSchool}
-          >
-            {schoolList.map((school) => (
-              <Picker.Item
-                key={school.id}
-                label={school.name}
-                value={school.id}
-              />
-            ))}
-          </Picker>
-        </View>
-        <View style={styles.inputContainer}>
-          <Picker
-            style={styles.input}
-            selectedValue={child}
-            onValueChange={selectChild}
-          >
-            {childList.map((child) => (
-              <Picker.Item key={child.id} label={child.name} value={child.id} />
-            ))}
-          </Picker>
-        </View>
-      </ScrollView>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>שעת יציאה</Text>
+            <TouchableOpacity style={styles.input} onPress={showDateTimePicker}>
+              <Icon name="clock-o" size={25} color="grey" style={styles.icon} />
+              <Text style={styles.pickerText}>{formattedTime || "hh:mm"}</Text>
+            </TouchableOpacity>
+            <DateTimePickerModal
+              isVisible={showPicker}
+              mode="time"
+              is24Hour
+              date={date}
+              display={Platform.OS === "android" ? "spinner" : undefined}
+              onConfirm={handleDateChange}
+              onCancel={() => setShowPicker(false)}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Picker
+              style={styles.input}
+              selectedValue={child}
+              onValueChange={selectChild}
+            >
+              <Picker.Item label="בחר/י ילד" value="" />
+              {childList.map((child) => (
+                <Picker.Item
+                  key={child.id}
+                  label={child.name}
+                  value={child.id}
+                />
+              ))}
+            </Picker>
+          </View>
+        </ScrollView>
+      )}
       <Buttons
         title="יצירת אוטובוס הליכה"
         color="orange"
@@ -320,6 +297,7 @@ const CreateWalkingGroup = ({ navigation }) => {
         press={addWalkingGroupToDB}
         style={{ marginBottom: 100 }}
       />
+
       <Footer />
     </View>
   );
@@ -327,6 +305,12 @@ const CreateWalkingGroup = ({ navigation }) => {
 
 // ------------------------Style area:------------------------
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+  },
   page: {
     backgroundColor: "#F5F5F5",
     flex: 1,

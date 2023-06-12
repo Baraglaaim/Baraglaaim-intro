@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { db, auth } from "../FireBaseConsts";
 import {
@@ -94,27 +95,27 @@ const AddChild = ({ navigation }) => {
   async function addChildToDB() {
     setIsLoading(true);
     if (!name) {
-      alert("יש להזין שם");
+      Alert.alert("שגיאה", "יש להזין שם", [{ text: "הבנתי", onPress: () => setName("") } ]);
       setIsLoading(false);
       return;
     }
     if (school === "") {
-      alert("יש לבחור בית ספר");
+      Alert.alert("שגיאה", "יש לבחור בית ספר", [{ text: "הבנתי", onPress: () => setSchool("") } ]);
       setIsLoading(false);
       return;
     }
     if (classChild === "") {
-      alert("יש לבחור כיתה");
+      Alert.alert("שגיאה", "יש לבחור כיתה", [{ text: "הבנתי", onPress: () => setClassChild("") } ]);
       setIsLoading(false);
       return;
     }
     if (gender === "") {
-      alert("יש לבחור מין");
+      Alert.alert("שגיאה", "יש לבחור מין", [{ text: "הבנתי", onPress: () => setGender("") } ]);
       setIsLoading(false);
       return;
     }
     if (phone && phone.length !== 10) {
-      alert("מספר הטלפון חייב להיות בעל 10 ספרות");
+      Alert.alert("שגיאה", "מספר הטלפון חייב להיות בעל 10 ספרות", [{ text: "הבנתי", onPress: () => setPhone("") } ]);
       setIsLoading(false);
       return;
     }
@@ -146,28 +147,13 @@ const AddChild = ({ navigation }) => {
       });
     }
     setIsLoading(false);
-    alert("ילדך נוסף/ה בהצלחה");
+    Alert.alert("ברכות", "הצועד/צועדת נוסף/ה בהצלחה", [{ text: "אישור", onPress: () => navigation.navigate("HomeScreen")} ]);
     navigation.navigate("HomeScreen", {
       username: userDocRef.data().username,
     });
   }
 
   //-----------------------------functions area:-----------------------------//
-  /**
-   * Toggles the school picker visibility
-   * @returns {<void>}
-   */
-  // const toggleSchoolPicker = () => {
-  //   setIsSchoolPickerVisible(!isSchoolPickerVisible);
-  // };
-
-  /**
-   * Toggles the class picker visibility
-   * @returns {<void>}
-   */
-  // const toggleClassPicker = () => {
-  //   setIsClassPickerVisible(!isClassPickerVisible);
-  // };
 
   /**
    * Selects the school from the school picker

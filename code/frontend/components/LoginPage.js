@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+//---------------------------------------------------------- imports area: ----------------------------------------------------------
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,18 +8,32 @@ import {
   SafeAreaView,
   View,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { db } from "../FireBaseConsts";
 import Buttons from "./Buttons";
 import { query, addDoc, collection, getDocs, where } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useFocusEffect } from '@react-navigation/native';
+import { set } from "date-fns";
 
+//---------------------------------------------------------- variable definition area: ----------------------------------------------------------
 const LoginPage = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      setEmail("");
+      setPassword("");
+      setErrorMessage("");
+      setIsLoading(false);
+    }, [])
+  );
+
+  //---------------------------------------------------------- Back-End area: ----------------------------------------------------------
   const handleLogin = async () => {
     setIsLoading(true);
     const auth = getAuth();
@@ -42,24 +57,21 @@ const LoginPage = ({ navigation }) => {
       );
 
       if (querySnapshot.empty) {
-        alert("User does not exist");
+        Alert.alert("שגיאה", "משתמש לא קיים במערכת" , [{ text: "אישור" }]);
         setIsLoading(false);
         return;
       }
 
-      navigation.navigate("HomeScreen", {
+      await navigation.navigate("HomeScreen", {
         username: querySnapshot.docs[0].data().username,
-        // userName: user.uid,
       });
-      setIsLoading(false);
     } catch (error) {
-      // Login failed
       const errorMessage = error.message;
       setErrorMessage(errorMessage);
       setIsLoading(false);
     }
   };
-
+//---------------------------------------------------------- Front-End area: ----------------------------------------------------------
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -112,6 +124,7 @@ const LoginPage = ({ navigation }) => {
   );
 };
 
+//---------------------------------------------------------- style area: ----------------------------------------------------------
 const styles = StyleSheet.create({
   container: {
     flex: 1,

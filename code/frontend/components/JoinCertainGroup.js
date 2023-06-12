@@ -21,7 +21,7 @@ import {
   where,
 } from "firebase/firestore";
 
-const JoinCerteinGroup = ({ navigation, route}) => {
+const JoinCertainGroup = ({ navigation, route}) => {
   //--------------------------------- define variables area ----------------------------------
 
   const [groupsList, setGroupsList] = useState([]);
@@ -189,4 +189,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default JoinCerteinGroup;
+export default JoinCertainGroup;

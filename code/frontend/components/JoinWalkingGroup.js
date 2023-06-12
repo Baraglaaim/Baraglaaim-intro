@@ -38,6 +38,10 @@ const JoinWalkingGroup = ({ navigation }) => {
     fetchGroupsList();
   }, []);
 
+  /**
+   * This function fetches the groups list from Firestore.
+   * @returns {void}
+   */
   async function fetchGroupsList() {
     try {
       setIsLoading(true);
@@ -86,6 +90,20 @@ const JoinWalkingGroup = ({ navigation }) => {
         const alreadyJoined = childs.some((child) => {
           return groupDoc.data().children.includes(child);
         });
+        let haveChildToJoin = false;
+        const kidsToJoin = [];
+        for (const child of childs) {
+          const childDoc = doc(db, "Children", child);
+          const childDocRef = await getDoc(childDoc);
+          const school = childDocRef.data().school;
+          if (school === groupDoc.data().school) {
+            if (!groupDoc.data().children.includes(child)) {
+              haveChildToJoin = true;
+              kidsToJoin.push({ id: child, name: childDocRef.data().name });
+            }
+          }
+        }
+        console.log("kids to join: ", kidsToJoin);
         const groupItem = {
           groupID: groupID,
           name: name,
@@ -97,6 +115,7 @@ const JoinWalkingGroup = ({ navigation }) => {
           maxCapacity: maxCapacity,
           currentCapacity: currentCapacity,
           alreadyJoined: alreadyJoined,
+          haveChildToJoin: haveChildToJoin,
         };
         groupsData.push(groupItem);
       }
@@ -109,9 +128,15 @@ const JoinWalkingGroup = ({ navigation }) => {
     }
   }
 
+  /**
+   * This function is called when the user want to sign up a kid to a group.
+   * @param {object} groupID - The group ID.
+   * @param {object} index - The group index.
+   * @returns {void}
+   */
   const handleGroupPress = ({ groupID, index }) => {
     console.log("groupID is: ", groupID);
-    // navigation.navigate("JoinGroupDetails", { groupID: groupID });
+    // navigation.navigate("JoinCertainGroup", { groupID: groupID });
   };
 
   const renderGroup = ({ item, index }) => {
@@ -126,10 +151,28 @@ const JoinWalkingGroup = ({ navigation }) => {
         <Text>
           כמות משתתפים: {item.currentCapacity} / {item.maxCapacity}
         </Text>
-        {item.alreadyJoined ? (
-          <Text style={{ color: "green", fontWeight: "bold" }}>
-            כבר הצטרפת לקבוצה זו
-          </Text>
+        {item.currentCapacity == item.maxCapacity ? (
+          <Text style={{ color: "red", fontWeight: "bold" }}>הקבוצה מלאה</Text>
+        ) : item.alreadyJoined ? (
+          item.haveChildToJoin ? (
+            <View style={{ alignItems: "center" }}>
+              <Text style={{ color: "green", fontWeight: "bold" }}>
+                יש לך ילדים בקבוצה זו
+              </Text>
+              <Buttons
+                title="הצטרף לקבוצה"
+                color="orange"
+                width={220}
+                press={() =>
+                  handleGroupPress({ groupID: item.groupID, index: index })
+                }
+              />
+            </View>
+          ) : (
+            <Text style={{ color: "red", fontWeight: "bold" }}>
+              אין לך ילדים להוסיף לקבוצה זו
+            </Text>
+          )
         ) : (
           <Buttons
             title="הצטרף לקבוצה"
@@ -174,25 +217,14 @@ const styles = StyleSheet.create({
     borderColor: "grey",
     borderRadius: 10,
     padding: 10,
-    marginBottom: 10,
+    margin: 10,
+    backgroundColor: "white",
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#F5F5F5",
-  },
-  joinButton: {
-    backgroundColor: "blue",
-    padding: 10,
-    marginTop: 10,
-    borderRadius: 5,
-  },
-  joinButtonText: {
-    color: "white",
-    textAlign: "center",
-    fontSize: 16,
-    fontWeight: "bold",
   },
   container: {
     flex: 1,
