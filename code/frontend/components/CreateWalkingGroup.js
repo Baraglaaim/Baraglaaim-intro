@@ -1,4 +1,3 @@
-//--------------------------------- import area ----------------------------------
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -9,9 +8,10 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Keyboard,
+  Platform,
 } from "react-native";
 import Footer from "./Footer";
-import Buttons from "./Buttons";
 import HeaderIcons from "./HeaderIcons";
 import { db, auth } from "../FireBaseConsts";
 import {
@@ -24,13 +24,14 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { format, set } from "date-fns";
 import Icon from "react-native-vector-icons/FontAwesome";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+
+import { format } from "date-fns"; // Add this line
+
 import { Picker } from "@react-native-picker/picker";
 
 const CreateWalkingGroup = ({ navigation }) => {
-  //--------------------------------- define variables area ----------------------------------
   const [busName, setBusName] = useState("");
   const [busMaxKids, setBusMaxKids] = useState("");
   const [busStartLocation, setBusStartLocation] = useState("");
@@ -44,340 +45,249 @@ const CreateWalkingGroup = ({ navigation }) => {
   const [formattedTime, setFormattedTime] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  //--------------------------------- Back-End area ----------------------------------
-  /**
-   * This function is called when the component is rendered.
-   * It fetches the school data from Firestore.
-   * @returns {void}
-   */
   useEffect(() => {
     fetchChilds();
   }, []);
 
-  /**
-   * This function fetches the childs data from Firestore.
-   * @returns {void}
-   * @throws {error} error - Firebase error
-   */
   async function fetchChilds() {
     setIsLoading(true);
     try {
       const currentUser = auth.currentUser;
-      const q = query(
-        collection(db, "Users"),
-        where("uid", "==", currentUser.uid)
-      );
-      const querySnapshot = await getDocs(q);
-      const userDocRef = querySnapshot.docs[0];
-      const childs = userDocRef.data().children;
-      if (!childs) {
+      const userDocRef = await getDoc(doc(db, "Users", currentUser.uid));
+      const userData = userDocRef.data();
+      if (!userData || !userData.children) {
         setIsLoading(false);
         return;
       }
-      const childsList = [];
-      for (const child of childs) {
-        const childDoc = doc(db, "Children", child);
-        const childDocRef = await getDoc(childDoc);
-        const name = childDocRef.data().name;
-        const school = childDocRef.data().school;
-        childsList.push({ id: childDocRef.id, name: name, school: school });
-      }
+      const childPromises = userData.children.map(async (childId) => {
+        const childDocRef = await getDoc(doc(db, "Children", childId));
+        const childData = childDocRef.data();
+        const schoolDocRef = await getDoc(doc(db, "Schools", childData.school));
+        const schoolName = schoolDocRef.data().name;
+        return { id: childDocRef.id, name: childData.name, school: schoolName };
+      });
+      const childsList = await Promise.all(childPromises);
       setChildList(childsList);
+      const uniqueSchools = Array.from(new Set(childsList.map((child) => child.school)));
+      const schoolPromises = uniqueSchools.map(async (schoolName) => {
+        const schoolQuery = query(collection(db, "Schools"), where("name", "==", schoolName));
+        const schoolQuerySnapshot = await getDocs(schoolQuery);
+        const schoolDocRef = schoolQuerySnapshot.docs[0];
+        return { id: schoolDocRef.id, school: schoolDocRef.data().name };
+      });
+      const schoolsList = await Promise.all(schoolPromises);
+      setSchoolList(schoolsList);
       setIsLoading(false);
     } catch (error) {
-      console.log("Error fetching childs data:", error);
+      console.error("Error fetching childs:", error);
       setIsLoading(false);
     }
   }
 
-  /**
-   * This function adds the walking group to the DB.
-   * @returns {void}
-   * @throws {error} error - Firebase error
-   */
-  async function addWalkingGroupToDB() {
+
+  const addWalkingGroupToDB = async () => {
+    Keyboard.dismiss();
+    if (!busName || !busMaxKids || !busStartLocation || !selectedDate || !school || !child) {
+      Alert.alert("Missing Information", "Please fill in all fields.");
+      return;
+    }
     setIsLoading(true);
-    if (childList.length === 0) {
-      Alert.alert("שגיאה", "אין לך ילדים רשומים, אנא הוסף ילד וחזור לנסות", [
-        { text: "הבנתי" },
-      ]);
+    try {
+      const walkingGroup = {
+        busName: busName,
+        busMaxKids: Number(busMaxKids),
+        busStartLocation: busStartLocation,
+        date: selectedDate,
+        school: school,
+        child: child,
+      };
+      await addDoc(collection(db, "WalkingGroups"), walkingGroup);
       setIsLoading(false);
-      return;
-    }
-    if (busName === "") {
-      Alert.alert("שגיאה", "אנא הכנס/י שם לקבוצה", [{ text: "הבנתי" }]);
+      Alert.alert("Success", "Walking Group created successfully.");
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error adding walking group:", error);
       setIsLoading(false);
-      return;
+      Alert.alert("Error", "Failed to create walking group.");
     }
-    if (busMaxKids > 30 || busMaxKids < 1 || busMaxKids === "") {
-      Alert.alert("שגיאה", "אנא הכנס/י מספר ילדים מרבי בין 1 ל-30", [
-        { text: "הבנתי" },
-      ]);
-      setIsLoading(false);
-      return;
-    }
-    if (busStartLocation === "") {
-      Alert.alert("שגיאה", "אנא הכנס/י מקום יציאה", [{ text: "הבנתי" }]);
-      setIsLoading(false);
-      return;
-    }
-    if (formattedTime === "") {
-      Alert.alert("שגיאה", "אנא הכנס/י שעת יציאה", [{ text: "הבנתי" }]);
-      setIsLoading(false);
-      return;
-    }
-    if (school === "") {
-      Alert.alert("שגיאה", "אנא בחר/י בית ספר", [{ text: "הבנתי" }]);
-      setIsLoading(false);
-      return;
-    }
-    if (child === "") {
-      Alert.alert("שגיאה", "אנא בחר/י ילד", [{ text: "הבנתי" }]);
-      setIsLoading(false);
-      return;
-    }
-    const currentUser = auth.currentUser;
-    const q = query(
-      collection(db, "Users"),
-      where("uid", "==", currentUser.uid)
-    );
-    const querySnapshot = await getDocs(q);
-    const userDocRef = querySnapshot.docs[0];
-    const userDocId = userDocRef.id;
-    const groupDocRef = await addDoc(collection(db, "Groups"), {
-      busName: busName,
-      busManager: userDocId,
-      busManagerPhone: userDocRef.data().phone,
-      maxKids: busMaxKids,
-      startLocation: busStartLocation,
-      startTime: formattedTime,
-      school: school,
-      children: [child],
-    });
-    const groupDocId = groupDocRef.id;
-    if (userDocRef.data().groups) {
-      updateDoc(doc(db, `Users/${userDocId}`), {
-        groups: [...userDocRef.data().groups, groupDocId],
-      });
-    } else {
-      updateDoc(doc(db, `Users/${userDocId}`), {
-        groups: [groupDocId],
-      });
-    }
-    setIsLoading(false);
-    Alert.alert("הקבוצה נוצרה בהצלחה!", "ברכותינו", [{ text: "אישור" }]);
-    navigation.navigate("HomeScreen", {
-      username: userDocRef.data().username,
-    });
-  }
+  };
 
-  // ------------------------funcions area:------------------------
-  /**
-   * This function is called when the user selects a time from the time picker.
-   * @param {Date} selectedDate - The selected date
-   * @returns {void}
-   */
-  const handleDateChange = (selectedDate) => {
-    setSelectedDate(selectedDate);
-    setFormattedTime(format(selectedDate, "HH:mm"));
+  const handleConfirm = (date) => {
+    setSelectedDate(date);
+    setFormattedTime(format(date, "hh:mm a")); // Update this line
     setShowPicker(false);
   };
 
-  /**
-   * This function is called when the user presses the time picker.
-   * It shows the time picker.
-   * @returns {void}
-   */
-  function showDateTimePicker() {
+  const showDateTimePicker = () => {
     setShowPicker(true);
-  }
-
-  /**
-   * This function is called when the user selects a school from the school picker.
-   * @param {string} itemValue - The selected school id
-   * @returns {void}
-   */
-  const selectSchool = (itemValue) => {
-    setSchool(itemValue);
   };
 
-  /**
-   * This function is called when the user selects a child from the child picker.
-   * @param {string} itemValue - The selected child id
-   * @returns {void}
-   */
-  const selectChild = (itemValue) => {
-    setChild(itemValue);
-    if (itemValue) {
-      setSchool(childList.find((child) => child.id === itemValue).school);
-    }
+  const hideDateTimePicker = () => {
+    setShowPicker(false);
   };
 
-  // ------------------------Front-End area:------------------------
   return (
-    // ------------------------JSX area:------------------------
-    <View style={styles.page}>
-      <HeaderIcons navigation={navigation} />
-      {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.header}>טוען נתונים...</Text>
-          <ActivityIndicator size="large" color="#4682B4" />
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.headerContainer}>
+          <HeaderIcons />
         </View>
-      ) : (
-        <ScrollView style={styles.formContainer}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>שם הקבוצה</Text>
-            <TextInput
-              style={styles.input}
-              value={busName}
-              onChangeText={setBusName}
-              placeholder="הקלד/י שם לקבוצה"
-            />
-          </View>
+        <View style={styles.formContainer}>
+          <Text style={styles.label}>Bus Name:</Text>
+          <TextInput
+            style={styles.input}
+            value={busName}
+            onChangeText={(text) => setBusName(text)}
+            placeholder="Enter bus name"
+            placeholderTextColor="#8b9cb5"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>מספר ילדים מרבי</Text>
-            <TextInput
-              style={styles.input}
-              value={busMaxKids}
-              onChangeText={setBusMaxKids}
-              placeholder="הקלד/י את מספר הילדים המרבי"
-              keyboardType="numeric"
-            />
-          </View>
+          <Text style={styles.label}>Max Kids:</Text>
+          <TextInput
+            style={styles.input}
+            value={busMaxKids}
+            onChangeText={(text) => setBusMaxKids(text)}
+            placeholder="Enter maximum number of kids"
+            placeholderTextColor="#8b9cb5"
+            keyboardType="numeric"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>מקום יציאה</Text>
-            <TextInput
-              style={styles.input}
-              value={busStartLocation}
-              onChangeText={setBusStartLocation}
-              placeholder="הקלד/י מקום יציאה"
-            />
-          </View>
+          <Text style={styles.label}>Bus Start Location:</Text>
+          <TextInput
+            style={styles.input}
+            value={busStartLocation}
+            onChangeText={(text) => setBusStartLocation(text)}
+            placeholder="Enter bus start location"
+            placeholderTextColor="#8b9cb5"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>שעת יציאה</Text>
-            <TouchableOpacity style={styles.input} onPress={showDateTimePicker}>
-              <Icon name="clock-o" size={25} color="grey" style={styles.icon} />
-              <Text style={styles.pickerText}>{formattedTime || "hh:mm"}</Text>
-            </TouchableOpacity>
-            <DateTimePickerModal
-              isVisible={showPicker}
-              mode="time"
-              is24Hour
-              date={date}
-              display={Platform.OS === "android" ? "spinner" : undefined}
-              onConfirm={handleDateChange}
-              onCancel={() => setShowPicker(false)}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Picker
-              style={styles.input}
-              selectedValue={child}
-              onValueChange={selectChild}
-            >
-              <Picker.Item label="בחר/י ילד" value="" />
-              {childList.map((child) => (
-                <Picker.Item
-                  key={child.id}
-                  label={child.name}
-                  value={child.id}
-                />
-              ))}
-            </Picker>
-          </View>
-        </ScrollView>
-      )}
-      <Buttons
-        title="יצירת אוטובוס הליכה"
-        color="orange"
-        width={220}
-        press={addWalkingGroupToDB}
-        style={{ marginBottom: 100 }}
-      />
+          <Text style={styles.label}>Date:</Text>
+          <TouchableOpacity style={styles.datePicker} onPress={showDateTimePicker}>
+            <Text style={styles.datePickerText}>{selectedDate ? formattedTime : "Select date and time"}</Text>
+            <Icon name="calendar" size={20} color="#2c3e50" />
+          </TouchableOpacity>
+          <DateTimePickerModal
+            isVisible={showPicker}
+            mode="datetime"
+            onConfirm={handleConfirm}
+            onCancel={hideDateTimePicker}
+            minimumDate={new Date()}
+            is24Hour={false}
+          />
 
+          <Text style={styles.label}>School:</Text>
+          <Picker
+            selectedValue={school}
+            style={styles.picker}
+            onValueChange={(itemValue) => setSchool(itemValue)}
+          >
+            <Picker.Item label="Select school" value="" />
+            {schoolList.map((school) => (
+              <Picker.Item key={school.id} label={school.school} value={school.school} />
+            ))}
+          </Picker>
+
+          <Text style={styles.label}>Child:</Text>
+          <Picker
+            selectedValue={child}
+            style={styles.picker}
+            onValueChange={(itemValue) => setChild(itemValue)}
+          >
+            <Picker.Item label="Select child" value="" />
+            {childList.map((child) => (
+              <Picker.Item key={child.id} label={child.name} value={child.name} />
+            ))}
+          </Picker>
+
+          <TouchableOpacity
+            style={styles.createGroupButton}
+            onPress={addWalkingGroupToDB} // Update this line
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.createGroupButtonText}>Create Group</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
       <Footer />
     </View>
   );
 };
 
-// ------------------------Style area:------------------------
+
 const styles = StyleSheet.create({
-  loadingContainer: {
+  container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#f5f5f5",
   },
-  page: {
-    backgroundColor: "#F5F5F5",
-    flex: 1,
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
-  title: {
-    fontSize: 30,
-    color: "black",
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  mainContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  headerContainer: {
+    marginTop: Platform.OS === "android" ? 30 : 0,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   formContainer: {
-    backgroundColor: "#F5F5F5",
-    height: "100%",
-    width: "90%",
-    borderRadius: 20,
-  },
-  inputContainer: {
-    width: "100%",
-    marginTop: 20,
-    marginBottom: 20,
-    alignItems: "center",
+    paddingHorizontal: 20,
   },
   label: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "black",
-    textAlign: "center",
-    marginBottom: 5,
+    color: "#333",
+    marginTop: 10,
   },
   input: {
-    flexDirection: "row",
-    textAlign: "right",
-    backgroundColor: "white",
-    borderWidth: 1,
+    height: 40,
     borderColor: "#ccc",
+    borderWidth: 1,
     borderRadius: 5,
-    width: "90%",
-    height: 35,
     paddingHorizontal: 10,
+    marginBottom: 20,
   },
-  clock: {
-    paddingTop: 2,
-    fontSize: 20,
-    textAlign: "center",
-    backgroundColor: "white",
-    borderWidth: 1,
+  datePicker: {
+    height: 40,
     borderColor: "#ccc",
+    borderWidth: 1,
     borderRadius: 5,
-    width: "20%",
-    height: 35,
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
   },
-  pickerText: {
-    marginTop: 5,
-    height: 35,
-    width: "60%",
-    paddingRight: 5,
-    paddingLeft: 5,
-    textAlign: "right",
+  datePickerText: {
+    color: "#333",
+  },
+  picker: {
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  createGroupButton: {
+    alignSelf: 'center',
+    marginBottom: 20,
+    width: '100%',
+    backgroundColor: '#2c3e50',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  createGroupButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
 

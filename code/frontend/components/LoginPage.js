@@ -38,10 +38,13 @@ const LoginPage = ({ navigation }) => {
     setIsLoading(true);
     const auth = getAuth();
 
+    // Trim whitespace from the end of the email
+    const trimmedEmail = email.trim();
+
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
-        email,
+        trimmedEmail,
         password
       );
 
