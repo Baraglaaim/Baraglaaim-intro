@@ -15,6 +15,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import Footer from "./Footer";
+import ListContainer from "./ListContainer";
 import Buttons from "./Buttons";
 import HeaderIcons from "./HeaderIcons";
 import { db, auth } from "../FireBaseConsts";
@@ -33,99 +34,98 @@ import { format, set } from "date-fns";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
 
-
 const MyWalkingGroup = ({ navigation }) => {
-// --------------------------------- define variables area ----------------------------------
-const [groupsList, setGroupsList] = useState([]);
-const [isLoading, setIsLoading] = useState(false);
+  // --------------------------------- define variables area ----------------------------------
+  const [groupsList, setGroupsList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-// --------------------------------- Back-End area ----------------------------------
-useEffect(() => {
-  fetchGroupsList();
-}, []);
+  // --------------------------------- Back-End area ----------------------------------
+  useEffect(() => {
+    fetchGroupsList();
+  }, []);
 
-async function fetchGroupsList() {
-  try {
-    setIsLoading(true);
-    const currentUser = auth.currentUser;
-    const q = query(
-      collection(db, "Users"),
-      where("uid", "==", currentUser.uid)
-    );
-    const querySnapshot = await getDocs(q);
-    const userDocRef = querySnapshot.docs[0];
-    const groups = userDocRef.data().groups;
-    if (!groups) {
+  async function fetchGroupsList() {
+    try {
+      setIsLoading(true);
+      const currentUser = auth.currentUser;
+      const q = query(
+        collection(db, "Users"),
+        where("uid", "==", currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      const userDocRef = querySnapshot.docs[0];
+      const groups = userDocRef.data().groups;
+      if (!groups) {
+        setIsLoading(false);
+        return;
+      }
+      const userGroups = [];
+      for (const group of groups) {
+        const groupDocRef = doc(db, "Groups", group);
+        const groupDoc = await getDoc(groupDocRef);
+        const groupData = groupDoc.data();
+        const schoolDocRef = doc(db, "School", groupData.school);
+        const schoolDoc = await getDoc(schoolDocRef);
+        const schoolName = schoolDoc.data().name;
+        groupData.schoolName = schoolName;
+        groupData.id = groupDoc.id;
+        userGroups.push(groupData);
+      }
+      console.log(userGroups);
+      setGroupsList(userGroups);
       setIsLoading(false);
-      return;
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
     }
-    const userGroups = [];
-    for (const group of groups) {
-      const groupDocRef = doc(db, "Groups", group);
-      const groupDoc = await getDoc(groupDocRef);
-      const groupData = groupDoc.data();
-      groupData.id = groupDoc.id;
-      userGroups.push(groupData);
-    }
-    console.log(userGroups);
-    setGroupsList(userGroups);
-    setIsLoading(false);
-  } catch (error) {
-    console.log(error);
-    setIsLoading(false);
   }
-}
 
-// --------------------------------- functions area ----------------------------------
-const WalkingGroupItem = ({ group, onPress }) => {
-  return (
-    <View>
-      <View style={styles.groupItem}>
-        <View style={styles.groupItemHeader}>
-          <Text style={[styles.groupItemTitle, { textAlign: "right" }]}>
-            {group.busName}
-          </Text>
-        </View>
-        <View style={styles.groupItemFooter}>
-          <Text style={styles.groupItemFooterText}>
-            המלווה: {group.parentCompanion}
-          </Text>
-          <Text style={styles.groupItemFooterText}>
-            ההליכה הקרובה: {group.nextAccompany}
-          </Text>
-        </View>
+  // --------------------------------- functions area ----------------------------------
+  const WalkingGroupItem = (group) => {
+    return (
+      <View>
+        <TouchableOpacity
+          style={styles.groupItem}
+          onPress={() => handleGroupPress(group)}
+        >
+          <View style={styles.groupItemHeader}>
+            <Text style={styles.groupItemTitle}>
+              {group.schoolName} - {group.busName}
+            </Text>
+          </View>
+          <View style={styles.groupItemFooter}>
+            <Text style={styles.groupItemFooterText}>
+              שעת יציאה: {group.startTime}
+            </Text>
+          </View>
+        </TouchableOpacity>
       </View>
-      <Buttons
-        title="פרופיל הקבוצה"
-        color="orange"
-        width={150}
-        onPress={onPress}
-      />
-    </View>
-  );
-};
-
-  const handleGroupPress = (group) => {
-    navigation.navigate("GroupProfile", { url: group.profileLink });
+    );
   };
+
+  function handleGroupPress(group) {
+    navigation.navigate("GroupProfile", { ...group });
+  }
 
   // --------------------------------- front-end area ----------------------------------
   return (
     <SafeAreaView style={styles.container}>
-      <View >
-        <HeaderIcons navigation={navigation} />
-        <Text style={[styles.title, { marginLeft: 16 }]}>
-          קבוצות ההליכה שלי
-        </Text>
-        <View style={styles.groupList}>
-          {groupsList.map((group) => (
-            <WalkingGroupItem
-              group={group}
-              onPress={() => handleGroupPress(group)}
-            />
-          ))}
+      <HeaderIcons navigation={navigation} />
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.header}>טוען נתונים...</Text>
+          <ActivityIndicator size="large" color="#4682B4" />
         </View>
-      </View>
+      ) : (
+        <View>
+          <Text style={[styles.title, { marginLeft: 16 }]}>האוטובוסים שלי</Text>
+          <ScrollView style={styles.groupList}>
+            {groupsList.map((group) => (
+              <WalkingGroupItem key={group.id} {...group} />
+            ))}
+          </ScrollView>
+        </View>
+      )}
       <Footer />
     </SafeAreaView>
   );
@@ -133,8 +133,20 @@ const WalkingGroupItem = ({ group, onPress }) => {
 
 // --------------------------------- styles area ----------------------------------
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+  },
   container: {
     flex: 1,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 15,
   },
   backgroundImage: {
     flex: 1,
@@ -149,8 +161,8 @@ const styles = StyleSheet.create({
   },
   groupList: {
     flexDirection: "column",
-    alignItems: "stretch",
     paddingHorizontal: 16,
+    marginBottom: 100,
   },
   groupItem: {
     backgroundColor: "#fff",
@@ -159,14 +171,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   groupItemHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    textAlign: "right",
   },
   groupItemTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 4,
+    textAlign: "right",
   },
   groupItemSubtitle: {
     fontSize: 14,
