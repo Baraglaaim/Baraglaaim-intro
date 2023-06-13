@@ -116,6 +116,24 @@ const WatchMyChilds = ({ navigation }) => {
         children: updatedChildren,
       });
 
+      // Remove the child from the "Groups" collection
+      const groupsQuerySnapshot = await getDocs(collection(db, "Groups"));
+      const groupsPromises = [];
+      groupsQuerySnapshot.forEach((groupDoc) => {
+        const groupData = groupDoc.data();
+        const updatedGroupChildren = groupData.children.filter(
+          (childId) => childId !== id
+        );
+        if (updatedGroupChildren.length !== groupData.children.length) {
+          const groupDocRef = doc(db, "Groups", groupDoc.id);
+          const updatePromise = updateDoc(groupDocRef, {
+            children: updatedGroupChildren,
+          });
+          groupsPromises.push(updatePromise);
+        }
+      });
+      await Promise.all(groupsPromises);
+
       // Update the local state to reflect the changes
       const updatedKidsList = kidsList.filter((kid) => kid.id !== id);
       setKidsList(updatedKidsList);
@@ -170,6 +188,7 @@ const WatchMyChilds = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "center",
   },
   overlay: {
     backgroundColor: "rgb(70, 130, 180)",
@@ -195,13 +214,13 @@ const styles = StyleSheet.create({
   },
   kidContainer: {
     alignItems: "center",
-    textAlign: "center",
     borderWidth: 1,
     borderColor: "#bbb",
     borderRadius: 10,
     padding: 10,
     marginBottom: 15,
     width: "90%",
+    alignSelf: "center",
   },
   kidName: {
     fontSize: 18,
