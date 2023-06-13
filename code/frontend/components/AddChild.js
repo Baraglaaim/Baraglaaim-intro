@@ -99,10 +99,10 @@ const AddChild = ({ navigation }) => {
   * Validates if the name is written in English
   * @returns {boolean} - Returns true if the name is written in English, otherwise false
   */
-  function isNameInEnglish() {
-    const englishLetters = /^[A-Za-z\s]+$/;
-    return name.match(englishLetters) !== null;
-  }
+  // function isNameInEnglish() {
+  //   const englishLetters = /^[A-Za-z\s]+$/;
+  //   return name.match(englishLetters) !== null;
+  // }
   /**
    * Adds the child to the database and updates the user's children list
    * @returns {<void>}
@@ -117,13 +117,13 @@ const AddChild = ({ navigation }) => {
       setIsLoading(false);
       return;
     }
-    if (!isNameInEnglish()) {
-      Alert.alert("שגיאה", "שם הצועד/צועדת יכול להכיל רק אותיות באנגלית", [
-        { text: "הבנתי", onPress: () => setName("") },
-      ]);
-      setIsLoading(false);
-      return;
-    }
+    // if (!isNameInEnglish()) {
+    //   Alert.alert("שגיאה", "שם הצועד/צועדת יכול להכיל רק אותיות באנגלית", [
+    //     { text: "הבנתי", onPress: () => setName("") },
+    //   ]);
+    //   setIsLoading(false);
+    //   return;
+    // }
     if (school === "") {
       Alert.alert("שגיאה", "יש לבחור בית ספר", [
         { text: "הבנתי", onPress: () => setSchool("") },
@@ -231,23 +231,23 @@ const AddChild = ({ navigation }) => {
       ) : (
         <ScrollView style={styles.formContainer}>
           <View style={styles.contentContainer}>
-            <Text style={styles.title}>הוספת צועדת/צועדת</Text>
+            <Text style={styles.title}>הוספת ילד/ה</Text>
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>שם הצועד/צועדת:</Text>
+              <Text style={styles.label}>שם הילד/ה:</Text>
               <TextInput
                 style={styles.input}
                 value={name}
                 onChangeText={setName}
-                placeholder="שם הצועד/צועדת"
+                placeholder="שם הילד/ה"
               />
             </View>
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>מספר הטלפון של הצועד/צועדת:</Text>
+              <Text style={styles.label}>מספר הטלפון של הילד/ה:</Text>
               <TextInput
                 style={styles.input}
                 value={phone}
                 onChangeText={setPhone}
-                placeholder="מספר הטלפון של הצועד/צועדת, במידה ויש נייד"
+                placeholder="מספר הטלפון של הילד/ה, במידה ויש נייד"
                 keyboardType="numeric"
               />
             </View>
