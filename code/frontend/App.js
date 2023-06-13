@@ -24,7 +24,7 @@ import GroupProfile from "./components/GroupProfile";
 import WelcomePage from "./components/WelcomePage";
 import CreateWalkingGroup from "./components/CreateWalkingGroup";
 import JoinCertainGroup from "./components/JoinCertainGroup";
-
+import SchoolProfile from "./components/SchoolProfile";
 
 // import AlmogItayMap from "./DataBase/Dar";
 
@@ -32,7 +32,10 @@ const Stack = createStackNavigator();
 
 function AppStack() {
   return (
-    // <Stack.Navigator initialRouteName="MyCommunity">
+    // <Stack.Navigator initialRouteName="GroupProfile" screenOptions={{
+    //   <Stack.Navigator initialRouteName="LoginPage" screenOptions={{
+    //   headerShown: false, // Hide the header for all screens
+    // }}>
     <Stack.Navigator initialRouteName="LoginPage">
       <Stack.Screen
         name="LoginPage"
@@ -104,6 +107,11 @@ function AppStack() {
         name="JoinCertainGroup"
         options={{ title: "הרשמה לקבוצה" }}
         component={JoinCertainGroup}
+      />
+      <Stack.Screen
+        name="SchoolProfile"
+        options={{ title: "פרופיל בית ספר" }}
+        component={SchoolProfile}
       />
     </Stack.Navigator>
   );

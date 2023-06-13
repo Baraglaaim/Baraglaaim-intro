@@ -9,6 +9,10 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Platform,
+  Modal,
+  FlatList,
+  SafeAreaView,
 } from "react-native";
 import Footer from "./Footer";
 import Buttons from "./Buttons";
@@ -43,6 +47,8 @@ const CreateWalkingGroup = ({ navigation }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [formattedTime, setFormattedTime] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("");
 
   //--------------------------------- Back-End area ----------------------------------
   /**
@@ -272,22 +278,70 @@ const CreateWalkingGroup = ({ navigation }) => {
               onCancel={() => setShowPicker(false)}
             />
           </View>
-          <View style={styles.inputContainer}>
-            <Picker
-              style={styles.input}
-              selectedValue={child}
-              onValueChange={selectChild}
-            >
-              <Picker.Item label="בחר/י ילד" value="" />
-              {childList.map((child) => (
-                <Picker.Item
-                  key={child.id}
-                  label={child.name}
-                  value={child.id}
+          {Platform.OS === "ios" ? (
+            <SafeAreaView>
+              <Text style={styles.label}>בחר/י ילד/ה</Text>
+              <TouchableOpacity
+                style={styles.input}
+                onPress={() => setIsModalVisible(true)}
+              >
+                <Text styles={{ textAlign: "right" }}>
+                  {selectedValue ? selectedValue : "בחר/י ילד"}
+                </Text>
+              </TouchableOpacity>
+              <Modal
+                animationType="slide"
+                // transparent={true}
+                visible={isModalVisible}
+                onRequestClose={() => {
+                  setIsModalVisible(!isModalVisible);
+                }}
+              >
+                <SafeAreaView style={styles.modalContainer}>
+                  <FlatList
+                    data={childList}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={styles.optionContainer}
+                        onPress={() => {
+                          setSelectedValue(item.name);
+                          selectChild(item.id);
+                          setIsModalVisible(!isModalVisible);
+                        }}
+                      >
+                        <Text style={styles.optionText}>{item.name}</Text>
+                      </TouchableOpacity>
+                    )}
+                    keyExtractor={(item) => item.id}
+                  />
+                </SafeAreaView>
+                <Buttons
+                  title="סגור"
+                  color="red"
+                  width={200}
+                  press={() => setIsModalVisible(!isModalVisible)}
+                  style={{ marginBottom: 100 }}
                 />
-              ))}
-            </Picker>
-          </View>
+              </Modal>
+            </SafeAreaView>
+          ) : (
+            <View style={styles.inputContainer}>
+              <Picker
+                style={styles.input}
+                selectedValue={child}
+                onValueChange={selectChild}
+              >
+                <Picker.Item label="בחר/י ילד" value="" />
+                {childList.map((child) => (
+                  <Picker.Item
+                    key={child.id}
+                    label={child.name}
+                    value={child.id}
+                  />
+                ))}
+              </Picker>
+            </View>
+          )}
         </ScrollView>
       )}
       <Buttons
@@ -310,6 +364,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#F5F5F5",
+  },
+  modalContainer: {
+    marginTop: "10%",
+    height: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "F5F5F5",
+  },
+  optionContainer: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#CCCCCC",
+  },
+  optionText: {
+    fontSize: 40,
   },
   page: {
     backgroundColor: "#F5F5F5",
@@ -335,6 +405,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "90%",
     borderRadius: 20,
+    alignSelf: "center",
   },
   inputContainer: {
     width: "100%",

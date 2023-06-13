@@ -1,87 +1,152 @@
-import React from "react";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+//--------------------------------- import area ----------------------------------
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  ActivityIndicator,
+  Platform,
+  Modal,
+  FlatList,
+  SafeAreaView,
+} from "react-native";
+import Footer from "./Footer";
+import ListContainer from "./ListContainer";
 import Buttons from "./Buttons";
 import HeaderIcons from "./HeaderIcons";
-import Footer from "./Footer";
-
-const walkingGroups = [
-  {
-    id: 1,
-    name: "הקבוצה של כיכר משואה",
-    children: ["נועם", "משי"],
-    parentCompanion: "ריטה",
-    nextAccompany: "יום חמישי 15.05.2023, 8:00",
-  },
-  {
-    id: 2,
-    name: "הקבוצה של פארק השבשבת",
-    children: ["יאיר", "אבנר"],
-    parentCompanion: "ביבי",
-    nextAccompany: "יום ראשון 18.05.2023, 7:30",
-  },
-];
-
-const WalkingGroupItem = ({ group, onPress }) => {
-  return (
-    <View>
-      <View style={styles.groupItem}>
-        <View style={styles.groupItemHeader}>
-          <Text style={[styles.groupItemTitle, { textAlign: "left" }]}>
-            {group.name}
-          </Text>
-          <Text style={styles.groupItemSubtitle}>
-            {group.children.join(", ")}
-          </Text>
-        </View>
-        <View style={styles.groupItemFooter}>
-          <Text style={styles.groupItemFooterText}>
-            המלווה: {group.parentCompanion}
-          </Text>
-          <Text style={styles.groupItemFooterText}>
-            ההליכה הקרובה: {group.nextAccompany}
-          </Text>
-        </View>
-      </View>
-      <Buttons
-        title="פרופיל הקבוצה"
-        color="orange"
-        width={150}
-        onPress={onPress}
-      />
-    </View>
-  );
-};
+import { db, auth } from "../FireBaseConsts";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  query,
+  where,
+} from "firebase/firestore";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { format, set } from "date-fns";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { Picker } from "@react-native-picker/picker";
 
 const MyWalkingGroup = ({ navigation }) => {
-  const handleGroupPress = (group) => {
-    navigation.navigate("GroupProfile", { url: group.profileLink });
+  // --------------------------------- define variables area ----------------------------------
+  const [groupsList, setGroupsList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // --------------------------------- Back-End area ----------------------------------
+  useEffect(() => {
+    fetchGroupsList();
+  }, []);
+
+  async function fetchGroupsList() {
+    try {
+      setIsLoading(true);
+      const currentUser = auth.currentUser;
+      const q = query(
+        collection(db, "Users"),
+        where("uid", "==", currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      const userDocRef = querySnapshot.docs[0];
+      const groups = userDocRef.data().groups;
+      if (!groups) {
+        setIsLoading(false);
+        return;
+      }
+      const userGroups = [];
+      for (const group of groups) {
+        const groupDocRef = doc(db, "Groups", group);
+        const groupDoc = await getDoc(groupDocRef);
+        const groupData = groupDoc.data();
+        const schoolDocRef = doc(db, "School", groupData.school);
+        const schoolDoc = await getDoc(schoolDocRef);
+        const schoolName = schoolDoc.data().name;
+        groupData.schoolName = schoolName;
+        groupData.id = groupDoc.id;
+        userGroups.push(groupData);
+      }
+      console.log(userGroups);
+      setGroupsList(userGroups);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  }
+
+  // --------------------------------- functions area ----------------------------------
+  const WalkingGroupItem = (group) => {
+    return (
+      <View>
+        <TouchableOpacity
+          style={styles.groupItem}
+          onPress={() => handleGroupPress(group)}
+        >
+          <View style={styles.groupItemHeader}>
+            <Text style={styles.groupItemTitle}>
+              {group.schoolName} - {group.busName}
+            </Text>
+          </View>
+          <View style={styles.groupItemFooter}>
+            <Text style={styles.groupItemFooterText}>
+              שעת יציאה: {group.startTime}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
   };
 
+  function handleGroupPress(group) {
+    navigation.navigate("GroupProfile", { ...group });
+  }
+
+  // --------------------------------- front-end area ----------------------------------
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ marginRight: 16 }}>
-        <HeaderIcons navigation={navigation} />
-        <Text style={[styles.title, { marginLeft: 16 }]}>
-          קבוצות ההליכה שלי
-        </Text>
-        <View style={styles.groupList}>
-          {walkingGroups.map((group) => (
-            <WalkingGroupItem
-              key={group.id}
-              group={group}
-              onPress={() => handleGroupPress(group)}
-            />
-          ))}
+      <HeaderIcons navigation={navigation} />
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.header}>טוען נתונים...</Text>
+          <ActivityIndicator size="large" color="#4682B4" />
         </View>
-      </View>
+      ) : (
+        <View>
+          <Text style={[styles.title, { marginLeft: 16 }]}>האוטובוסים שלי</Text>
+          <ScrollView style={styles.groupList}>
+            {groupsList.map((group) => (
+              <WalkingGroupItem key={group.id} {...group} />
+            ))}
+          </ScrollView>
+        </View>
+      )}
       <Footer />
     </SafeAreaView>
   );
 };
 
+// --------------------------------- styles area ----------------------------------
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+  },
   container: {
     flex: 1,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 15,
   },
   backgroundImage: {
     flex: 1,
@@ -96,8 +161,8 @@ const styles = StyleSheet.create({
   },
   groupList: {
     flexDirection: "column",
-    alignItems: "stretch",
     paddingHorizontal: 16,
+    marginBottom: 100,
   },
   groupItem: {
     backgroundColor: "#fff",
@@ -106,14 +171,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   groupItemHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    textAlign: "right",
   },
   groupItemTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 4,
+    textAlign: "right",
   },
   groupItemSubtitle: {
     fontSize: 14,
