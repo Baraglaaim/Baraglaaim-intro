@@ -47,7 +47,14 @@ const MyCommunity = ({ navigation }) => {
           style={styles.schoolItem}
           onPress={() => handleSchoolPress(school)}
         >
-          <Text style={styles.schoolItemTitle}>{school.name}</Text>
+          <Text
+            style={[
+              styles.schoolItemTitle,
+              Platform.OS === "ios" && styles.schoolItemTitleIOS,
+            ]}
+          >
+            {school.name}
+          </Text>
           {/* <Text style={styles.schoolItemTitle}>{school.address}</Text> */}
         </TouchableOpacity>
       </View>
@@ -73,9 +80,9 @@ const MyCommunity = ({ navigation }) => {
               <SchoolItem key={school.id} {...school} />
             ))}
           </ScrollView>
-          <HeaderIcons navigation={navigation} />
         </View>
       )}
+      <HeaderIcons navigation={navigation} />
     </SafeAreaView>
   );
 };
@@ -89,6 +96,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    marginTop: 30,
   },
   header: {
     fontSize: 20,
@@ -113,6 +121,10 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   schoolItemTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  schoolItemTitleIOS: {
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "right",

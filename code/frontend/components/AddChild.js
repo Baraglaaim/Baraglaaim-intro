@@ -24,7 +24,6 @@ import {
   where,
 } from "firebase/firestore";
 import Buttons from "./Buttons";
-import Footer from "./Footer";
 import HeaderIcons from "./HeaderIcons";
 import { Picker } from "@react-native-picker/picker";
 
@@ -398,7 +397,6 @@ const AddChild = ({ navigation }) => {
         press={addChildToDB}
         style={{ marginBottom: 100 }}
       />
-      <Footer />
     </SafeAreaView>
   );
 };
@@ -441,6 +439,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     justifyContent: "center",
+    marginTop: 30,
   },
   contentContainer: {
     flex: 1,

@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Buttons from "./Buttons";
-import Footer from "./Footer";
 import { addDoc, collection, query, getDocs, where } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { db } from "../FireBaseConsts";
@@ -170,7 +169,6 @@ const RegisterPage = ({ navigation }) => {
               </View>
             </View>
           </ScrollView>
-          <Footer />
         </SafeAreaView>
       )}
     </View>
@@ -180,6 +178,7 @@ const RegisterPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "rgb(70, 130, 180)",
   },
   loadingContainer: {
     flex: 1,

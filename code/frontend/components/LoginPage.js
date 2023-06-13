@@ -14,7 +14,7 @@ import { db } from "../FireBaseConsts";
 import Buttons from "./Buttons";
 import { query, addDoc, collection, getDocs, where } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from "@react-navigation/native";
 import { set } from "date-fns";
 
 //---------------------------------------------------------- variable definition area: ----------------------------------------------------------
@@ -57,7 +57,7 @@ const LoginPage = ({ navigation }) => {
       );
 
       if (querySnapshot.empty) {
-        Alert.alert("שגיאה", "משתמש לא קיים במערכת" , [{ text: "אישור" }]);
+        Alert.alert("שגיאה", "משתמש לא קיים במערכת", [{ text: "אישור" }]);
         setIsLoading(false);
         return;
       }
@@ -71,7 +71,7 @@ const LoginPage = ({ navigation }) => {
       setIsLoading(false);
     }
   };
-//---------------------------------------------------------- Front-End area: ----------------------------------------------------------
+  //---------------------------------------------------------- Front-End area: ----------------------------------------------------------
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -110,12 +110,12 @@ const LoginPage = ({ navigation }) => {
               <Text style={styles.error}>{errorMessage}</Text>
             ) : null}
             <View style={styles.signupContainer}>
+              <Text style={styles.signupNow}>אין לך חשבון? </Text>
               <TouchableOpacity
                 onPress={() => navigation.navigate("RegisterPage")}
               >
-                <Text style={styles.signupLink}> להרשמה</Text>
+                <Text style={[styles.signupLink]}>להרשמה</Text>
               </TouchableOpacity>
-              <Text style={styles.signupNow}>אין לך חשבון? </Text>
             </View>
           </View>
         </SafeAreaView>
@@ -131,9 +131,9 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgb(70, 130, 180)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgb(70, 130, 180)",
   },
   overlay: {
     backgroundColor: "rgb(70, 130, 180)",
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   signupContainer: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     marginTop: 10,

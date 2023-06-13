@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import HeaderIcons from "./HeaderIcons";
 import Buttons from "./Buttons";
-import Footer from "./Footer";
 import CreateWalkingGroup from "./CreateWalkingGroup";
 
 const WalkingGroups = ({ navigation }) => {
@@ -16,32 +15,29 @@ const WalkingGroups = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderIcons navigation={navigation} />
       <View style={styles.overlay}>
-     
-          <View>
-            <Buttons
+        <View>
+          <Buttons
             title="צור קבוצת הליכה חדשה"
             color="orange"
             width={300}
             press={() => navigation.navigate("CreateWalkingGroup")}
           />
-            <Buttons
-              title="הצטרף לקבוצת הליכה"
-              color="orange"
-              width={300}
-              press={() => navigation.navigate("JoinWalkingGroup")}
-            />
-            <Buttons
-              title="הקבוצות שלי"
-              color="orange"
-              width={300}
-              press={() => navigation.navigate("MyWalkingGroup")}
-            />
-          </View>
-     
+          <Buttons
+            title="הצטרף לקבוצת הליכה"
+            color="orange"
+            width={300}
+            press={() => navigation.navigate("JoinWalkingGroup")}
+          />
+          <Buttons
+            title="הקבוצות שלי"
+            color="orange"
+            width={300}
+            press={() => navigation.navigate("MyWalkingGroup")}
+          />
+        </View>
       </View>
-      <Footer />
+      <HeaderIcons navigation={navigation} />
     </SafeAreaView>
   );
 };
@@ -49,6 +45,7 @@ const WalkingGroups = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 30,
   },
   overlay: {
     backgroundColor: "rgb(70, 130, 180)",

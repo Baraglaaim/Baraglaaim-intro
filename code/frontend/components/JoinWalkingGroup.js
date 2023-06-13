@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import Footer from "./Footer";
 import HeaderIcons from "./HeaderIcons";
 import { db, auth } from "../FireBaseConsts";
 import {
@@ -142,7 +141,7 @@ const JoinWalkingGroup = ({ navigation }) => {
   const renderGroup = ({ item, index }) => {
     const { name, manager, managerPhone, startLocation } = item;
     return (
-      <View style={styles.groupContainer}>
+      <SafeAreaView style={styles.groupContainer}>
         <Text style={{ fontWeight: "bold", fontSize: 20 }}>{name}</Text>
         <Text>מנהל: {manager}</Text>
         <Text>טלפון מנהל: {managerPhone}</Text>
@@ -183,15 +182,14 @@ const JoinWalkingGroup = ({ navigation }) => {
             }
           />
         )}
-      </View>
+      </SafeAreaView>
     );
   };
 
   // ------------------------Front-End area:------------------------
 
   return (
-    <View style={styles.container}>
-      <HeaderIcons navigation={navigation} />
+    <SafeAreaView style={styles.container}>
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <Text style={styles.header}>המידע נטען...</Text>
@@ -199,12 +197,14 @@ const JoinWalkingGroup = ({ navigation }) => {
         </View>
       ) : (
         <ScrollView>
+          <Text style={styles.header}>קבוצות הליכה</Text>
           {groupsList.map((item, index) => (
             <View key={index}>{renderGroup({ item, index })}</View>
           ))}
         </ScrollView>
       )}
-    </View>
+      <HeaderIcons navigation={navigation} />
+    </SafeAreaView>
   );
 };
 
@@ -229,6 +229,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F5F5",
+    marginTop: 30,
   },
   header: {
     fontSize: 30,

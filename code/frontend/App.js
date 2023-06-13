@@ -32,11 +32,12 @@ const Stack = createStackNavigator();
 
 function AppStack() {
   return (
-    // <Stack.Navigator initialRouteName="GroupProfile" screenOptions={{
-    //   <Stack.Navigator initialRouteName="LoginPage" screenOptions={{
-    //   headerShown: false, // Hide the header for all screens
-    // }}>
-    <Stack.Navigator initialRouteName="LoginPage">
+    <Stack.Navigator
+      initialRouteName="LoginPage"
+      screenOptions={{
+        headerShown: false, // Hide the header for all screens
+      }}
+    >
       <Stack.Screen
         name="LoginPage"
         options={{ title: "התחברות" }}

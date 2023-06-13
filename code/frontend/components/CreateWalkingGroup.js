@@ -14,7 +14,6 @@ import {
   FlatList,
   SafeAreaView,
 } from "react-native";
-import Footer from "./Footer";
 import Buttons from "./Buttons";
 import HeaderIcons from "./HeaderIcons";
 import { db, auth } from "../FireBaseConsts";
@@ -222,7 +221,7 @@ const CreateWalkingGroup = ({ navigation }) => {
   // ------------------------Front-End area:------------------------
   return (
     // ------------------------JSX area:------------------------
-    <View style={styles.page}>
+    <SafeAreaView style={styles.page}>
       <HeaderIcons navigation={navigation} />
       {isLoading ? (
         <View style={styles.loadingContainer}>
@@ -231,6 +230,7 @@ const CreateWalkingGroup = ({ navigation }) => {
         </View>
       ) : (
         <ScrollView style={styles.formContainer}>
+          <Text style={styles.title}>יצירת אוטובוס הליכה</Text>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>שם הקבוצה</Text>
             <TextInput
@@ -351,9 +351,7 @@ const CreateWalkingGroup = ({ navigation }) => {
         press={addWalkingGroupToDB}
         style={{ marginBottom: 100 }}
       />
-
-      <Footer />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -387,6 +385,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     justifyContent: "center",
+    marginTop: 30,
   },
   title: {
     fontSize: 30,

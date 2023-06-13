@@ -1,38 +1,58 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ScrollView, SafeAreaView } from "react-native";
 
 const SchoolProfile = ({ route }) => {
-  const { name, address, description } = route.params;
+  const { name, phone, address, description } = route.params;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{name}</Text>
-      <Text style={styles.subtitle}>{address} :מיקום</Text>
-      <Text style={styles.description}>{description}</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.contentContainer}>
+        <View style={styles.textContainer}>
+          <Text style={styles.header}>{name}</Text>
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.regular}>{phone}</Text>
+          <Text style={styles.regular}>טלפון:</Text>
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.regular}>{address}</Text>
+          <Text style={styles.regular}>מיקום:</Text>
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.description}>{description}</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#F5F5F5",
+  },
+  header: {
+    fontSize: 30,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 15,
+  },
+  contentContainer: {
+    flex: 1,
+    backgroundColor: "#F5F5F5",
+  },
+  textContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
     justifyContent: "center",
     alignItems: "center",
-    padding: 16,
+    backgroundColor: "#F5F5F5",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-    color: "#333",
-    textAlign: "center",
-    textTransform: "uppercase",
-  },
-  subtitle: {
-    fontSize: 18,
-    marginBottom: 8,
-    color: "#666",
-    textAlign: "center",
+  regular: {
+    fontSize: 20,
+    textAlign: "right",
+    margin: 10,
   },
   description: {
     fontSize: 16,

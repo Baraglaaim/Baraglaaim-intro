@@ -14,7 +14,6 @@ import {
   FlatList,
   SafeAreaView,
 } from "react-native";
-import Footer from "./Footer";
 import ListContainer from "./ListContainer";
 import Buttons from "./Buttons";
 import HeaderIcons from "./HeaderIcons";
@@ -110,7 +109,6 @@ const MyWalkingGroup = ({ navigation }) => {
   // --------------------------------- front-end area ----------------------------------
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderIcons navigation={navigation} />
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <Text style={styles.header}>טוען נתונים...</Text>
@@ -126,7 +124,7 @@ const MyWalkingGroup = ({ navigation }) => {
           </ScrollView>
         </View>
       )}
-      <Footer />
+      <HeaderIcons navigation={navigation} />
     </SafeAreaView>
   );
 };
@@ -141,6 +139,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    marginTop: 30,
   },
   header: {
     fontSize: 20,

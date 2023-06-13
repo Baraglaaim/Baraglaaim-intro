@@ -12,7 +12,15 @@ import {
 } from "react-native";
 import { db, auth } from "../FireBaseConsts";
 // import { collection, doc, getDocs } from "firebase/firestore";
-import { addDoc, collection, doc, getDocs, updateDoc, query, where } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  updateDoc,
+  query,
+  where,
+} from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import HeaderIcons from "./HeaderIcons";
 import Buttons from "./Buttons";
@@ -30,7 +38,10 @@ const WatchMyChilds = ({ navigation }) => {
     try {
       //get current user doc id:
       const currentUser = auth.currentUser;
-      const q = query(collection(db, "Users"), where("uid", "==", currentUser.uid));
+      const q = query(
+        collection(db, "Users"),
+        where("uid", "==", currentUser.uid)
+      );
       const querySnapshot = await getDocs(q);
       const userDocRef = querySnapshot.docs[0];
       const userDocId = userDocRef.id;
@@ -79,55 +90,53 @@ const WatchMyChilds = ({ navigation }) => {
     );
   };
 
-
   ////////////////////////// <-- UI area --> //////////////////////////
 
   const renderKid = ({ item, index }) => {
     const { name, school, class: kidClass } = item;
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.kidContainer}
         onPress={() => handleKidPress(index)}
       >
         <Text style={styles.kidName}>{name}</Text>
-        <Text style={styles.kidDetails}>
-          {`${school}, ${kidClass}`}
-        </Text>
+        <Text style={styles.kidDetails}>{`${school}, ${kidClass}`}</Text>
       </TouchableOpacity>
     );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderIcons navigation={navigation} />
       <View style={styles.overlay}>
         <Text style={styles.title}>צפה בילד שלי</Text>
-        
-        <FlatList style={styles.kidsList}
+
+        <FlatList
+          style={styles.kidsList}
           data={kidsList}
           renderItem={renderKid}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.kidsList}
-          
         />
 
         <Buttons
           title="הוספת ילד"
           color="orange"
           width={150}
+          style={{ marginBottom: 100 }}
           press={handleAddChild}
         />
       </View>
+      <HeaderIcons navigation={navigation} />
     </SafeAreaView>
   );
 };
-
 
 ////////////////////////// <-- style area --> //////////////////////////
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 30,
   },
   overlay: {
     backgroundColor: "rgb(70, 130, 180)",
@@ -160,7 +169,6 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 15,
     width: "90%",
-
   },
   kidName: {
     fontSize: 18,
@@ -174,7 +182,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "white",
     textAlign: "center",
-  }
+  },
 });
 
 export default WatchMyChilds;
