@@ -411,12 +411,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#F5F5F5",
   },
-  // modal: {
-  //   height: 450,
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   backgroundColor: "#F5F5F5",
-  // },
   modalContainer: {
     marginTop: "10%",
     height: "80%",
