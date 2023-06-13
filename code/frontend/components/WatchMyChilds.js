@@ -80,22 +80,16 @@ const WatchMyChilds = ({ navigation }) => {
 
   const handleKidPress = (index) => {
     const selectedKid = kidsList[index];
-    // Alert.alert(
-    //   "האם למחוק את selectedKid.name?",
-    //   `${selectedKid.name}, ${selectedKid.school}, ${selectedKid.class}`,
-    //   [
-    //     {
-    //       text: "לא",
-    //       style: "cancel",
-    //     },
-    //     {
-    //       text: "כן",
-    //       onPress: () => handleDeleteChild(selectedKid.id),
-    //       style: "destructive",
-    //     },
-    //   ]
-    // );
-    handleDeleteChild(selectedKid.id);
+    Alert.alert(
+      "התראה",
+      `${selectedKid.name}, ${selectedKid.school}, ${selectedKid.class}`,
+      [
+        {
+          text: "לא",
+          style: "cancel",
+        },
+      ]
+    );
   };
 
   const handleDeleteChild = async (id) => {
@@ -125,30 +119,6 @@ const WatchMyChilds = ({ navigation }) => {
       // Update the local state to reflect the changes
       const updatedKidsList = kidsList.filter((kid) => kid.id !== id);
       setKidsList(updatedKidsList);
-
-      // Retrieve the list of walking groups
-      const groupsQuerySnapshot = await getDocs(collection(db, "Groups"));
-      const groupsData = groupsQuerySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        children: doc.data().children || [],
-      }));
-
-      // Iterate through each walking group and remove the child from the "children" array
-      const updatedGroupsData = groupsData.map((group) => {
-        const updatedChildren = group.children.filter((childId) => childId !== id);
-        return {
-          id: group.id,
-          children: updatedChildren,
-        };
-      });
-
-      // Update the walking group documents in the "Groups" collection
-      const batch = db.batch();
-      updatedGroupsData.forEach((group) => {
-        const groupRef = doc(db, "Groups", group.id);
-        batch.update(groupRef, { children: group.children });
-      });
-      await batch.commit();
     } catch (error) {
       console.log("Error deleting child:", error);
     }
@@ -166,7 +136,7 @@ const WatchMyChilds = ({ navigation }) => {
         <Text style={styles.kidDetails}>{`${school}`}</Text>
         <TouchableOpacity
           style={styles.deleteOpacity}
-          onPress={() => handleKidPress(id)}
+          onPress={() => handleDeleteChild(id)}
         >
           <FontAwesomeIcon icon={faTrash} style={styles.deleteIcon} />
         </TouchableOpacity>
