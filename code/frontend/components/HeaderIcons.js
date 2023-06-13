@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -7,9 +7,37 @@ import {
   SafeAreaView,
   Platform,
 } from "react-native";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  query,
+  where,
+} from "firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
+import { db, auth } from "../FireBaseConsts";
 
 const HeaderIcons = ({ navigation }) => {
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    const currentUser = auth.currentUser;
+    const q = query(
+      collection(db, "Users"),
+      where("uid", "==", currentUser.uid)
+    );
+    const querySnapshot = await getDocs(q);
+    const user = querySnapshot.docs[0];
+    setUsername(user.data().username);
+  };
+
   return (
     <View style={styles.footerContainer}>
       <View
@@ -19,43 +47,72 @@ const HeaderIcons = ({ navigation }) => {
         ]}
       >
         <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate("MyCommunity")}>
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() =>
+              navigation.navigate("HomeScreen", { username: username })
+            }
+          >
             <View style={styles.iconWrapper}>
-              <Ionicons name="school-outline" size={30} color="black" />
-              <Text style={styles.iconText}>הצטרף לקהילה</Text>
+              <Ionicons name="home-outline" size={30} color="black" />
+              <Text style={styles.iconText}>דף</Text>
+              <Text style={styles.iconText}>הבית</Text>
             </View>
           </TouchableOpacity>
         </View>
         <View style={styles.iconContainer}>
           <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => navigation.navigate("MyCommunity")}
+          >
+            <View style={styles.iconWrapper}>
+              <Ionicons name="school-outline" size={30} color="black" />
+              <Text style={styles.iconText}>הקהילות</Text>
+              <Text style={styles.iconText}>שלי</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity
+            style={styles.headerButton}
             onPress={() => navigation.navigate("WalkingGroups")}
           >
             <View style={styles.iconWrapper}>
               <Ionicons name="walk-outline" size={30} color="black" />
-              <Text style={styles.iconText}>קבוצות הליכה</Text>
+              <Text style={styles.iconText}>קבוצות</Text>
+              <Text style={styles.iconText}>הליכה</Text>
             </View>
           </TouchableOpacity>
         </View>
         <View style={styles.iconContainer}>
           <TouchableOpacity
+            style={styles.headerButton}
             onPress={() => navigation.navigate("WatchMyChilds")}
           >
             <View style={styles.iconWrapper}>
               <Ionicons name="people-outline" size={30} color="black" />
-              <Text style={styles.iconText}>צפה בילדים שלי</Text>
+              <Text style={styles.iconText}>הילדים</Text>
+              <Text style={styles.iconText}>שלי</Text>
             </View>
           </TouchableOpacity>
         </View>
         <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate("AddChild")}>
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => navigation.navigate("AddChild")}
+          >
             <View style={styles.iconWrapper}>
               <Ionicons name="person-add-outline" size={30} color="black" />
-              <Text style={styles.iconText}>הוסף ילד</Text>
+              <Text style={styles.iconText}>הוסף</Text>
+              <Text style={styles.iconText}>ילד</Text>
             </View>
           </TouchableOpacity>
         </View>
         <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => navigation.navigate("LoginPage")}>
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => navigation.navigate("LoginPage")}
+          >
             <View style={styles.iconWrapper}>
               <Ionicons name="log-out-outline" size={30} color="black" />
               <Text style={styles.iconText}>התנתק</Text>
@@ -72,7 +129,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
-    backgroundColor: "#9EAEBA",
+    backgroundColor: "#D7D2B7",
     paddingBottom: 20,
   },
   navigationBar: {
@@ -101,6 +158,20 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: "center",
     textAlignVertical: "center", // Add this line for consistent icon directionality
+  },
+  headerButton: {
+    backgroundColor: "#F2EDD0",
+    shadowColor: "black",
+    shadowOffset: {
+      width: 2,
+      height: 2,
+    },
+    borderRadius: 10,
+    width: 50,
+    height: 70,
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    elevation: 5, // Add this line for Android shadow
   },
 });
 

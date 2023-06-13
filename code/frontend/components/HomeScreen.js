@@ -1,20 +1,54 @@
 import React from "react";
 import { Text, View, Image, StyleSheet, SafeAreaView } from "react-native";
+import { Video } from "expo-av";
 import HeaderIcons from "./HeaderIcons";
-// import Footer from "./Footer";
-import kidsImage from "../assets/kidsWalking.jpg";
+import Buttons from "./Buttons";
 
 const HomeScreen = ({ navigation, route }) => {
   const { username } = route.params;
 
   return (
     <SafeAreaView style={styles.container}>
+      <Video
+        source={require("../assets/walkingKids.mp4")}
+        style={styles.video}
+        resizeMode="cover"
+        shouldPlay
+        isLooping
+        isMuted
+      />
+      <Text style={styles.header}>ברוך הבא {username}</Text>
       <View style={styles.overlay}>
-        <Text style={styles.header}>ברוך הבא {username}</Text>
-        <Image source={kidsImage} style={styles.image} />
+        <Buttons
+          title="הוסף ילד"
+          color="gold"
+          textColor="black"
+          width={200}
+          press={() => navigation.navigate("AddChild")}
+        />
+        <Buttons
+          title="הילדים שלי"
+          color="gold"
+          textColor="black"
+          width={200}
+          press={() => navigation.navigate("WatchMyChilds")}
+        />
+        <Buttons
+          title="קבוצות הליכה"
+          color="gold"
+          textColor="black"
+          width={200}
+          press={() => navigation.navigate("MyWalkingGroup")}
+        />
+        <Buttons
+          title="הקהילות שלי"
+          color="gold"
+          textColor="black"
+          width={200}
+          press={() => navigation.navigate("MyCommunity")}
+        />
       </View>
       <HeaderIcons navigation={navigation} />
-      {/* <Footer /> */}
     </SafeAreaView>
   );
 };
@@ -22,10 +56,20 @@ const HomeScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 30,
+    marginTop: 50,
+  },
+  // containerIOS: {
+  //   flex: 1,
+  // },
+  video: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
   overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -33,16 +77,10 @@ const styles = StyleSheet.create({
   },
   header: {
     color: "white",
-    fontSize: 35,
+    fontSize: 30,
     fontWeight: "bold",
-    marginBottom: 20,
     textAlign: "center",
-  },
-  image: {
-    flex: 1,
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
 });
 

@@ -1,8 +1,21 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity, // Add this import
+  Linking,
+} from "react-native";
+import HeaderIcons from "./HeaderIcons";
 
-const SchoolProfile = ({ route }) => {
-  const { name, phone, address, description } = route.params;
+const SchoolProfile = ({ navigation, route }) => {
+  const { name, phone, address } = route.params;
+
+  const handlePress = () => {
+    Linking.openURL(`tel:${phone}`);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -11,17 +24,17 @@ const SchoolProfile = ({ route }) => {
           <Text style={styles.header}>{name}</Text>
         </View>
         <View style={styles.textContainer}>
-          <Text style={styles.regular}>{phone}</Text>
+          <TouchableOpacity onPress={handlePress}>
+            <Text style={[styles.regular, { color: "blue" }]}>{phone}</Text>
+          </TouchableOpacity>
           <Text style={styles.regular}>טלפון:</Text>
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.regular}>{address}</Text>
           <Text style={styles.regular}>מיקום:</Text>
         </View>
-        <View style={styles.textContainer}>
-          <Text style={styles.description}>{description}</Text>
-        </View>
       </ScrollView>
+      <HeaderIcons navigation={navigation} />
     </SafeAreaView>
   );
 };
