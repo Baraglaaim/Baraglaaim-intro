@@ -60,7 +60,7 @@ const LoginPage = ({ navigation }) => {
       );
 
       if (querySnapshot.empty) {
-        Alert.alert("שגיאה", "משתמש לא קיים במערכת" , [{ text: "אישור" }]);
+        Alert.alert("שגיאה", "משתמש לא קיים במערכת", [{ text: "אישור" }]);
         setIsLoading(false);
         return;
       }
@@ -74,7 +74,7 @@ const LoginPage = ({ navigation }) => {
       setIsLoading(false);
     }
   };
-//---------------------------------------------------------- Front-End area: ----------------------------------------------------------
+  //---------------------------------------------------------- Front-End area: ----------------------------------------------------------
   return (
     <View style={styles.container}>
       {isLoading ? (
