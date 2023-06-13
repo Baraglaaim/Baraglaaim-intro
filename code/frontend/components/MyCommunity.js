@@ -1,128 +1,121 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Text,
   View,
+  Text,
   StyleSheet,
-  SafeAreaView,
-  TextInput,
   TouchableOpacity,
+  ScrollView,
+  Alert,
+  ActivityIndicator,
+  Platform,
+  Modal,
+  FlatList,
+  SafeAreaView,
 } from "react-native";
-import Buttons from "./Buttons";
-import Footer from "./Footer";
-import { db, auth } from "../FireBaseConsts";
-import { query, addDoc, collection, getDocs, where } from "firebase/firestore";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { db } from "../FireBaseConsts";
+import { collection, getDocs } from "firebase/firestore";
 import HeaderIcons from "./HeaderIcons";
-import ListContainer from "./ListContainer";
-
 
 const MyCommunity = ({ navigation }) => {
-  const handleJoinPress = () => {
-    console.log("Join button pressed");
+  const [schoolsList, setSchoolsList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    fetchSchoolsList();
+  }, []);
+
+  async function fetchSchoolsList() {
+    try {
+      setIsLoading(true);
+      const querySnapshot = await getDocs(collection(db, "School"));
+      const schools = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setSchoolsList(schools);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  }
+
+  const SchoolItem = (school) => {
+    return (
+      <View>
+        <TouchableOpacity
+          style={styles.schoolItem}
+          onPress={() => handleSchoolPress(school)}
+        >
+          <Text style={styles.schoolItemTitle}>{school.name}</Text>
+          {/* <Text style={styles.schoolItemTitle}>{school.address}</Text> */}
+        </TouchableOpacity>
+      </View>
+    );
   };
 
-  // currentUser = auth.auth().currentUser;
-  //todo - need to write querry to get list of schools
-  async function getCommunityList() {
-    const q = query(collection(db, "Users"), where("uid", "==", userUid));
-    const querySnapshot = await getDocs(q);
-    console.log("querySnapshot:", querySnapshot);
-  }
-
-  function CommunityList(arr) {
-    let communityArr = [];
-    arr.map((community) =>
-      communityArr.push(CommunityButton(community))
-    );
-    return communityArr;
-  }
-
-  function CommunityButton(name) {
-    return (
-      <TouchableOpacity
-        style={styles.communityContainer}
-        onPress={handleJoinPress}
-      >
-        <Text style={styles.title}>{name}</Text>
-      </TouchableOpacity>
-    );
+  function handleSchoolPress(school) {
+    navigation.navigate("SchoolProfile", { ...school });
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <HeaderIcons navigation={navigation} />
-      <View style={styles.overlay}>
-        <View style={styles.communityList}>
-          <ListContainer
-            width={0.9}
-            height={0.5}
-            data={CommunityList([
-              "אורנים",
-              "גוננים",
-              "School 3",
-              "School 4",
-            ])}
-            separatorColor="black"
-            backgroundColor="pink"
-            style={styles.list}
-          />
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.header}>טוען נתונים...</Text>
+          <ActivityIndicator size="large" color="#4682B4" />
         </View>
-      </View>
-      <Footer />
+      ) : (
+        <View>
+          <Text style={[styles.title, { marginLeft: 16 }]}>הקהילות שלי</Text>
+          <ScrollView style={styles.schoolList}>
+            {schoolsList.map((school) => (
+              <SchoolItem key={school.id} {...school} />
+            ))}
+          </ScrollView>
+          <HeaderIcons navigation={navigation} />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+  },
   container: {
     flex: 1,
   },
-  overlay: {
-    backgroundColor: "rgb(70, 130, 180)",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  communityList: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "50%",
-  },
-  list: {
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    height: "50%",
-  },
   header: {
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: "bold",
-    color: "white",
-    marginTop: 10,
     textAlign: "center",
+    marginVertical: 15,
   },
   title: {
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: "bold",
-    color: "white",
     textAlign: "center",
-    marginVertical: 20,
+    marginVertical: 15,
   },
-  communityContainer: {
-    alignItems: "center",
-   backgroundColor: "orange",
-   width: 300,
+  schoolList: {
+    paddingHorizontal: 16,
+    marginBottom: 100,
   },
-  joinBtn: {
-    marginVertical: 10,
+  schoolItem: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    marginBottom: 16,
+    padding: 16,
   },
-  backToLogin: {
-    textAlign: "center",
-    fontSize: 15,
-    color: "white",
-    // marginTop: 10,
+  schoolItemTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "right",
   },
 });
 

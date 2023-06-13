@@ -36,7 +36,17 @@ const RegisterPage = ({ navigation }) => {
       const q = query(collection(db, "Users"), where("email", "==", email));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        alert("User already exists");
+        alert("משתמש עם כתובת האימייל הזו כבר קיים במערכת");
+        setIsLoading(false);
+        return;
+      }
+      const q2 = query(
+        collection(db, "Users"),
+        where("username", "==", username)
+      );
+      const querySnapshot2 = await getDocs(q2);
+      if (!querySnapshot2.empty) {
+        alert("שם משתמש כבר קיים במערכת");
         setIsLoading(false);
         return;
       }
@@ -173,9 +183,9 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgb(70, 130, 180)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgb(70, 130, 180)",
   },
   overlay: {
     backgroundColor: "rgb(70, 130, 180)",
