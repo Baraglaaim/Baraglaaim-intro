@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
-    opacity: 0.5, // Set the opacity of the image
+    opacity: 0.3, // Set the opacity of the image
   },
 });
 

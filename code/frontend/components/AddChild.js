@@ -181,7 +181,7 @@ const AddChild = ({ navigation }) => {
     }
     setIsLoading(false);
     Alert.alert("ברכות", "הצועד/צועדת נוסף/ה בהצלחה", [{ text: "אישור" }]);
-    navigation.navigate("HomeScreen", {
+    navigation.navigate("WatchMyChilds", {
       username: userDocRef.data().username,
     });
   }
