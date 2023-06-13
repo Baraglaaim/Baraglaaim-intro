@@ -25,15 +25,17 @@ import WelcomePage from "./components/WelcomePage";
 import CreateWalkingGroup from "./components/CreateWalkingGroup";
 import JoinCertainGroup from "./components/JoinCertainGroup";
 
-
 // import AlmogItayMap from "./DataBase/Dar";
 
 const Stack = createStackNavigator();
 
 function AppStack() {
   return (
-    // <Stack.Navigator initialRouteName="MyCommunity">
-    <Stack.Navigator initialRouteName="LoginPage">
+    // <Stack.Navigator initialRouteName="GroupProfile" screenOptions={{
+    //   <Stack.Navigator initialRouteName="LoginPage" screenOptions={{
+    //   headerShown: false, // Hide the header for all screens
+    // }}>
+    <Stack.Navigator initialRouteName="GroupProfile">
       <Stack.Screen
         name="LoginPage"
         options={{ title: "התחברות" }}
