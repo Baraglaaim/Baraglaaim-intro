@@ -130,14 +130,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: "100%",
     backgroundColor: "#D7D2B7",
-    paddingBottom: 20,
+    paddingBottom:  Platform.OS === "ios" ? 20 : 5,
   },
   navigationBar: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: Platform.OS === "ios" ? 20 : 5,
   },
   navigationBarIOS: {
     flexDirection: "row",
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     },
     borderRadius: 10,
     width: 50,
-    height: 70,
+    height: Platform.OS === "ios" ? 70 : 75,
     shadowOpacity: 0.5,
     shadowRadius: 3.84,
     elevation: 5, // Add this line for Android shadow
