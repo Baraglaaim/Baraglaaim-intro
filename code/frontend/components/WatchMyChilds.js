@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useFocusEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,11 +19,12 @@ import {
   where,
   getDoc,
 } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { useFocusEffect } from "@react-navigation/native";
+// import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import HeaderIcons from "./HeaderIcons";
 import Buttons from "./Buttons";
 import { Ionicons } from "@expo/vector-icons";
-import { Platform } from "react-native";
+// import { Platform } from "react-native";
 
 const WatchMyChilds = ({ navigation }) => {
   const [kidsList, setKidsList] = useState([]);
@@ -31,7 +32,7 @@ const WatchMyChilds = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      setKidsList([]);
+      // setKidsList([]);
     }, [])
   );
   useEffect(() => {
@@ -116,39 +117,37 @@ const WatchMyChilds = ({ navigation }) => {
       const userDocId = userDocRef.id;
       const userDocData = userDocRef.data();
 
-      if (userDocData.children && userDocData.children.includes(id)) {
-        // Remove the child ID from the user's array of children
-        const updatedChildren = userDocData.children.filter(
+      // Remove the child ID from the user's array of children
+      const updatedChildren = userDocData.children.filter(
+        (childId) => childId !== id
+      );
+
+      // Update the user document in the "Users" collection
+      await updateDoc(doc(db, "Users", userDocId), {
+        children: updatedChildren,
+      });
+
+      // Remove the child from the "Groups" collection
+      const groupsQuerySnapshot = await getDocs(collection(db, "Groups"));
+      const groupsPromises = [];
+      groupsQuerySnapshot.forEach((groupDoc) => {
+        const groupData = groupDoc.data();
+        const updatedGroupChildren = groupData.children.filter(
           (childId) => childId !== id
         );
+        if (updatedGroupChildren.length !== groupData.children.length) {
+          const groupDocRef = doc(db, "Groups", groupDoc.id);
+          const updatePromise = updateDoc(groupDocRef, {
+            children: updatedGroupChildren,
+          });
+          groupsPromises.push(updatePromise);
+        }
+      });
+      await Promise.all(groupsPromises);
 
-        // Update the user document in the "Users" collection
-        await updateDoc(doc(db, "Users", userDocId), {
-          children: updatedChildren,
-        });
-
-        // Remove the child from the "Groups" collection
-        const groupsQuerySnapshot = await getDocs(collection(db, "Groups"));
-        const groupsPromises = [];
-        groupsQuerySnapshot.forEach((groupDoc) => {
-          const groupData = groupDoc.data();
-          const updatedGroupChildren = groupData.children.filter(
-            (childId) => childId !== id
-          );
-          if (updatedGroupChildren.length !== groupData.children.length) {
-            const groupDocRef = doc(db, "Groups", groupDoc.id);
-            const updatePromise = updateDoc(groupDocRef, {
-              children: updatedGroupChildren,
-            });
-            groupsPromises.push(updatePromise);
-          }
-        });
-        await Promise.all(groupsPromises);
-
-        // Update the local state to reflect the changes
-        const updatedKidsList = kidsList.filter((kid) => kid.id !== id);
-        setKidsList(updatedKidsList);
-      }
+      // Update the local state to reflect the changes
+      const updatedKidsList = kidsList.filter((kid) => kid.id !== id);
+      setKidsList(updatedKidsList);
     } catch (error) {
       console.log("Error deleting child:", error);
     }
