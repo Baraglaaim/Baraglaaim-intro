@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
-    backgroundColor: "#D7D2B7",
+    backgroundColor: "#ECECEC",
     paddingBottom:  Platform.OS === "ios" ? 20 : 5,
   },
   navigationBar: {
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     textAlignVertical: "center", // Add this line for consistent icon directionality
   },
   headerButton: {
-    backgroundColor: "#F2EDD0",
+    backgroundColor: "#F3F3F3",
     shadowColor: "black",
     shadowOffset: {
       width: 2,

@@ -12,7 +12,7 @@ import {
   Platform,
   Modal,
   FlatList,
-  Linking ,
+  Linking,
   SafeAreaView,
 } from "react-native";
 import Footer from "./Footer";
@@ -42,26 +42,14 @@ const GroupProfile = ({ navigation, route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [manager, setManager] = useState({});
   const [children, setChildren] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
-  //   const group = route.params;
-  const group = {
-    busManager: "F6wxomgRo3qwuYw5Nofo",
-    busManagerPhone: "0509240224",
-    busName: "ההולכים",
-    children: [
-      "PKQ7ewrQy9U77hYrCA5S",
-    ],
-    id: "K9xqNDN5Szj0NRHjE3QM",
-    maxKids: "17",
-    school: "Gonenim",
-    schoolName: "גוננים",
-    startLocation: "הפסל הלבן",
-    startTime: "06:30",
-  };
+  const group = route.params;
 
   useFocusEffect(
     React.useCallback(() => {
       setIsLoading(false);
+      setIsModalVisible(false);
     }, [])
   );
 
@@ -76,17 +64,22 @@ const GroupProfile = ({ navigation, route }) => {
     setManager(managerDoc.data());
     let childrenDocs = [];
     for (const child of group.children) {
-        const childDoc = await getDoc(doc(db, "Children", child));
-        childrenDocs.push(childDoc.data());
+      const childDoc = await getDoc(doc(db, "Children", child));
+      const parentDoc = await getDoc(doc(db, "Users", childDoc.data().parent));
+      let childData = {
+        name: childDoc.data().name,
+        phone: childDoc.data().phone,
+        parentPhone: parentDoc.data().phone,
+      };
+      childrenDocs.push(childData);
     }
-    console.log(childrenDocs);
     setChildren(childrenDocs);
     setIsLoading(false);
   };
 
-    const handlePress = (phoneNumber) => {
-      Linking.openURL(`tel:${phoneNumber}`);
-    };
+  const handlePress = (phoneNumber) => {
+    Linking.openURL(`tel:${phoneNumber}`);
+  };
   // --------------------------------- front-end area ----------------------------------
   return (
     <SafeAreaView style={styles.container}>
@@ -97,27 +90,97 @@ const GroupProfile = ({ navigation, route }) => {
         </View>
       ) : (
         <ScrollView style={styles.contentContainer}>
-          <View style={styles.textContainer}>
+          <View style={styles.headerContainer}>
             <Text style={styles.header}>{group.busName}</Text>
           </View>
           <View style={styles.textContainer}>
             <Text style={styles.regular}>{manager.username}</Text>
             <Text style={styles.regular}>מנהל האוטובוס:</Text>
           </View>
-            <View style={styles.textContainer}>
-                <Text style={[styles.regular, {color:"blue"}]} onPress={() => handlePress(group.busManagerPhone)}>{group.busManagerPhone}</Text>
-                <Text style={styles.regular}>טלפון:</Text>
-            </View>
-            <View style={styles.textContainer}>
-                <Text style={styles.regular}>{group.schoolName}</Text>
-                <Text style={styles.regular}>מוסד חינוך:</Text>
-            </View>
-            <View style={styles.textContainer}>
-                <Text style={styles.regular}>{group.startLocation}</Text>
-                <Text style={styles.regular}>מיקום התחלה:</Text>
-            </View>
+          <View style={styles.textContainer}>
+            <Text
+              style={[styles.regular, { color: "blue" }]}
+              onPress={() => handlePress(group.busManagerPhone)}
+            >
+              {group.busManagerPhone}
+            </Text>
+            <Text style={styles.regular}>טלפון:</Text>
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.regular}>{group.schoolName}</Text>
+            <Text style={styles.regular}>מוסד חינוך:</Text>
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.regular}>{group.startLocation}</Text>
+            <Text style={styles.regular}>מיקום התחלה:</Text>
+          </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.regular}>{group.startTime}</Text>
+            <Text style={styles.regular}>שעת התחלה:</Text>
+          </View>
+          <View style={styles.textContainer}>
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={() => setIsModalVisible(true)}
+            >
+              <Text style={styles.regular}>
+                {" "}
+                {children.length} / {group.maxKids}
+              </Text>
+              <Text style={styles.regular}>רשימת משתתפים:</Text>
+            </TouchableOpacity>
+          </View>
+          <Modal
+            animationType="none"
+            visible={isModalVisible}
+            style={styles.modal}
+            onRequestClose={() => {
+              setIsModalVisible(!isModalVisible);
+            }}
+          >
+            <SafeAreaView style={styles.modalContainer}>
+              <ScrollView style={styles.modalContentContainer}>
+                <View style={styles.modalHeaderContainer}>
+                  <Text style={styles.modalHeader}>רשימת משתתפים</Text>
+                </View>
+                <View style={styles.ListsContainer}>
+                  <ListContainer
+                    data={children.map((child) => {
+                      return (
+                        <View style={styles.textContainer}>
+                          <View style={styles.fieldContainer}>
+                            <Text style={styles.regular}>שם:</Text>
+                            <Text style={styles.regular}>{child.name}</Text>
+                          </View>
+                          <View style={styles.fieldContainer}>
+                            <Text style={styles.regular}>פלאפון ההורה:</Text>
+                            <Text
+                              style={[styles.regular, { color: "blue" }]}
+                              onPress={() => handlePress(child.parentPhone)}
+                            >
+                              {child.parentPhone}
+                            </Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                    height={0.8}
+                    width={0.8}
+                  />
+                </View>
+                <Buttons
+                  title="סגור"
+                  color="red"
+                  width={200}
+                  press={() => setIsModalVisible(!isModalVisible)}
+                  style={{ marginBottom: 100 }}
+                />
+              </ScrollView>
+            </SafeAreaView>
+          </Modal>
         </ScrollView>
       )}
+      <HeaderIcons navigation={navigation} />
     </SafeAreaView>
   );
 };
@@ -138,11 +201,12 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     textAlign: "center",
-    marginVertical: 15,
+    textDecorationLine: "underline",
   },
   contentContainer: {
     flex: 1,
     backgroundColor: "#F5F5F5",
+    marginBottom: 100,
   },
   textContainer: {
     flex: 1,
@@ -151,11 +215,73 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#F5F5F5",
+    borderColor: "grey",
+    marginBottom: 15,
+    borderWidth: 1,
+    marginHorizontal: 10,
+    borderRadius: 10,
+  },
+  btn: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius: 10,
+    shadowColor: "black", 
+    shadowOffset: { width: -4, height: -4 },
+    shadowOpacity: 0.2,
+  },
+  headerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+    margin: 60,
   },
   regular: {
     fontSize: 20,
     textAlign: "right",
     margin: 10,
+  },
+  modal: {
+    marginTop: Platform.OS === "android" ? 30 : 0,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "#F5F5F5",
+  },
+  modalContentContainer: {
+    flex: 1,
+    backgroundColor: "#F5F5F5",
+    marginBottom: 50,
+  },
+  modalHeaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 30,
+  },
+  modalHeader: {
+    fontSize: 30,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  ListsContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+  },
+  fieldContainer: {
+    flex: 1,
+    flexDirection: "column",
+    width: 150,
   },
 });
 
