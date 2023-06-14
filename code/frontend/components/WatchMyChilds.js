@@ -1,5 +1,3 @@
-////////////////////////// <-- import package area START --> //////////////////////////
-
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -11,9 +9,8 @@ import {
   SafeAreaView,
 } from "react-native";
 import { db, auth } from "../FireBaseConsts";
-// import { collection, doc, getDocs } from "firebase/firestore";
 import {
-  addDoc,
+  deleteDoc,
   collection,
   doc,
   getDocs,
@@ -24,14 +21,19 @@ import {
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import HeaderIcons from "./HeaderIcons";
 import Buttons from "./Buttons";
-
-////////////////////////// <-- logic area --> //////////////////////////
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const WatchMyChilds = ({ navigation }) => {
   const [kidsList, setKidsList] = useState([]);
+  let isMounted = true; // Flag to check if the component is mounted
 
   useEffect(() => {
     fetchKidsList();
+
+    return () => {
+      isMounted = false; // Clean up the flag when the component is unmounted
+    };
   }, []);
 
   const fetchKidsList = async () => {
@@ -65,7 +67,10 @@ const WatchMyChilds = ({ navigation }) => {
         }
       });
 
-      setKidsList(kidsData);
+      if (isMounted) {
+        setKidsList(kidsData);
+      }
+
       console.log("kids data is: ", kidsData);
     } catch (error) {
       console.log("Error fetching kids list:", error);
@@ -90,17 +95,72 @@ const WatchMyChilds = ({ navigation }) => {
     );
   };
 
-  ////////////////////////// <-- UI area --> //////////////////////////
+  const handleDeleteChild = async (id) => {
+    try {
+      // Delete child item from the "Children" collection
+      await deleteDoc(doc(db, "Children", id));
+
+      // Delete child from the user's array of children
+      const currentUser = auth.currentUser;
+      const userQuerySnapshot = await getDocs(
+        query(collection(db, "Users"), where("uid", "==", currentUser.uid))
+      );
+      const userDocRef = userQuerySnapshot.docs[0];
+      const userDocId = userDocRef.id;
+      const userDocData = userDocRef.data();
+
+      // Remove the child ID from the user's array of children
+      const updatedChildren = userDocData.children.filter(
+        (childId) => childId !== id
+      );
+
+      // Update the user document in the "Users" collection
+      await updateDoc(doc(db, "Users", userDocId), {
+        children: updatedChildren,
+      });
+
+      // Remove the child from the "Groups" collection
+      const groupsQuerySnapshot = await getDocs(collection(db, "Groups"));
+      const groupsPromises = [];
+      groupsQuerySnapshot.forEach((groupDoc) => {
+        const groupData = groupDoc.data();
+        const updatedGroupChildren = groupData.children.filter(
+          (childId) => childId !== id
+        );
+        if (updatedGroupChildren.length !== groupData.children.length) {
+          const groupDocRef = doc(db, "Groups", groupDoc.id);
+          const updatePromise = updateDoc(groupDocRef, {
+            children: updatedGroupChildren,
+          });
+          groupsPromises.push(updatePromise);
+        }
+      });
+      await Promise.all(groupsPromises);
+
+      // Update the local state to reflect the changes
+      const updatedKidsList = kidsList.filter((kid) => kid.id !== id);
+      setKidsList(updatedKidsList);
+    } catch (error) {
+      console.log("Error deleting child:", error);
+    }
+  };
 
   const renderKid = ({ item, index }) => {
-    const { name, school, class: kidClass } = item;
+    const { id, name, school, class: kidClass } = item;
+
     return (
       <TouchableOpacity
         style={styles.kidContainer}
         onPress={() => handleKidPress(index)}
       >
         <Text style={styles.kidName}>{name}</Text>
-        <Text style={styles.kidDetails}>{`${school}, ${kidClass}`}</Text>
+        <Text style={styles.kidDetails}>{`${school}`}</Text>
+        <TouchableOpacity
+          style={styles.deleteOpacity}
+          onPress={() => handleDeleteChild(id)}
+        >
+          <FontAwesomeIcon icon={faTrash} style={styles.deleteIcon} />
+        </TouchableOpacity>
       </TouchableOpacity>
     );
   };
@@ -109,7 +169,6 @@ const WatchMyChilds = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.overlay}>
         <Text style={styles.title}>צפה בילד שלי</Text>
-
         <FlatList
           style={styles.kidsList}
           data={kidsList}
@@ -117,7 +176,6 @@ const WatchMyChilds = ({ navigation }) => {
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.kidsList}
         />
-
         <Buttons
           title="הוספת ילד"
           color="orange"
@@ -131,11 +189,10 @@ const WatchMyChilds = ({ navigation }) => {
   );
 };
 
-////////////////////////// <-- style area --> //////////////////////////
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "center",
     marginTop: 30,
   },
   overlay: {
@@ -162,13 +219,13 @@ const styles = StyleSheet.create({
   },
   kidContainer: {
     alignItems: "center",
-    textAlign: "center",
     borderWidth: 1,
     borderColor: "#bbb",
     borderRadius: 10,
     padding: 10,
     marginBottom: 15,
     width: "90%",
+    alignSelf: "center",
   },
   kidName: {
     fontSize: 18,
@@ -182,6 +239,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "white",
     textAlign: "center",
+  },
+  deleteOpacity: {
+    position: "absolute",
+    left: 10,
+    top: "50%",
+    transform: [{ translateY: -8 }],
+  },
+  deleteIcon: {
+    color: "red",
+    fontSize: 30,
   },
 });
 
