@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useFocusEffect } from "react";
 import {
   View,
   Text,
@@ -17,17 +17,23 @@ import {
   updateDoc,
   query,
   where,
+  getDoc,
 } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import HeaderIcons from "./HeaderIcons";
 import Buttons from "./Buttons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { Platform } from "react-native";
 
 const WatchMyChilds = ({ navigation }) => {
   const [kidsList, setKidsList] = useState([]);
   let isMounted = true; // Flag to check if the component is mounted
 
+  useFocusEffect(
+    React.useCallback(() => {
+      setKidsList([]);
+    }, [])
+  );
   useEffect(() => {
     fetchKidsList();
 
@@ -47,29 +53,30 @@ const WatchMyChilds = ({ navigation }) => {
       const querySnapshot = await getDocs(q);
       const userDocRef = querySnapshot.docs[0];
       const userDocId = userDocRef.id;
+      const children = userDocRef.data().children;
 
-      //get all kids docs:
-      const kidsCollection = collection(db, "Children");
-      const kidsSnapshot = await getDocs(kidsCollection);
-
-      const kidsData = [];
-      kidsSnapshot.forEach((kidDoc) => {
-        const kidData = kidDoc.data();
-        if (kidData.parent === userDocId) {
-          console.log("kid data is: ", kidData.parent);
-          const kidItem = {
-            id: kidDoc.id,
-            name: kidData.name,
-            school: kidData.school,
-            class: kidData.class,
-          };
-          kidsData.push(kidItem);
-        }
-      });
-
-      if (isMounted) {
-        setKidsList(kidsData);
+      let kidsData = [];
+      for (const childId of children) {
+        const childDocRef = await getDoc(doc(db, "Children", childId));
+        const childDocData = childDocRef.data();
+        const schoolDocRef = await getDoc(
+          doc(db, "School", childDocData.school)
+        );
+        const classesCollectionRef = collection(
+          doc(db, "School", childDocData.school),
+          "Classes"
+        );
+        const classDocRef = await getDoc(
+          doc(classesCollectionRef, childDocData.class)
+        );
+        childDocData.school = schoolDocRef.data().name;
+        childDocData.class = classDocRef.data().name;
+        childDocData.id = childId;
+        kidsData.push(childDocData);
       }
+      console.log("kids data is: ", kidsData);
+
+      setKidsList(kidsData);
 
       console.log("kids data is: ", kidsData);
     } catch (error) {
@@ -109,37 +116,39 @@ const WatchMyChilds = ({ navigation }) => {
       const userDocId = userDocRef.id;
       const userDocData = userDocRef.data();
 
-      // Remove the child ID from the user's array of children
-      const updatedChildren = userDocData.children.filter(
-        (childId) => childId !== id
-      );
-
-      // Update the user document in the "Users" collection
-      await updateDoc(doc(db, "Users", userDocId), {
-        children: updatedChildren,
-      });
-
-      // Remove the child from the "Groups" collection
-      const groupsQuerySnapshot = await getDocs(collection(db, "Groups"));
-      const groupsPromises = [];
-      groupsQuerySnapshot.forEach((groupDoc) => {
-        const groupData = groupDoc.data();
-        const updatedGroupChildren = groupData.children.filter(
+      if (userDocData.children && userDocData.children.includes(id)) {
+        // Remove the child ID from the user's array of children
+        const updatedChildren = userDocData.children.filter(
           (childId) => childId !== id
         );
-        if (updatedGroupChildren.length !== groupData.children.length) {
-          const groupDocRef = doc(db, "Groups", groupDoc.id);
-          const updatePromise = updateDoc(groupDocRef, {
-            children: updatedGroupChildren,
-          });
-          groupsPromises.push(updatePromise);
-        }
-      });
-      await Promise.all(groupsPromises);
 
-      // Update the local state to reflect the changes
-      const updatedKidsList = kidsList.filter((kid) => kid.id !== id);
-      setKidsList(updatedKidsList);
+        // Update the user document in the "Users" collection
+        await updateDoc(doc(db, "Users", userDocId), {
+          children: updatedChildren,
+        });
+
+        // Remove the child from the "Groups" collection
+        const groupsQuerySnapshot = await getDocs(collection(db, "Groups"));
+        const groupsPromises = [];
+        groupsQuerySnapshot.forEach((groupDoc) => {
+          const groupData = groupDoc.data();
+          const updatedGroupChildren = groupData.children.filter(
+            (childId) => childId !== id
+          );
+          if (updatedGroupChildren.length !== groupData.children.length) {
+            const groupDocRef = doc(db, "Groups", groupDoc.id);
+            const updatePromise = updateDoc(groupDocRef, {
+              children: updatedGroupChildren,
+            });
+            groupsPromises.push(updatePromise);
+          }
+        });
+        await Promise.all(groupsPromises);
+
+        // Update the local state to reflect the changes
+        const updatedKidsList = kidsList.filter((kid) => kid.id !== id);
+        setKidsList(updatedKidsList);
+      }
     } catch (error) {
       console.log("Error deleting child:", error);
     }
@@ -153,14 +162,15 @@ const WatchMyChilds = ({ navigation }) => {
         style={styles.kidContainer}
         onPress={() => handleKidPress(index)}
       >
-        <Text style={styles.kidName}>{name}</Text>
-        <Text style={styles.kidDetails}>{`${school}`}</Text>
         <TouchableOpacity
           style={styles.deleteOpacity}
           onPress={() => handleDeleteChild(id)}
         >
-          <FontAwesomeIcon icon={faTrash} style={styles.deleteIcon} />
+          <Ionicons name="trash-outline" style={styles.deleteIcon} />
         </TouchableOpacity>
+        <Text style={styles.kidName}>{name}</Text>
+        <Text style={styles.kidDetails}>{`${school}`}</Text>
+        <Text style={styles.kidDetails}>{`${kidClass}`}</Text>
       </TouchableOpacity>
     );
   };
@@ -226,6 +236,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     width: "90%",
     alignSelf: "center",
+    backgroundColor: "#A8E2FA",
+    direction: "ltr",
   },
   kidName: {
     fontSize: 18,

@@ -80,11 +80,12 @@ const AddChild = ({ navigation }) => {
     setIsLoadingClasses(true);
     try {
       const schoolDocRef = doc(db, "School", schoolID);
-      const classesCollection = collection(schoolDocRef, "classes");
+      const classesCollection = collection(schoolDocRef, "Classes");
       const classesSnapshot = await getDocs(classesCollection);
       const classesData = classesSnapshot.docs.map((doc) => {
         return { id: doc.id, name: doc.data().name }; // Include the id property
       });
+      console.log(classesData);
       setClassList(classesData);
       setIsLoadingClasses(false);
     } catch (error) {
@@ -195,7 +196,6 @@ const AddChild = ({ navigation }) => {
   };
 
   const selectClassOption = (item) => {
-    // console.log(item);
     setSelectedClassValue(item.name);
     selectClass(item.id);
     setIsClassModalVisible(false);
@@ -350,7 +350,7 @@ const AddChild = ({ navigation }) => {
                   <View style={styles.inputContainer}>
                     <Picker
                       style={styles.input}
-                      selectedClassValue={classChild}
+                      selectedValue={classChild}
                       onValueChange={selectClass}
                     >
                       <Picker.Item label="בחר כיתה" value="" />
