@@ -15,7 +15,6 @@ import {
   Linking,
   SafeAreaView,
 } from "react-native";
-import Footer from "./Footer";
 import ListContainer from "./ListContainer";
 import Buttons from "./Buttons";
 import HeaderIcons from "./HeaderIcons";
@@ -30,12 +29,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { format, set } from "date-fns";
-import Icon from "react-native-vector-icons/FontAwesome";
-import { Picker } from "@react-native-picker/picker";
 import { useFocusEffect } from "@react-navigation/native";
-import { is } from "date-fns/locale";
 import { MainStyles } from "../styles/MainStyles";
 
 const GroupProfile = ({ navigation, route }) => {
@@ -171,8 +165,9 @@ const GroupProfile = ({ navigation, route }) => {
                         </View>
                       );
                     })}
-                    height={0.8}
+                    height={0.7}
                     width={0.8}
+                    style={{ marginBottom: 100 }}
                   />
                 </View>
                 <Buttons
@@ -180,7 +175,7 @@ const GroupProfile = ({ navigation, route }) => {
                   color="red"
                   width={200}
                   press={() => setIsModalVisible(!isModalVisible)}
-                  style={{ marginBottom: 100 }}
+                  style={{ marginBottom: 20 }}
                 />
               </View>
             </SafeAreaView>
@@ -260,12 +255,8 @@ const styles = StyleSheet.create({
   modalContentContainer: {
     flex: 1,
     backgroundColor: "#F5F5F5",
-    marginBottom: 50,
   },
   modalHeaderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     margin: 30,
   },
   modalHeader: {

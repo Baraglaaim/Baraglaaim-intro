@@ -21,13 +21,12 @@ import {
   where,
 } from "firebase/firestore";
 import { set } from "date-fns";
-import { MainStyles , Writings , Inputs} from "../styles/MainStyles";
+import { MainStyles, Writings, Inputs } from "../styles/MainStyles";
 
 const JoinWalkingGroup = ({ navigation }) => {
   //--------------------------------- define variables area ----------------------------------
 
   const [groupsList, setGroupsList] = useState([]);
-  const [childrenToJoin, setChildrenToJoin] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   //--------------------------------- Back-End area ----------------------------------
@@ -99,13 +98,12 @@ const JoinWalkingGroup = ({ navigation }) => {
           const childDocRef = await getDoc(childDoc);
           const school = childDocRef.data().school;
           if (school === groupDoc.data().school) {
-            if (!groupDoc.data().children.includes(child)) {
+            if (groupDoc.data().children.includes(child) === false) {
               haveChildToJoin = true;
               kidsToJoin.push({ id: child, name: childDocRef.data().name });
             }
           }
         }
-        setChildrenToJoin(kidsToJoin);
         const groupItem = {
           groupID: groupID,
           name: name,
@@ -118,11 +116,11 @@ const JoinWalkingGroup = ({ navigation }) => {
           currentCapacity: currentCapacity,
           alreadyJoined: alreadyJoined,
           haveChildToJoin: haveChildToJoin,
+          kidsToJoin: kidsToJoin,
         };
         groupsData.push(groupItem);
       }
       setGroupsList(groupsData);
-      console.log("groups data is: ", groupsData);
       setIsLoading(false);
     } catch (error) {
       console.log("Error fetching group list:", error);
@@ -136,8 +134,12 @@ const JoinWalkingGroup = ({ navigation }) => {
    * @param {object} index - The group index.
    * @returns {void}
    */
-  const handleGroupPress = ({ groupID, index }) => {
-    navigation.navigate("JoinCertainGroup", { groupID: groupID , childrenToJoin: childrenToJoin});
+  const handleGroupPress = ({ groupID, kidsToJoin }) => {
+    navigation.navigate("JoinCertainGroup", {
+      groupID: groupID,
+      childrenToJoin: kidsToJoin,
+    });
+    
   };
 
   const renderGroup = ({ item, index }) => {
@@ -161,11 +163,11 @@ const JoinWalkingGroup = ({ navigation }) => {
                 יש לך ילדים בקבוצה זו
               </Text>
               <Buttons
-                title="הצטרף לקבוצה"
+                title="הוסף לקבוצה"
                 color="orange"
                 width={220}
                 press={() =>
-                  handleGroupPress({ groupID: item.groupID, index: index })
+                  handleGroupPress({ groupID: item.groupID, kidsToJoin: item.kidsToJoin })
                 }
               />
             </View>
@@ -180,7 +182,7 @@ const JoinWalkingGroup = ({ navigation }) => {
             color="orange"
             width={220}
             press={() =>
-              handleGroupPress({ groupID: item.groupID, index: index })
+              handleGroupPress({ groupID: item.groupID, kidsToJoin: item.kidsToJoin })
             }
           />
         )}
@@ -198,7 +200,7 @@ const JoinWalkingGroup = ({ navigation }) => {
           <ActivityIndicator size="large" color="#4682B4" />
         </View>
       ) : (
-        <ScrollView>
+        <ScrollView style={{ marginBottom: 100 }}>
           <Text style={Writings.header}>קבוצות הליכה</Text>
           {groupsList.map((item, index) => (
             <View key={index}>{renderGroup({ item, index })}</View>

@@ -11,6 +11,7 @@ import {
   Modal,
   FlatList,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import Footer from "./Footer";
 import HeaderIcons from "./HeaderIcons";
@@ -39,28 +40,21 @@ const JoinCertainGroup = ({ navigation, route }) => {
   const groupId = route.params.groupID;
   const childrenToJoin = route.params.childrenToJoin;
   //--------------------------------- Back-End area ----------------------------------
+ 
+
   /**
-   * This function is called when the component is rendered.
-   * It fetches the school data from Firestore.
+   * This function is handling the join group button.
+   * It adds the group to the user's groups array and adds the child to the group's children array.
    * @returns {void}
    */
-  useEffect(() => {
-    fetchGroup();
-  }, []);
-
-  async function fetchGroup() {
-    try {
-      console.log("group id:", groupId);
-      console.log("childrenToJoin:", childrenToJoin);
-    } catch (error) {
-      console.log("Error fetching group list:", error);
-      setIsLoading(false);
-    }
-  }
-
   handleJoin = async () => {
     try {
       setIsLoading(true);
+      if (!child || child === "") {
+        alert("בחר/י ילד/ה");
+        setIsLoading(false);
+        return;
+      }
       const currentUser = auth.currentUser;
       const q = query(
         collection(db, "Users"),
@@ -80,6 +74,11 @@ const JoinCertainGroup = ({ navigation, route }) => {
       }
       const groupDocRef = await getDoc(doc(db, "Groups", groupId));
       let childrenArray = groupDocRef.data().children;
+      if(groupDocRef.data().maxKids <= childrenArray.length){
+        Alert.alert("הקבוצה מלאה", "הקבוצה מלאה, אנא בחר/י קבוצה אחרת", [{ text: "אישור" }], { cancelable: false });
+        setIsLoading(false);
+        return;
+      }
       await updateDoc(doc(db, "Groups", groupId), {
         children: [...childrenArray, child],
       });
@@ -127,6 +126,7 @@ const JoinCertainGroup = ({ navigation, route }) => {
               >
                 <SafeAreaView style={styles.modalContainer}>
                   <FlatList
+                    style={{ width: "100%", height: 300 }}
                     data={childrenToJoin}
                     renderItem={({ item }) => (
                       <TouchableOpacity

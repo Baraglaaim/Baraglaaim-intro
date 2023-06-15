@@ -3,7 +3,6 @@ import { Text, View, StyleSheet, FlatList, Dimensions } from "react-native";
 
 function ListContainer(props) {
   let arg = props.data;
-  console.log("arg:", arg);
   let objArray = [];
 
   for (let i = 0; i < arg.length; i++) {
@@ -20,7 +19,7 @@ function ListContainer(props) {
   };
 
   return (
-    <View style={[styles.container, { height: containerHeight ,width: containerWidth}]}>
+    <View style={[styles.container, props.style, { height: containerHeight ,width: containerWidth}]}>
       <View style={[styles.list, { backgroundColor: props.backgroundColor}]}>
         <FlatList
           data={objArray}
