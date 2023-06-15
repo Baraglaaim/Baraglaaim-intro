@@ -12,7 +12,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import Buttons from "./Buttons";
 import { addDoc, collection, query, getDocs, where } from "firebase/firestore";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { db } from "../FireBaseConsts";
+import { db } from "../FireBaseConsts.js"; // Adjust the import statement
 
 const RegisterPage = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -21,6 +21,7 @@ const RegisterPage = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
+  //const [adminCode, setAdminCode] = useState(""); // New state for admin code
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -70,6 +71,15 @@ const RegisterPage = ({ navigation }) => {
         return;
       }
 
+      // if (adminCode !== "123123" && adminCode !== "0") {
+      //   Alert.alert("שגיאה", "קוד מנהל לא תקין", [{ text: "אישור" }]);
+      //   setIsLoading(false);
+      //   return;
+      // }
+
+      
+      
+
       const q = query(collection(db, "Users"), where("email", "==", email));
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
@@ -102,6 +112,7 @@ const RegisterPage = ({ navigation }) => {
         email: email,
         address: address,
         phone: phone,
+        // isAdmin: adminCode === "123123",
       });
 
       setIsLoading(false);
@@ -191,10 +202,21 @@ const RegisterPage = ({ navigation }) => {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 maxLength={50}
-                numberOfLines={1}
+                numberOfLines={1}  
               />
             </View>
-
+              {/* <Text style={styles.userDetails}>קוד מנהל</Text>
+              <View style={styles.inputContainer}>
+                <TextInput
+                  style={[styles.input, styles.marginBottom, { color: "black" }]}
+                  placeholder="אם אין הכנס 0"
+                  secureTextEntry={true}
+                  value={adminCode}
+                  onChangeText={setAdminCode}
+                  maxLength={50}
+                  numberOfLines={1}
+                />
+              </View> */}
             <Buttons
               title="הרשמה"
               color="#E6ECFF"

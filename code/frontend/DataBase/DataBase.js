@@ -3,9 +3,6 @@ import { View, TextInput, Button, Alert, StyleSheet } from "react-native";
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
-import firebase from "firebase/app";
-import "firebase/auth";
-
 // Initialize Firebase app
 const firebaseConfig = {
   apiKey: "AIzaSyBpaY7Ds0ypV7P6yJocAARhQqSDqcZnKJs",
@@ -22,7 +19,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-export function handleLogin(email, password) {
+export function login(email, password) {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
   return signInWithEmailAndPassword(auth, email, password);
 }
 
@@ -30,8 +30,8 @@ function DataBase() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    handleLogin(email, password)
+  const handleLoginButtonPress = () => {
+    login(email, password)
       .then((userCredential) => {
         // Login successful
         const user = userCredential.user;
@@ -60,7 +60,7 @@ function DataBase() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Login" onPress={handleLogin} />
+      <Button title="Login" onPress={handleLoginButtonPress} />
     </View>
   );
 }

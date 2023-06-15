@@ -1,11 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, Image, StyleSheet, SafeAreaView } from "react-native";
-
+ import { db,auth } from "../FireBaseConsts.js";
+import { collection, query, getDocs, where } from "firebase/firestore";
 import HeaderIcons from "./HeaderIcons";
 import Buttons from "./Buttons";
 
 const HomeScreen = ({ navigation, route }) => {
-  const { username } = route.params;
+  const { username} = route.params;
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userDataLoaded, setUserDataLoaded] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const currentUser = auth.currentUser;
+        const q = query(
+          collection(db, "Users"),
+          where("uid", "==", currentUser.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        const userDocRef = querySnapshot.docs[0];
+        console.log("isAdmin:", userDocRef.data().isAdmin); // Debugging
+        setIsAdmin(userDocRef.data().isAdmin);
+        const usersRef = db.collection("Users");
+        console.log("usersRef:", usersRef); // Debugging
+
+      } catch (error) {
+        console.error("Failed to retrieve user data:", error);
+      } finally {
+        setUserDataLoaded(true);
+      }
+    };
+
+    fetchData();
+  }, [username]);
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -39,6 +68,15 @@ const HomeScreen = ({ navigation, route }) => {
           width={200}
           press={() => navigation.navigate("MyCommunity")}
         />
+        {userDataLoaded && isAdmin && (
+          <Buttons
+            title="צור קהילה"
+            color="gold"
+            textColor="black"
+            width={200}
+            press={() => navigation.navigate("CreateCommunity")}
+          />
+        )}
       </View>
       <HeaderIcons navigation={navigation} />
     </SafeAreaView>

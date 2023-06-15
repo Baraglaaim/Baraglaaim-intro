@@ -102,7 +102,8 @@ const LoginPage = ({ navigation }) => {
             />
             <Buttons
               title="התחברות"
-              color="orange"
+                color="#FFBF00"
+                textColor="black"
               width={150}
               press={handleLogin}
             />
@@ -133,10 +134,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgb(70, 130, 180)",
+    backgroundColor: "#AED1EC",
   },
   overlay: {
-    backgroundColor: "rgb(70, 130, 180)",
+    backgroundColor: "#AED1EC",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 30,
     fontWeight: "bold",
-    color: "white",
+    color: "black",
     marginTop: 20,
     marginBottom: 20,
     textAlign: "center",
@@ -184,11 +185,12 @@ const styles = StyleSheet.create({
   },
   signupNow: {
     fontSize: 15,
-    color: "orange",
+    color: "black",
   },
   signupLink: {
     textDecorationLine: "underline",
-    color: "orange",
+    color: "#1F456E",
+    fontWeight: 'bold',
     marginLeft: 5,
   },
 });
