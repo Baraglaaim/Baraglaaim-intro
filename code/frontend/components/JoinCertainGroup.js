@@ -98,7 +98,7 @@ const JoinCertainGroup = ({ navigation, route }) => {
   // ------------------------Front-End area:------------------------
 
   return (
-    <View style={MainStyles.page}>
+    <SafeAreaView style={MainStyles.page}>
       {isLoading ? (
         <View style={MainStyles.loadingContainer}>
           <Text style={Writings.header}>המידע נטען...</Text>
@@ -108,10 +108,10 @@ const JoinCertainGroup = ({ navigation, route }) => {
         <View>
           <Text style={Writings.header}>הצטרפות לקבוצה</Text>
           {Platform.OS === "ios" ? (
-            <SafeAreaView>
-              <Text style={styles.label}>בחר/י ילד/ה</Text>
+            <View>
+              <Text style={MainStyles.label}>בחר/י ילד/ה</Text>
               <TouchableOpacity
-                style={styles.input}
+                style={Inputs.input}
                 onPress={() => setIsModalVisible(true)}
               >
                 <Text styles={{ textAlign: "right" }}>
@@ -151,7 +151,7 @@ const JoinCertainGroup = ({ navigation, route }) => {
                   style={{ marginBottom: 100 }}
                 />
               </Modal>
-            </SafeAreaView>
+            </View>
           ) : (
             <View style={Inputs.inputContainer}>
               <Picker
@@ -179,11 +179,28 @@ const JoinCertainGroup = ({ navigation, route }) => {
         press={() => handleJoin()}
       />
       <HeaderIcons navigation={navigation} />
-    </View>
+    </SafeAreaView>
   );
 };
 
 //--------------------------------- style area ----------------------------------
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  modalContainer: {
+    marginTop: "10%",
+    height: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "F5F5F5",
+  },
+  optionContainer: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#CCCCCC",
+  },
+  optionText: {
+    fontSize: 30,
+  },
+});
 
 export default JoinCertainGroup;

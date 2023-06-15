@@ -12,6 +12,13 @@ export const MainStyles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#F5F5F5",
   },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "black",
+    textAlign: "center",
+    marginBottom: 5,
+  }
 });
 
 export const Writings = StyleSheet.create({
