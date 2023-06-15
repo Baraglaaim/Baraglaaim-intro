@@ -10,9 +10,17 @@ import {
 } from "react-native";
 import HeaderIcons from "./HeaderIcons";
 
-const SchoolProfile = ({ navigation, route }) => {
-  const { name, phone, address } = route.params;
+const UserProfile = ({ navigation, route }) => {
+  
+  useEffect(() => {
+    UserProfile()
+  }, []);
 
+  async function UserProfile() {
+    user = await getDoc(doc(db, "Users", route.params.userId));
+    const { name, phone, address } = user.data();
+  };
+  
   const handlePress = () => {
     Linking.openURL(`tel:${phone}`);
   };
@@ -31,7 +39,7 @@ const SchoolProfile = ({ navigation, route }) => {
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.regular}>{address}</Text>
-          <Text style={styles.regular}>כתובת:</Text>
+          <Text style={styles.regular}>מיקום:</Text>
         </View>
       </ScrollView>
       <HeaderIcons navigation={navigation} />
@@ -76,4 +84,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SchoolProfile;
+export default UserProfile;

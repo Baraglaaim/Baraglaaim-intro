@@ -236,7 +236,6 @@ const styles = StyleSheet.create({
     width: "90%",
     alignSelf: "center",
     backgroundColor: "#A8E2FA",
-    direction: "ltr",
   },
   kidName: {
     fontSize: 18,
