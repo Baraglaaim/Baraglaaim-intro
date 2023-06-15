@@ -8,6 +8,8 @@ import {
   ScrollView,
   Platform,
   TouchableOpacity,
+  Modal,
+  FlatList,
   ActivityIndicator,
 } from "react-native";
 import Footer from "./Footer";
