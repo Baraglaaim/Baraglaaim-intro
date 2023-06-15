@@ -36,6 +36,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
 import { useFocusEffect } from "@react-navigation/native";
 import { is } from "date-fns/locale";
+import { MainStyles } from "../styles/MainStyles";
 
 const GroupProfile = ({ navigation, route }) => {
   // --------------------------------- define variables area ----------------------------------
@@ -59,22 +60,28 @@ const GroupProfile = ({ navigation, route }) => {
   }, []);
 
   const fachingUsers = async () => {
-    setIsLoading(true);
-    const managerDoc = await getDoc(doc(db, "Users", group.busManager));
-    setManager(managerDoc.data());
-    let childrenDocs = [];
-    for (const child of group.children) {
-      const childDoc = await getDoc(doc(db, "Children", child));
-      const parentDoc = await getDoc(doc(db, "Users", childDoc.data().parent));
-      let childData = {
-        name: childDoc.data().name,
-        phone: childDoc.data().phone,
-        parentPhone: parentDoc.data().phone,
-      };
-      childrenDocs.push(childData);
+    try {
+      setIsLoading(true);
+      const managerDoc = await getDoc(doc(db, "Users", group.busManager));
+      setManager(managerDoc.data());
+      let childrenDocs = [];
+      for (const child of group.children) {
+        const childDoc = await getDoc(doc(db, "Children", child));
+        const parentDoc = await getDoc(
+          doc(db, "Users", childDoc.data().parent)
+        );
+        let childData = {
+          name: childDoc.data().name,
+          parentPhone: parentDoc.data().phone,
+        };
+        childrenDocs.push(childData);
+      }
+      setChildren(childrenDocs);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
     }
-    setChildren(childrenDocs);
-    setIsLoading(false);
   };
 
   const handlePress = (phoneNumber) => {
@@ -82,7 +89,7 @@ const GroupProfile = ({ navigation, route }) => {
   };
   // --------------------------------- front-end area ----------------------------------
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={MainStyles.page}>
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <Text style={styles.header}>טוען נתונים...</Text>
@@ -139,7 +146,7 @@ const GroupProfile = ({ navigation, route }) => {
             }}
           >
             <SafeAreaView style={styles.modalContainer}>
-              <ScrollView style={styles.modalContentContainer}>
+              <View style={styles.modalContentContainer}>
                 <View style={styles.modalHeaderContainer}>
                   <Text style={styles.modalHeader}>רשימת משתתפים</Text>
                 </View>
@@ -175,7 +182,7 @@ const GroupProfile = ({ navigation, route }) => {
                   press={() => setIsModalVisible(!isModalVisible)}
                   style={{ marginBottom: 100 }}
                 />
-              </ScrollView>
+              </View>
             </SafeAreaView>
           </Modal>
         </ScrollView>
@@ -191,10 +198,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
-  },
-  container: {
-    flex: 1,
     backgroundColor: "#F5F5F5",
   },
   header: {
@@ -231,7 +234,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderWidth: 1,
     borderRadius: 10,
-    shadowColor: "black", 
+    shadowColor: "black",
     shadowOffset: { width: -4, height: -4 },
     shadowOpacity: 0.2,
   },

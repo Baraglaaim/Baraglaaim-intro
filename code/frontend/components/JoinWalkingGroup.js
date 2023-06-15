@@ -20,11 +20,14 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import { set } from "date-fns";
+import { MainStyles , Writings , Inputs} from "../styles/MainStyles";
 
 const JoinWalkingGroup = ({ navigation }) => {
   //--------------------------------- define variables area ----------------------------------
 
   const [groupsList, setGroupsList] = useState([]);
+  const [childrenToJoin, setChildrenToJoin] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   //--------------------------------- Back-End area ----------------------------------
@@ -102,7 +105,7 @@ const JoinWalkingGroup = ({ navigation }) => {
             }
           }
         }
-        console.log("kids to join: ", kidsToJoin);
+        setChildrenToJoin(kidsToJoin);
         const groupItem = {
           groupID: groupID,
           name: name,
@@ -134,8 +137,7 @@ const JoinWalkingGroup = ({ navigation }) => {
    * @returns {void}
    */
   const handleGroupPress = ({ groupID, index }) => {
-    console.log("groupID is: ", groupID);
-    // navigation.navigate("JoinCertainGroup", { groupID: groupID });
+    navigation.navigate("JoinCertainGroup", { groupID: groupID , childrenToJoin: childrenToJoin});
   };
 
   const renderGroup = ({ item, index }) => {
@@ -189,15 +191,15 @@ const JoinWalkingGroup = ({ navigation }) => {
   // ------------------------Front-End area:------------------------
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={MainStyles.page}>
       {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.header}>המידע נטען...</Text>
+        <View style={MainStyles.loadingContainer}>
+          <Text style={Writings.header}>המידע נטען...</Text>
           <ActivityIndicator size="large" color="#4682B4" />
         </View>
       ) : (
         <ScrollView>
-          <Text style={styles.header}>קבוצות הליכה</Text>
+          <Text style={Writings.header}>קבוצות הליכה</Text>
           {groupsList.map((item, index) => (
             <View key={index}>{renderGroup({ item, index })}</View>
           ))}
@@ -220,24 +222,10 @@ const styles = StyleSheet.create({
     margin: 10,
     backgroundColor: "white",
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5F5F5",
-  },
   container: {
     flex: 1,
     backgroundColor: "#F5F5F5",
     marginTop: 30,
-  },
-  header: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#4682B4",
-    marginTop: 20,
-    marginBottom: 20,
-    textAlign: "center",
   },
 });
 
