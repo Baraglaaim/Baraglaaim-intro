@@ -219,7 +219,7 @@ const RegisterPage = ({ navigation }) => {
               </View> */}
             <Buttons
               title="הרשמה"
-              color="#E6ECFF"
+              color="#FFBF00"
               textColor="black"
               width={150}
               press={handleRegistration}
@@ -234,7 +234,7 @@ const RegisterPage = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#96CCE4",
+    backgroundColor: "#AED1EC",
     marginTop: 45,
   },
   contentContainer: {
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#96CCE4",
   },
   header: {
-    color: "white",
+    color: "black",
     fontSize: 40,
     fontWeight: "bold",
     marginBottom: 2,

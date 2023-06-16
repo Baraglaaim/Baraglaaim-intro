@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   overlay: {
-    backgroundColor: "rgb(70, 130, 180)",
+    backgroundColor: "#96CCE4",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     width: "100%",
     height: "100%",
-    backgroundColor: "rgb(70, 130, 180)",
+    backgroundColor: "#96CCE4",
   },
   kidContainer: {
     alignItems: "center",
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     width: "90%",
     alignSelf: "center",
-    backgroundColor: "#A8E2FA",
+    backgroundColor: "#F5F5F5",
     // direction: "ltr",
   },
   kidName: {

@@ -89,7 +89,6 @@ const CreateCommunity = ({ navigation }) => {
                         value={address}
                         onChangeText={setAddress}
                         placeholder="כתובת של בית הספר"
-                        keyboardType="numeric"
                     />
                 </View>
                 <View style={styles.inputContainer}>
