@@ -348,7 +348,7 @@ const CreateWalkingGroup = ({ navigation }) => {
         title="יצירת אוטובוס הליכה"
         color="#FFBF00"
         textColor="black"
-        width={220}
+        width={260}
         press={addWalkingGroupToDB}
         style={{ marginBottom: 100 }}
       />
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   title: {
-    fontSize: 30,
+    fontSize: 24,
     color: "black",
     fontWeight: "bold",
     textAlign: "center",
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   formContainer: {
     backgroundColor: "#AED1EC",
     height: "100%",
-    width: "90%",
+    width: "110%",
     borderRadius: 20,
     alignSelf: "center",
     padding: 20,

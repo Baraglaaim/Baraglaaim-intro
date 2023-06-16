@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import Buttons from "./Buttons";
@@ -123,6 +124,9 @@ const RegisterPage = ({ navigation }) => {
     }
   };
 
+  const handleGoToLogin = () => {
+    navigation.navigate("LoginPage");
+  };
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -224,6 +228,10 @@ const RegisterPage = ({ navigation }) => {
               width={150}
               press={handleRegistration}
             />
+            {/* Add the button for navigating to the login page */}
+            <TouchableOpacity onPress={handleGoToLogin}>
+              <Text style={styles.loginLink}>נזכרתי שיש לי כבר חשבון</Text>
+            </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
       )}
@@ -278,6 +286,13 @@ const styles = StyleSheet.create({
   },
   marginBottom: {
     marginBottom: 20,
+  },
+  loginLink: {
+    color: "#1F456E",
+    fontSize: 16,
+    textAlign: "center",
+    textDecorationLine: "underline",
+    marginTop: 10,
   },
 });
 
