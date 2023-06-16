@@ -19,29 +19,20 @@ import {
   where,
   getDoc,
 } from "firebase/firestore";
-import { useFocusEffect } from "@react-navigation/native";
-// import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import HeaderIcons from "./HeaderIcons";
 import Buttons from "./Buttons";
 import { Ionicons } from "@expo/vector-icons";
-// import { Platform } from "react-native";
 
 const WatchMyChilds = ({ navigation }) => {
   const [kidsList, setKidsList] = useState([]);
-  let isMounted = true; // Flag to check if the component is mounted
 
-  useFocusEffect(
-    React.useCallback(() => {
-      // setKidsList([]);
-    }, [])
-  );
   useEffect(() => {
-    fetchKidsList();
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchKidsList();
+    });
 
-    return () => {
-      isMounted = false; // Clean up the flag when the component is unmounted
-    };
-  }, []);
+    return unsubscribe;
+  }, [navigation]);
 
   const fetchKidsList = async () => {
     try {
@@ -75,11 +66,8 @@ const WatchMyChilds = ({ navigation }) => {
         childDocData.id = childId;
         kidsData.push(childDocData);
       }
-      console.log("kids data is: ", kidsData);
 
       setKidsList(kidsData);
-
-      console.log("kids data is: ", kidsData);
     } catch (error) {
       console.log("Error fetching kids list:", error);
     }
@@ -117,10 +105,10 @@ const WatchMyChilds = ({ navigation }) => {
       const userDocId = userDocRef.id;
       const userDocData = userDocRef.data();
 
-      // Remove the child ID from the user's array of children
-      const updatedChildren = userDocData.children.filter(
-        (childId) => childId !== id
-      );
+      // Remove the child ID from the user's array of children if it exists
+      const updatedChildren = userDocData.children
+        ? userDocData.children.filter((childId) => childId !== id)
+        : [];
 
       // Update the user document in the "Users" collection
       await updateDoc(doc(db, "Users", userDocId), {
@@ -145,9 +133,8 @@ const WatchMyChilds = ({ navigation }) => {
       });
       await Promise.all(groupsPromises);
 
-      // Update the local state to reflect the changes
-      const updatedKidsList = kidsList.filter((kid) => kid.id !== id);
-      setKidsList(updatedKidsList);
+      // Fetch and update the kids' data after deleting the child
+      fetchKidsList();
     } catch (error) {
       console.log("Error deleting child:", error);
     }
@@ -161,15 +148,23 @@ const WatchMyChilds = ({ navigation }) => {
         style={styles.kidContainer}
         onPress={() => handleKidPress(index)}
       >
-        <TouchableOpacity
-          style={styles.deleteOpacity}
-          onPress={() => handleDeleteChild(id)}
-        >
-          <Ionicons name="trash-outline" style={styles.deleteIcon} />
-        </TouchableOpacity>
-        <Text style={styles.kidName}>{name}</Text>
-        <Text style={styles.kidDetails}>{`${school}`}</Text>
-        <Text style={styles.kidDetails}>{`${kidClass}`}</Text>
+        <View style={styles.kidRow}>
+          <TouchableOpacity
+            style={styles.deleteOpacity}
+            onPress={() => handleDeleteChild(id)}
+          >
+            <Ionicons name="trash-outline" style={styles.deleteIcon} />
+          </TouchableOpacity>
+          <View style={styles.kidNameContainer}>
+            <Text style={styles.kidName}>{name}</Text>
+          </View>
+        </View>
+        <View style={styles.kidRow}>
+          <Text style={styles.kidDetails}>{`${school}`}</Text>
+        </View>
+        <View style={styles.kidRow}>
+          <Text style={styles.kidDetails}>{`${kidClass}`}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -177,19 +172,20 @@ const WatchMyChilds = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.overlay}>
-        <Text style={styles.title}>צפה בילד שלי</Text>
+        <Text style={styles.title}>צפה בילדים שלי</Text>
         <FlatList
           style={styles.kidsList}
           data={kidsList}
           renderItem={renderKid}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.kidsList}
+          contentContainerStyle={styles.kidsListContent}
         />
         <Buttons
-          title="הוספת ילד"
-          color="orange"
-          width={150}
-          style={{ marginBottom: 100 }}
+          title="הוספת ילד/ה"
+          color="#FFBF00"
+          textColor="black"
+          width={170}
+          style={{ marginBottom: 80 }}
           press={handleAddChild}
         />
       </View>
@@ -205,60 +201,69 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   overlay: {
-    backgroundColor: "rgb(70, 130, 180)",
+    backgroundColor: "#AED1EC",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 15,
-    color: "white",
+    color: "black",
   },
   kidsList: {
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-    alignContent: "center",
     width: "100%",
-    height: "100%",
-    backgroundColor: "rgb(70, 130, 180)",
+    backgroundColor: "#AED1EC",
+  },
+  kidsListContent: {
+      flex: 1,
+      // justifyContent: "center",
+      marginTop: 30,
+      width: "100%", // Add this line
   },
   kidContainer: {
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#bbb",
+    borderColor: "#F5F5F5",
     borderRadius: 10,
     padding: 10,
     marginBottom: 15,
-    width: "90%",
+    width: "100%",
     alignSelf: "center",
-    backgroundColor: "#A8E2FA",
-    // direction: "ltr",
+    backgroundColor: "#F5F5F5",
+  },
+  kidRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  kidNameContainer: {
+    alignItems: "center",
+    flex: 1,
+    alignItems: "flex-end",
   },
   kidName: {
+    alignItems: "center",
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
     marginTop: 5,
     marginBottom: 5,
-    color: "gold",
-    textAlign: "center",
+    color: "#DCAB07",
   },
   kidDetails: {
+    alignItems: "center",
     fontSize: 16,
-    color: "white",
+    color: "#999",
     textAlign: "center",
   },
   deleteOpacity: {
-    position: "absolute",
-    left: 10,
-    top: "50%",
-    transform: [{ translateY: -8 }],
+    marginRight: 10,
   },
   deleteIcon: {
-    color: "red",
+    color: "#B06363",
     fontSize: 30,
   },
 });

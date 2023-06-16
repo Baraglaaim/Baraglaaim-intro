@@ -4,7 +4,7 @@ export const MainStyles = StyleSheet.create({
   page: {
     flex: 1,
     marginTop: 30,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
   },
   loadingContainer: {
     flex: 1,
@@ -23,9 +23,9 @@ export const MainStyles = StyleSheet.create({
 
 export const Writings = StyleSheet.create({
   header: {
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#4682B4",
+    color: "black",
     marginTop: 20,
     marginBottom: 20,
     textAlign: "center",

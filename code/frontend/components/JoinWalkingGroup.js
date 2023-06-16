@@ -146,7 +146,7 @@ const JoinWalkingGroup = ({ navigation }) => {
     const { name, manager, managerPhone, startLocation } = item;
     return (
       <SafeAreaView style={styles.groupContainer}>
-        <Text style={{ fontWeight: "bold", fontSize: 20 }}>{name}</Text>
+        <Text style={{textColor: "#DCAB07", fontWeight: "bold", fontSize: 20 }}>{name}</Text>
         <Text>מנהל: {manager}</Text>
         <Text>טלפון מנהל: {managerPhone}</Text>
         <Text>נקודת מפגש: {startLocation}</Text>
@@ -155,7 +155,7 @@ const JoinWalkingGroup = ({ navigation }) => {
           כמות משתתפים: {item.currentCapacity} / {item.maxCapacity}
         </Text>
         {item.currentCapacity == item.maxCapacity ? (
-          <Text style={{ color: "red", fontWeight: "bold" }}>הקבוצה מלאה</Text>
+          <Text style={{ color: "#B06363", fontWeight: "bold" }}>הקבוצה מלאה</Text>
         ) : item.alreadyJoined ? (
           item.haveChildToJoin ? (
             <View style={{ alignItems: "center" }}>
@@ -164,7 +164,8 @@ const JoinWalkingGroup = ({ navigation }) => {
               </Text>
               <Buttons
                 title="הוסף לקבוצה"
-                color="orange"
+                color="#FFBF00"
+                textColor = "black"
                 width={220}
                 press={() =>
                   handleGroupPress({ groupID: item.groupID, kidsToJoin: item.kidsToJoin })
@@ -172,14 +173,15 @@ const JoinWalkingGroup = ({ navigation }) => {
               />
             </View>
           ) : (
-            <Text style={{ color: "red", fontWeight: "bold" }}>
+            <Text style={{ color: "#B06363", fontWeight: "bold" }}>
               אין לך ילדים להוסיף לקבוצה זו
             </Text>
           )
         ) : (
           <Buttons
             title="הצטרף לקבוצה"
-            color="orange"
+            color="#FFBF00"
+            textColor = "black"
             width={220}
             press={() =>
               handleGroupPress({ groupID: item.groupID, kidsToJoin: item.kidsToJoin })
@@ -196,7 +198,7 @@ const JoinWalkingGroup = ({ navigation }) => {
     <SafeAreaView style={MainStyles.page}>
       {isLoading ? (
         <View style={MainStyles.loadingContainer}>
-          <Text style={Writings.header}>המידע נטען...</Text>
+          <Text style={ Writings.header }>המידע נטען...</Text>
           <ActivityIndicator size="large" color="#4682B4" />
         </View>
       ) : (
@@ -217,18 +219,26 @@ const styles = StyleSheet.create({
   groupContainer: {
     alignItems: "center",
     textAlign: "center",
-    borderWidth: 1,
-    borderColor: "grey",
+    textColor: "#999",
+    // borderWidth: 1,
+    // borderColor: "#F5F5F5",
     borderRadius: 10,
     padding: 10,
     margin: 10,
-    backgroundColor: "white",
+    backgroundColor: "#F5F5F5",
+  
   },
   container: {
     flex: 1,
     backgroundColor: "#F5F5F5",
-    marginTop: 30,
+    marginTop: 50,
+    
   },
+  // groupName:{
+  //   textColor: "#DCAB07",
+  //   fontWeight: "bold",
+  //   fontSize: 20 ,  
+  // },
 });
 
 export default JoinWalkingGroup;

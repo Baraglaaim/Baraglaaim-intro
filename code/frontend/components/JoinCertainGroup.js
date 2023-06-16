@@ -105,7 +105,7 @@ const JoinCertainGroup = ({ navigation, route }) => {
         </View>
       ) : (
         <View>
-          <Text style={Writings.header}>הצטרפות לקבוצה</Text>
+          <Text style={Writings.header}>הצטרפות לאוטובוס</Text>
           {Platform.OS === "ios" ? (
             <View>
               <Text style={MainStyles.label}>בחר/י ילד/ה</Text>
@@ -114,7 +114,7 @@ const JoinCertainGroup = ({ navigation, route }) => {
                 onPress={() => setIsModalVisible(true)}
               >
                 <Text styles={{ textAlign: "right" }}>
-                  {selectedValue ? selectedValue : "בחר/י ילד"}
+                  {selectedValue ? selectedValue : "בחר/י ילד/ה"}
                 </Text>
               </TouchableOpacity>
               <Modal
@@ -145,7 +145,7 @@ const JoinCertainGroup = ({ navigation, route }) => {
                 </SafeAreaView>
                 <Buttons
                   title="סגור"
-                  color="red"
+                  color="#B06363"
                   width={200}
                   press={() => setIsModalVisible(!isModalVisible)}
                   style={{ marginBottom: 100 }}
@@ -159,7 +159,7 @@ const JoinCertainGroup = ({ navigation, route }) => {
                 selectedValue={child}
                 onValueChange={selectChild}
               >
-                <Picker.Item label="בחר/י ילד" value="" />
+                <Picker.Item label="בחר/י ילד/ה" value="" />
                 {childrenToJoin.map((child) => (
                   <Picker.Item
                     key={child.id}
@@ -173,8 +173,11 @@ const JoinCertainGroup = ({ navigation, route }) => {
         </View>
       )}
       <Buttons
-        title="הצטרף"
-        color="orange"
+        title="הצטרפ/י"
+        color="#FFBF00"
+        textColor="black"
+        // width={170}
+        style={{ marginBottom: 80 }}
         width={200}
         press={() => handleJoin()}
       />

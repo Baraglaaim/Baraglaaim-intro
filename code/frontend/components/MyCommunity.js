@@ -66,7 +66,7 @@ const MyCommunity = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, {backgroundColor: "#AED1EC"}]}>
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <Text style={styles.header}>טוען נתונים...</Text>
@@ -74,7 +74,7 @@ const MyCommunity = ({ navigation }) => {
         </View>
       ) : (
         <View>
-          <Text style={[styles.title, { marginLeft: 16 }]}>הקהילות שלי</Text>
+          <Text style={[styles.title, {alignItems: "center" }]}>הקהילות שלי</Text>
           <ScrollView style={styles.schoolList}>
             {schoolsList.map((school) => (
               <SchoolItem key={school.id} {...school} />
@@ -92,42 +92,44 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
   },
   container: {
     flex: 1,
     marginTop: 30,
   },
   header: {
+    // marginTop: 50,
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 15,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 15,
   },
   schoolList: {
     paddingHorizontal: 16,
-    marginBottom: 100,
+    marginBottom: 150,
   },
   schoolItem: {
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f5f5",
     borderRadius: 16,
-    marginBottom: 16,
+    marginBottom: 20,
     padding: 16,
   },
   schoolItemTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
   },
   schoolItemTitleIOS: {
     fontSize: 18,
     fontWeight: "bold",
-    textAlign: "right",
+    textAlign: "center",
   },
 });
 

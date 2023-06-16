@@ -18,22 +18,25 @@ const WalkingGroups = ({ navigation }) => {
       <View style={styles.overlay}>
         <View>
           <Buttons
-            title="צור קבוצת הליכה חדשה"
-            color="orange"
+            title="האוטובוסים שלי"
+            color="#FFBF00"
+            textColor = "black"
             width={300}
-            press={() => navigation.navigate("CreateWalkingGroup")}
+            press={() => navigation.navigate("MyWalkingGroup")}
           />
           <Buttons
-            title="הצטרף לקבוצת הליכה"
-            color="orange"
+            title="הצטרף לאוטובוס הליכה"
+            color="#FFBF00"
+            textColor = "black"
             width={300}
             press={() => navigation.navigate("JoinWalkingGroup")}
           />
           <Buttons
-            title="הקבוצות שלי"
-            color="orange"
+            title="צור אוטובוס הליכה חדש"
+            color="#FFBF00"
+            textColor = "black"
             width={300}
-            press={() => navigation.navigate("MyWalkingGroup")}
+            press={() => navigation.navigate("CreateWalkingGroup")}
           />
         </View>
       </View>
@@ -48,7 +51,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   overlay: {
-    backgroundColor: "rgb(70, 130, 180)",
+    backgroundColor: "#AED1EC",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -69,7 +72,7 @@ const styles = StyleSheet.create({
   //   borderRadius: 5,
   // },
   buttonText: {
-    color: "#fff",
+    color: "black",
     fontSize: 18,
   },
 });

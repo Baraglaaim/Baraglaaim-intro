@@ -6,6 +6,7 @@ import {
     StyleSheet,
     TouchableOpacity,
     SafeAreaView,
+    ScrollView,
     Alert,
 } from "react-native";
 import { db, auth } from "../FireBaseConsts";
@@ -89,11 +90,11 @@ const CreateCommunity = ({ navigation }) => {
                         value={address}
                         onChangeText={setAddress}
                         placeholder="כתובת של בית הספר"
-                        keyboardType="numeric"
                     />
                 </View>
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>שמות הכיתות:</Text>
+                    <ScrollView style={styles.classNamesContainer}>
                     {classNames.map((name, index) => (
                         <View key={index} style={styles.classNameContainer}>
                             <Text style={styles.className}>{name}</Text>
@@ -105,6 +106,7 @@ const CreateCommunity = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
                     ))}
+                    </ScrollView>
                     <View style={styles.inputWithButtonContainer}>
                         <TextInput
                             style={[styles.input, styles.classNameInput]}
@@ -127,7 +129,7 @@ const CreateCommunity = ({ navigation }) => {
                 color="orange"
                 width={200}
                 press={addSchoolToDB}
-                style={{ marginBottom: 100 }}
+                style={{ marginBottom: 90, marginTop: 30 }}
             />
         </SafeAreaView>
     );
@@ -136,7 +138,7 @@ const CreateCommunity = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: "#AED1EC",
     },
     formContainer: {
         flex: 1,
@@ -147,19 +149,22 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
         marginBottom: 20,
+        textAlign: "center",
     },
     inputContainer: {
-        marginBottom: 20,
+        marginTop: 10,
     },
     label: {
         fontSize: 16,
         marginBottom: 10,
+        textAlign: "center",
     },
     input: {
         borderWidth: 1,
-        borderColor: "#ccc",
+        backgroundColor: "white",
         padding: 10,
         borderRadius: 5,
+        textAlign: "center",
     },
     classNameContainer: {
         flexDirection: "row",
@@ -169,6 +174,7 @@ const styles = StyleSheet.create({
     className: {
         fontSize: 16,
         flex: 1,
+        textAlign: "center",
     },
     deleteButton: {
         backgroundColor: "red",
@@ -199,6 +205,10 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 18,
         fontWeight: "bold",
+    },
+    classNamesContainer: {
+        maxHeight: 200, // Adjust the maximum height as needed
+        marginBottom: 10,
     },
 });
 

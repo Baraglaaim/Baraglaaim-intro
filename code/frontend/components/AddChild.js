@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
+  Platform,
   FlatList,
 } from "react-native";
 import { db, auth } from "../FireBaseConsts";
@@ -163,8 +164,8 @@ const AddChild = ({ navigation }) => {
       });
     }
     setIsLoading(false);
-    Alert.alert("ברכות", "הצועד/צועדת נוסף/ה בהצלחה", [{ text: "אישור" }]);
-    navigation.navigate("HomeScreen", {
+    Alert.alert("ברכות", "הילד/ה נוסף/ה בהצלחה", [{ text: "אישור" }]);
+    navigation.navigate("WatchMyChilds", {
       username: userDocRef.data().username,
     });
   }
@@ -204,44 +205,45 @@ const AddChild = ({ navigation }) => {
   return (
     // ------------------------Front-End area:------------------------
     <SafeAreaView style={styles.container}>
-      <HeaderIcons navigation={navigation} />
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <Text style={styles.header}>טוען נתונים...</Text>
           <ActivityIndicator size="large" color="#4682B4" />
         </View>
       ) : (
+          <View style={styles.overlay}>
         <ScrollView style={styles.formContainer}>
           <View style={styles.contentContainer}>
-            <Text style={styles.title}>הוספת צועדת/צועדת</Text>
+            <Text style={styles.title}>הוספת ילד/ה</Text>
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>שם הצועד/צועדת:</Text>
+              <Text style={styles.label}>שם הילד/ה:</Text>
               <TextInput
                 style={styles.input}
                 value={name}
                 onChangeText={setName}
-                placeholder="שם הצועד/צועדת"
+                placeholder="שם הילד/ה"
               />
             </View>
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>מספר הטלפון של הצועד/צועדת:</Text>
+              <Text style={styles.label}>מספר הטלפון של הילד/ה:</Text>
               <TextInput
                 style={styles.input}
                 value={phone}
                 onChangeText={setPhone}
-                placeholder="מספר הטלפון של הצועד/צועדת, במידה ויש נייד"
+                placeholder="מספר הטלפון של הילד/ה, במידה ויש נייד"
                 keyboardType="numeric"
               />
             </View>
-            <View style={styles.inputContainer}>
+            <View sctyle={styles.inputContainer}>
               <Text style={styles.label}>בית ספר:</Text>
               {Platform.OS === "ios" ? (
-                <View style={styles.inputPickerContainer}>
+                  <View style={[styles.inputPickerContainer, { justifyContent: "center" }]}>
+
                   <TouchableOpacity
-                    style={styles.input}
+                    style={[styles.input, styles.inputRight]}
                     onPress={() => setIsModalVisible(true)}
                   >
-                    <Text styles={{ textAlign: "right" }}>
+                    <Text style={{ textAlign: "right", width: "100%" }}>
                       {selectedValue ? selectedValue : "בחר בית ספר"}
                     </Text>
                   </TouchableOpacity>
@@ -263,7 +265,8 @@ const AddChild = ({ navigation }) => {
                           </TouchableOpacity>
                         )}
                       />
-                      <Buttons
+                        <Buttons
+                        style = {{marginBottom: 100}}
                         title="סגור"
                         color="red"
                         width={200}
@@ -327,7 +330,8 @@ const AddChild = ({ navigation }) => {
                             </TouchableOpacity>
                           )}
                         />
-                        <Buttons
+                          <Buttons
+                          style = {{marginBottom: 100}}
                           title="סגור"
                           color="red"
                           width={200}
@@ -388,15 +392,19 @@ const AddChild = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
       )}
       <Buttons
-        title="הוסף צועד/צועדת"
-        color="orange"
-        width={200}
+        title="הוסף ילד/ה"
+        color="#FFBF00"
+        textColor="black"
+        // width={200}
         press={addChildToDB}
-        style={{ marginBottom: 100 }}
+        width={160}
+        style={{ marginBottom: 100 }}     
       />
+      <HeaderIcons navigation={navigation} />
     </SafeAreaView>
   );
 };
@@ -407,14 +415,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
   },
-  modalContainer: {
-    marginTop: "10%",
-    height: "80%",
+  modal: {
+    flex: 1,
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "F5F5F5",
+    backgroundColor: "#AED1EC",
+  },
+  modalContainer: {
+    marginTop: 50,
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#AED1EC",
   },
   optionContainer: {
     paddingVertical: 10,
@@ -426,7 +441,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
   },
   formContainer: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
     marginBottom: 20,
     height: "80%",
     width: "90%",
@@ -434,23 +449,23 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   container: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
     flex: 1,
     height: "100%",
     width: "100%",
     justifyContent: "center",
-    marginTop: 30,
+    marginTop: 50,
   },
   contentContainer: {
     flex: 1,
-    paddingBottom: 100,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
     color: "black",
-    marginBottom: 20,
+    marginBottom: 5,
+    marginTop: 20,
   },
   inputContainer: {
     width: "100%",
@@ -487,17 +502,29 @@ const styles = StyleSheet.create({
   },
   genderButton: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "black",
     borderRadius: 5,
     padding: 10,
     width: "45%",
     alignItems: "center",
   },
   selectedGenderButton: {
-    backgroundColor: "#ccc",
+    backgroundColor: "#839BE8",
   },
   genderLabel: {
     fontSize: 20,
+  },
+  overlay: {
+    backgroundColor: "#AED1EC",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  inputRight: {
+    alignSelf: "right",
+    textAlign: "right",
+    backgroundColor: "white",
+    direction: "rtl",
   },
 });
 
