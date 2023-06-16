@@ -22,7 +22,7 @@ const HomeScreen = ({ navigation, route }) => {
         const userDocRef = querySnapshot.docs[0];
         console.log("isAdmin:", userDocRef.data().isAdmin); // Debugging
         setIsAdmin(userDocRef.data().isAdmin);
-        const usersRef = db.collection("Users");
+        const usersRef = collection(db, "Users");
         console.log("usersRef:", usersRef); // Debugging
 
       } catch (error) {
