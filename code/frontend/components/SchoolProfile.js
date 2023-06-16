@@ -48,11 +48,12 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
     textAlign: "center",
-    marginVertical: 15,
+    marginVertical: 100,
+
   },
   contentContainer: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
   },
   textContainer: {
     flex: 1,
@@ -60,7 +61,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
+    
   },
   regular: {
     fontSize: 20,

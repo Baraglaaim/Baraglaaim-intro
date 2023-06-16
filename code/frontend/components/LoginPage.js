@@ -102,8 +102,8 @@ const LoginPage = ({ navigation }) => {
             />
             <Buttons
               title="התחברות"
-                color="#FFBF00"
-                textColor="black"
+              color="#FFBF00"
+              textColor="black"
               width={150}
               press={handleLogin}
             />

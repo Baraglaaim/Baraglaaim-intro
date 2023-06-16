@@ -42,28 +42,28 @@ const HomeScreen = ({ navigation, route }) => {
       <View style={styles.overlay}>
         <Buttons
           title="הוסף ילד"
-          color="#E6ECFF"
+          color="#FFBF00"
           textColor="black"
           width={200}
           press={() => navigation.navigate("AddChild")}
         />
         <Buttons
           title="הילדים שלי"
-          color="#E6ECFF"
+          color="#FFBF00"
           textColor="black"
           width={200}
           press={() => navigation.navigate("WatchMyChilds")}
         />
         <Buttons
           title="קבוצות הליכה"
-          color="#E6ECFF"
+          color="#FFBF00"
           textColor="black"
           width={200}
           press={() => navigation.navigate("MyWalkingGroup")}
         />
         <Buttons
           title="הקהילות שלי"
-          color="#E6ECFF"
+          color="#FFBF00"
           textColor="black"
           width={200}
           press={() => navigation.navigate("MyCommunity")}

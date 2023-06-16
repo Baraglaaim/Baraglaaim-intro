@@ -32,6 +32,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { format, set } from "date-fns";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
+import { MainStyles } from "../styles/MainStyles";
 
 const MyWalkingGroup = ({ navigation }) => {
   // --------------------------------- define variables area ----------------------------------
@@ -82,7 +83,7 @@ const MyWalkingGroup = ({ navigation }) => {
   // --------------------------------- functions area ----------------------------------
   const WalkingGroupItem = (group) => {
     return (
-      <View>
+      <View style = {MainStyles.page}>
         <TouchableOpacity
           style={styles.groupItem}
           onPress={() => handleGroupPress(group)}
@@ -108,14 +109,14 @@ const MyWalkingGroup = ({ navigation }) => {
 
   // --------------------------------- front-end area ----------------------------------
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[MainStyles.page]}>
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <Text style={styles.header}>טוען נתונים...</Text>
           <ActivityIndicator size="large" color="#4682B4" />
         </View>
       ) : (
-        <View>
+        <View style={{MarginButtom:100}}>
           <Text style={[styles.title, { marginLeft: 16 }]}>האוטובוסים שלי</Text>
           <ScrollView style={styles.groupList}>
             {groupsList.map((group) => (
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
   },
   container: {
     flex: 1,
@@ -153,7 +154,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 15,
@@ -161,10 +162,10 @@ const styles = StyleSheet.create({
   groupList: {
     flexDirection: "column",
     paddingHorizontal: 16,
-    marginBottom: 100,
+    marginBottom: 150,
   },
   groupItem: {
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f5f5",
     borderRadius: 16,
     marginBottom: 16,
     padding: 16,
@@ -176,11 +177,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 4,
-    textAlign: "right",
+    textAlign: "center",
+    color: "#DCAB07",
   },
   groupItemSubtitle: {
     fontSize: 14,
-    color: "#999",
+    color: "#DCAB07",
   },
   groupItemFooter: {
     marginTop: 8,
@@ -188,6 +190,7 @@ const styles = StyleSheet.create({
   groupItemFooterText: {
     fontSize: 14,
     color: "#999",
+    textAlign: "center",
   },
 });
 

@@ -281,40 +281,41 @@ const GroupProfile = ({ navigation, route }) => {
             <Text style={styles.header}>{group.busName}</Text>
           </View>
           <View style={styles.textContainer}>
-            <Text style={styles.regular}>{manager.username}</Text>
             <Text style={styles.regular}>מנהל האוטובוס:</Text>
+            <Text style={styles.regular}>{manager.username}</Text>
           </View>
           <View style={styles.textContainer}>
+            <Text style={styles.regular}>טלפון:</Text>
             <Text
               style={[styles.regular, { color: "blue" }]}
               onPress={() => handlePress(group.busManagerPhone)}
             >
               {group.busManagerPhone}
             </Text>
-            <Text style={styles.regular}>טלפון:</Text>
           </View>
           <View style={styles.textContainer}>
-            <Text style={styles.regular}>{group.schoolName}</Text>
             <Text style={styles.regular}>מוסד חינוך:</Text>
+            <Text style={styles.regular}>{group.schoolName}</Text>
           </View>
           <View style={styles.textContainer}>
-            <Text style={styles.regular}>{group.startLocation}</Text>
             <Text style={styles.regular}>מיקום התחלה:</Text>
+            <Text style={styles.regular}>{group.startLocation}</Text>
           </View>
           <View style={styles.textContainer}>
+          <Text style={styles.regular}>שעת התחלה:</Text>
             <Text style={styles.regular}>{group.startTime}</Text>
-            <Text style={styles.regular}>שעת התחלה:</Text>
           </View>
           <View style={styles.textContainer}>
             <TouchableOpacity
               style={styles.btn}
               onPress={() => setIsModalVisible(true)}
             >
+              <Text style={styles.regular}>רשימת משתתפים:</Text>
               <Text style={styles.regular}>
                 {" "}
                 {children.length} / {group.maxKids}
               </Text>
-              <Text style={styles.regular}>רשימת משתתפים:</Text>
+              
             </TouchableOpacity>
           </View>
           <View style={styles.textContainer}>
@@ -366,7 +367,8 @@ const GroupProfile = ({ navigation, route }) => {
                 </View>
                 <Buttons
                   title="סגור"
-                  color="red"
+                  color="#FFBF00"
+                  textColor= "black"
                   width={200}
                   press={() => setIsModalVisible(!isModalVisible)}
                   style={{ marginBottom: 20 }}
@@ -398,7 +400,8 @@ const GroupProfile = ({ navigation, route }) => {
               </View>
               <Buttons
                 title="סגור"
-                color="red"
+                color="#FFBF00"
+                textColor= "black"
                 width={200}
                 press={() => setScheduleModalVisible(!scheduleModalVisible)}
                 style={{ marginBottom: 20 }}
@@ -418,27 +421,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
   },
   header: {
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
-    textDecorationLine: "underline",
+    backgroundColor: "#AED1EC",
+    // textDecorationLine: "underline",
   },
   contentContainer: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
     marginBottom: 100,
   },
   textContainer: {
     flex: 1,
     flexDirection: "row",
-    justifyContent: "space-between",
+    // justifyContent: "space-between",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#F5F5F5",
-    borderColor: "grey",
+    borderColor: "#F5F5F5",
     marginBottom: 15,
     borderWidth: 1,
     marginHorizontal: 10,
@@ -450,24 +454,25 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white",
-    borderColor: "black",
-    borderWidth: 1,
+    backgroundColor: "#f5f5f5",
+    borderColor: "#f5f5f5",
+    borderWidth: 1, 
     borderRadius: 10,
     shadowColor: "black",
     shadowOffset: { width: -4, height: -4 },
     shadowOpacity: 0.2,
   },
   headerContainer: {
+    fontSize: 24,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
     margin: 60,
   },
   regular: {
-    fontSize: 20,
-    textAlign: "right",
+    fontSize: 17,
+    textAlign: "center",
     margin: 10,
   },
   modal: {
@@ -475,27 +480,29 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
+    borderColor: "#AED1EC",
   },
   modalContentContainer: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
   },
   modalHeaderContainer: {
     margin: 30,
   },
   modalHeader: {
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
   },
   ListsContainer: {
     flex: 1,
+    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
   },
   fieldContainer: {
     flex: 1,
@@ -509,11 +516,11 @@ const styles = StyleSheet.create({
   },
   dayCard: {
     flex: 1,
-    width: "90%",
+    width: "95%",
     height: 150,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: "#f5f5f5",
     borderColor: "black",
     borderWidth: 1,
     borderRadius: 10,

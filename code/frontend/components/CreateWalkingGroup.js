@@ -171,7 +171,7 @@ const CreateWalkingGroup = ({ navigation }) => {
     }
     setIsLoading(false);
     Alert.alert("הקבוצה נוצרה בהצלחה!", "ברכותינו", [{ text: "אישור" }]);
-    navigation.navigate("HomeScreen", {
+    navigation.navigate("MyWalkingGroup", {
       username: userDocRef.data().username,
     });
   }
@@ -346,7 +346,8 @@ const CreateWalkingGroup = ({ navigation }) => {
       )}
       <Buttons
         title="יצירת אוטובוס הליכה"
-        color="orange"
+        color="#FFBF00"
+        textColor="black"
         width={220}
         press={addWalkingGroupToDB}
         style={{ marginBottom: 100 }}
@@ -361,14 +362,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
   },
   modalContainer: {
     marginTop: "10%",
     height: "80%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "F5F5F5",
+    backgroundColor: "#AED1EC",
   },
   optionContainer: {
     paddingVertical: 10,
@@ -380,7 +381,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
   },
   page: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
     flex: 1,
     height: "100%",
     width: "100%",
@@ -400,11 +401,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   formContainer: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#AED1EC",
     height: "100%",
     width: "90%",
     borderRadius: 20,
     alignSelf: "center",
+    padding: 20,
   },
   inputContainer: {
     width: "100%",
