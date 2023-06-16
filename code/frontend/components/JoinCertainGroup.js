@@ -6,8 +6,12 @@ import {
   Text,
   View,
   ScrollView,
+  Platform,
   TouchableOpacity,
+  Modal,
+  FlatList,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import Footer from "./Footer";
 import HeaderIcons from "./HeaderIcons";
@@ -17,29 +21,40 @@ import {
   doc,
   getDocs,
   getDoc,
+  updateDoc,
   query,
   where,
 } from "firebase/firestore";
+import { Picker } from "@react-native-picker/picker";
+import Buttons from "./Buttons";
+import { MainStyles, Writings, Inputs } from "../styles/MainStyles";
 
-const JoinCertainGroup = ({ navigation, route}) => {
+const JoinCertainGroup = ({ navigation, route }) => {
   //--------------------------------- define variables area ----------------------------------
 
-  const [groupsList, setGroupsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [child, setChild] = useState("");
+  const [selectedValue, setSelectedValue] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const groupId = route.params.groupID;
+  const childrenToJoin = route.params.childrenToJoin;
   //--------------------------------- Back-End area ----------------------------------
+ 
+
   /**
-   * This function is called when the component is rendered.
-   * It fetches the school data from Firestore.
+   * This function is handling the join group button.
+   * It adds the group to the user's groups array and adds the child to the group's children array.
    * @returns {void}
    */
-  useEffect(() => {
-    fetchGroupsList();
-  }, []);
-
-  async function fetchGroupsList() {
+  handleJoin = async () => {
     try {
       setIsLoading(true);
+      if (!child || child === "") {
+        alert("בחר/י ילד/ה");
+        setIsLoading(false);
+        return;
+      }
       const currentUser = auth.currentUser;
       const q = query(
         collection(db, "Users"),
@@ -47,145 +62,144 @@ const JoinCertainGroup = ({ navigation, route}) => {
       );
       const querySnapshot = await getDocs(q);
       const userDocRef = querySnapshot.docs[0];
-      const userDocId = userDocRef.id;
-
-      const childs = userDocRef.data().children;
-      if (!childs) {
+      let groupsArray = userDocRef.data().groups;
+      if (!groupsArray) {
+        groupsArray = [];
+      }
+      if (!groupsArray || !groupsArray.includes(groupId)) {
+        groupsArray.push(groupId);
+        await updateDoc(doc(db, "Users", userDocRef.id), {
+          groups: groupsArray,
+        });
+      }
+      const groupDocRef = await getDoc(doc(db, "Groups", groupId));
+      let childrenArray = groupDocRef.data().children;
+      if(groupDocRef.data().maxKids <= childrenArray.length){
+        Alert.alert("הקבוצה מלאה", "הקבוצה מלאה, אנא בחר/י קבוצה אחרת", [{ text: "אישור" }], { cancelable: false });
         setIsLoading(false);
         return;
       }
-      const schoolList = [];
-      for (const child of childs) {
-        const childDoc = doc(db, "Children", child);
-        const childDocRef = await getDoc(childDoc);
-        const school = childDocRef.data().school;
-        if (!schoolList.includes(school)) {
-          schoolList.push(school);
-        }
-      }
-      const q2 = query(
-        collection(db, "Groups"),
-        where("school", "in", schoolList)
-      );
-      const groupsCollection = await getDocs(q2);
-      const groupsSnapshot = groupsCollection.docs;
-      const groupsData = [];
-      for (const groupDoc of groupsSnapshot) {
-        const managerID = groupDoc.data().busManager;
-        const managerDocRef = doc(db, "Users", managerID);
-        const managerDoc = await getDoc(managerDocRef);
-        const managerName = managerDoc.data().username;
-        const name = groupDoc.data().name;
-        const school = groupDoc.data().school;
-        const managerPhone = groupDoc.data().busManagerPhone;
-        const startLocation = groupDoc.data().startLocation;
-        const startTime = groupDoc.data().startTime;
-        const groupItem = {
-          name: name,
-          school: school,
-          manager: managerName,
-          managerPhone: managerPhone,
-          startLocation: startLocation,
-          startTime: startTime,
-        };
-        groupsData.push(groupItem);
-      }
-      setGroupsList(groupsData);
-      console.log("groups data is: ", groupsData);
+      await updateDoc(doc(db, "Groups", groupId), {
+        children: [...childrenArray, child],
+      });
       setIsLoading(false);
+      navigation.navigate("MyWalkingGroup");
     } catch (error) {
-      console.log("Error fetching group list:", error);
+      console.log("Error joining group:", error);
       setIsLoading(false);
     }
-  }
-
-  const handleGroupPress = (index) => {
-    console.log("group index is: ", index);
-    navigation.navigate("GroupProfile", { groupIndex: index });
   };
 
-  const renderGroup = ({ item, index }) => {
-    const { name, manager, managerPhone, startLocation } = item;
-    return (
-      <TouchableOpacity
-        style={styles.groupContainer}
-        onPress={() => handleGroupPress(index)}
-      >
-        <Text>Walking Group Name: {name}</Text>
-        <Text>Manager: {manager}</Text>
-        <Text>Manager's Phone: {managerPhone}</Text>
-        <Text>Meeting Point: {startLocation}</Text>
-        <TouchableOpacity
-          style={styles.joinButton}
-          onPress={() => handleJoinGroup(index)}
-        >
-          <Text style={styles.joinButtonText}>Join</Text>
-        </TouchableOpacity>
-      </TouchableOpacity>
-    );
+  // --------------------------------- functions area ----------------------------------
+  const selectChild = (itemValue) => {
+    setChild(itemValue);
   };
-
   // ------------------------Front-End area:------------------------
 
   return (
-    <View style={styles.container}>
-      <HeaderIcons navigation={navigation} />
+    <SafeAreaView style={MainStyles.page}>
       {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.header}>המידע נטען...</Text>
+        <View style={MainStyles.loadingContainer}>
+          <Text style={Writings.header}>המידע נטען...</Text>
           <ActivityIndicator size="large" color="#4682B4" />
         </View>
       ) : (
-        <ScrollView>
-          {groupsList.map((item, index) => (
-            <View key={index}>{renderGroup({ item, index })}</View>
-          ))}
-        </ScrollView>
+        <View>
+          <Text style={Writings.header}>הצטרפות לקבוצה</Text>
+          {Platform.OS === "ios" ? (
+            <View>
+              <Text style={MainStyles.label}>בחר/י ילד/ה</Text>
+              <TouchableOpacity
+                style={Inputs.input}
+                onPress={() => setIsModalVisible(true)}
+              >
+                <Text styles={{ textAlign: "right" }}>
+                  {selectedValue ? selectedValue : "בחר/י ילד"}
+                </Text>
+              </TouchableOpacity>
+              <Modal
+                animationType="slide"
+                visible={isModalVisible}
+                onRequestClose={() => {
+                  setIsModalVisible(!isModalVisible);
+                }}
+              >
+                <SafeAreaView style={styles.modalContainer}>
+                  <FlatList
+                    style={{ width: "100%", height: 300 }}
+                    data={childrenToJoin}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity
+                        style={styles.optionContainer}
+                        onPress={() => {
+                          setSelectedValue(item.name);
+                          selectChild(item.id);
+                          setIsModalVisible(!isModalVisible);
+                        }}
+                      >
+                        <Text style={styles.optionText}>{item.name}</Text>
+                      </TouchableOpacity>
+                    )}
+                    keyExtractor={(item) => item.id}
+                  />
+                </SafeAreaView>
+                <Buttons
+                  title="סגור"
+                  color="red"
+                  width={200}
+                  press={() => setIsModalVisible(!isModalVisible)}
+                  style={{ marginBottom: 100 }}
+                />
+              </Modal>
+            </View>
+          ) : (
+            <View style={Inputs.inputContainer}>
+              <Picker
+                style={Inputs.input}
+                selectedValue={child}
+                onValueChange={selectChild}
+              >
+                <Picker.Item label="בחר/י ילד" value="" />
+                {childrenToJoin.map((child) => (
+                  <Picker.Item
+                    key={child.id}
+                    label={child.name}
+                    value={child.id}
+                  />
+                ))}
+              </Picker>
+            </View>
+          )}
+        </View>
       )}
-    </View>
+      <Buttons
+        title="הצטרף"
+        color="orange"
+        width={200}
+        press={() => handleJoin()}
+      />
+      <HeaderIcons navigation={navigation} />
+    </SafeAreaView>
   );
 };
 
 //--------------------------------- style area ----------------------------------
 const styles = StyleSheet.create({
-  groupContainer: {
-    alignItems: "center",
-    textAlign: "center",
-    borderWidth: 1,
-    borderColor: "grey",
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 10,
-  },
-  loadingContainer: {
-    flex: 1,
+  modalContainer: {
+    marginTop: "10%",
+    height: "80%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "F5F5F5",
   },
-  joinButton: {
-    backgroundColor: "blue",
-    padding: 10,
-    marginTop: 10,
-    borderRadius: 5,
+  optionContainer: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#CCCCCC",
   },
-  joinButtonText: {
-    color: "white",
-    textAlign: "center",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#F5F5F5",
-  },
-  header: {
+  optionText: {
     fontSize: 30,
-    fontWeight: "bold",
-    color: "#4682B4",
-    marginTop: 20,
-    marginBottom: 20,
-    textAlign: "center",
   },
 });
 
