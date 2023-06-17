@@ -146,7 +146,7 @@ const JoinWalkingGroup = ({ navigation }) => {
     const { name, manager, managerPhone, startLocation } = item;
     return (
       <SafeAreaView style={styles.groupContainer}>
-        <Text style={{textColor: "#DCAB07", fontWeight: "bold", fontSize: 20 }}>{name}</Text>
+        <Text style={{color: "#DCAB07", fontWeight: "bold", fontSize: 20 }}>{name}</Text>
         <Text>מנהל: {manager}</Text>
         <Text>טלפון מנהל: {managerPhone}</Text>
         <Text>נקודת מפגש: {startLocation}</Text>
