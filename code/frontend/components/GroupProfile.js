@@ -236,7 +236,7 @@ const GroupProfile = ({ navigation, route }) => {
               <Text style={[styles.regular, { color: "grey" }]}>
                 ביום זה אין מלווים
               </Text>
-              <Text style={[styles.regular, { color: "grey" }]}>
+              <Text style={[styles.regular, { color: "orange" }]}>
                 לחץ להצעת מלווה
               </Text>
             </View>
@@ -256,7 +256,7 @@ const GroupProfile = ({ navigation, route }) => {
                   <Text style={[styles.regular, { color: "#B56A77" }]}>
                     ביום זה קיים כבר מלווה
                   </Text>
-                  <Text style={[styles.regular, { color: "#B56A77" }]}>
+                      <Text style={[styles.regular, { color: "#B65FCF" }]}>
                     לחץ לצפייה בפרטיו
                   </Text>
                 </View>

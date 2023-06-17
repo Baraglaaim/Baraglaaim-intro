@@ -71,7 +71,7 @@ const HomeScreen = ({ navigation, route }) => {
         {userDataLoaded && isAdmin && (
           <Buttons
             title="צור קהילה"
-            color="gold"
+            color="#EA3B52"
             textColor="black"
             width={200}
             press={() => navigation.navigate("CreateCommunity")}

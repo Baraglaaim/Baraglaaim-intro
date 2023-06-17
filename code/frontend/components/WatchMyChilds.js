@@ -23,6 +23,7 @@ import HeaderIcons from "./HeaderIcons";
 import Buttons from "./Buttons";
 import { Ionicons } from "@expo/vector-icons";
 
+
 const WatchMyChilds = ({ navigation }) => {
   const [kidsList, setKidsList] = useState([]);
 
@@ -135,6 +136,13 @@ const WatchMyChilds = ({ navigation }) => {
 
       // Fetch and update the kids' data after deleting the child
       fetchKidsList();
+      // Show an alert for successful deletion
+      Alert.alert("התראה", "הילד נמחק בהצלחה", [
+        {
+          text: "אישור",
+          onPress: () => navigation.navigate("HomeScreen"), // Navigate to HomeScreen
+        },
+      ]);
     } catch (error) {
       console.log("Error deleting child:", error);
     }

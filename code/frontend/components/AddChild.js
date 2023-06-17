@@ -229,6 +229,7 @@ const AddChild = ({ navigation }) => {
               <TextInput
                 style={styles.input}
                 value={phone}
+                maxLength={10}    
                 onChangeText={setPhone}
                 placeholder="מספר הטלפון של הילד/ה, במידה ויש נייד"
                 keyboardType="numeric"
