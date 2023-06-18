@@ -71,6 +71,7 @@ const MyWalkingGroup = ({ navigation }) => {
         groupData.id = groupDoc.id;
         userGroups.push(groupData);
       }
+      console.log("userGroups");
       console.log(userGroups);
       setGroupsList(userGroups);
       setIsLoading(false);

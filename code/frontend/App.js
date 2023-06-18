@@ -26,6 +26,7 @@ import CreateWalkingGroup from "./components/CreateWalkingGroup";
 import JoinCertainGroup from "./components/JoinCertainGroup";
 import SchoolProfile from "./components/SchoolProfile";
 import CreateCommunity from "./components/CreateCommunity";
+import UserProfile from "./components/UserProfile";
 // import AlmogItayMap from "./DataBase/Dar";
 
 const Stack = createStackNavigator();
@@ -118,6 +119,11 @@ function AppStack() {
         name="SchoolProfile"
         options={{ title: "פרופיל בית ספר" }}
         component={SchoolProfile}
+      />
+      <Stack.Screen
+        name="UserProfile"
+        options={{ title: "פרופיל משתמש" }}
+        component={UserProfile}
       />
     </Stack.Navigator>
   );

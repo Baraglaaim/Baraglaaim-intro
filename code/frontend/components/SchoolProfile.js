@@ -24,14 +24,14 @@ const SchoolProfile = ({ navigation, route }) => {
           <Text style={styles.header}>{name}</Text>
         </View>
         <View style={styles.textContainer}>
+          <Text style={styles.regular}>טלפון:</Text>
           <TouchableOpacity onPress={handlePress}>
             <Text style={[styles.regular, { color: "blue" }]}>{phone}</Text>
           </TouchableOpacity>
-          <Text style={styles.regular}>טלפון:</Text>
         </View>
         <View style={styles.textContainer}>
-          <Text style={styles.regular}>{address}</Text>
           <Text style={styles.regular}>כתובת:</Text>
+          <Text style={styles.regular}>{address}</Text>
         </View>
       </ScrollView>
       <HeaderIcons navigation={navigation} />

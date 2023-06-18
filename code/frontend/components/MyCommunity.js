@@ -12,8 +12,8 @@ import {
   FlatList,
   SafeAreaView,
 } from "react-native";
-import { db } from "../FireBaseConsts";
-import { collection, getDocs } from "firebase/firestore";
+import { auth, db } from "../FireBaseConsts";
+import { collection, getDocs, query, where, getDoc, doc } from "firebase/firestore";
 import HeaderIcons from "./HeaderIcons";
 
 const MyCommunity = ({ navigation }) => {
@@ -27,11 +27,24 @@ const MyCommunity = ({ navigation }) => {
   async function fetchSchoolsList() {
     try {
       setIsLoading(true);
-      const querySnapshot = await getDocs(collection(db, "School"));
-      const schools = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const currentUser = auth.currentUser;
+      const q = query(
+        collection(db, "Users"),
+        where("uid", "==", currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      const userDocRef = querySnapshot.docs[0];
+      const children = userDocRef.data().children;
+      const schools = [];
+      for (const child of children) {
+        const childDocRef = await getDoc(doc(db, "Children", child));
+        const childData = childDocRef.data();
+        const schoolDocRef = await getDoc(doc(db, "School", childData.school));
+        const school = schoolDocRef.data();
+        if (!schools.some((s) => s.id === school.id)) {
+          schools.push(school);
+        }
+      }
       setSchoolsList(schools);
       setIsLoading(false);
     } catch (error) {
@@ -77,7 +90,7 @@ const MyCommunity = ({ navigation }) => {
           <Text style={[styles.title, {alignItems: "center" }]}>הקהילות שלי</Text>
           <ScrollView style={styles.schoolList}>
             {schoolsList.map((school) => (
-              <SchoolItem key={school.id} {...school} />
+              <SchoolItem {...school}/>
             ))}
           </ScrollView>
         </View>

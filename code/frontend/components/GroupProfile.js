@@ -201,20 +201,20 @@ const GroupProfile = ({ navigation, route }) => {
         {
           text: "כן",
           onPress: async () => {
-            //todo navigation.navigate("Profile", { userId: schedule[day] });
-            Alert.alert(
-              "אשר",
-              "פרטים בהמשך",
-              [
-                {
-                  text: "אישור",
-                  onPress: () => {
-                    setIsLoading(false);
-                  },
-                },
-              ],
-              { cancelable: false }
-            );
+            navigation.navigate("UserProfile", { userId: schedule[day] });
+            // Alert.alert(
+            //   "אשר",
+            //   "פרטים בהמשך",
+            //   [
+            //     {
+            //       text: "אישור",
+            //       onPress: () => {
+            //         setIsLoading(false);
+            //       },
+            //     },
+            //   ],
+            //   { cancelable: false }
+            // );
           },
         },
       ]);
@@ -281,40 +281,40 @@ const GroupProfile = ({ navigation, route }) => {
             <Text style={styles.header}>{group.busName}</Text>
           </View>
           <View style={styles.textContainer}>
-            <Text style={styles.regular}>מנהל האוטובוס:</Text>
             <Text style={styles.regular}>{manager.username}</Text>
+            <Text style={styles.regular}>מנהל האוטובוס:</Text>
           </View>
           <View style={styles.textContainer}>
-            <Text style={styles.regular}>טלפון:</Text>
             <Text
               style={[styles.regular, { color: "blue" }]}
               onPress={() => handlePress(group.busManagerPhone)}
             >
               {group.busManagerPhone}
             </Text>
+            <Text style={styles.regular}>טלפון:</Text>
           </View>
           <View style={styles.textContainer}>
-            <Text style={styles.regular}>מוסד חינוך:</Text>
             <Text style={styles.regular}>{group.schoolName}</Text>
+            <Text style={styles.regular}>מוסד חינוך:</Text>
           </View>
           <View style={styles.textContainer}>
-            <Text style={styles.regular}>מיקום התחלה:</Text>
             <Text style={styles.regular}>{group.startLocation}</Text>
+            <Text style={styles.regular}>מיקום התחלה:</Text>
           </View>
           <View style={styles.textContainer}>
-          <Text style={styles.regular}>שעת התחלה:</Text>
             <Text style={styles.regular}>{group.startTime}</Text>
+          <Text style={styles.regular}>שעת התחלה:</Text>
           </View>
           <View style={styles.textContainer}>
             <TouchableOpacity
               style={styles.btn}
               onPress={() => setIsModalVisible(true)}
             >
-              <Text style={styles.regular}>רשימת משתתפים:</Text>
               <Text style={styles.regular}>
                 {" "}
                 {children.length} / {group.maxKids}
               </Text>
+              <Text style={styles.regular}>רשימת משתתפים:</Text>
               
             </TouchableOpacity>
           </View>
@@ -323,7 +323,7 @@ const GroupProfile = ({ navigation, route }) => {
               style={styles.btn}
               onPress={() => setScheduleModalVisible(true)}
             >
-              <Text style={styles.regular}>לוח זמנים</Text>
+            <Text style={styles.regular}>לוח זמנים</Text>
             </TouchableOpacity>
           </View>
           <Modal
