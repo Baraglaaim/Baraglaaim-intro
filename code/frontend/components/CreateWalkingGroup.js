@@ -80,13 +80,13 @@ const CreateWalkingGroup = ({ navigation }) => {
         return;
       }
       const childsList = [];
-      for (const child of childs) {
+      await Promise.all( childs.map(async (child) => {
         const childDoc = doc(db, "Children", child);
         const childDocRef = await getDoc(childDoc);
         const name = childDocRef.data().name;
         const school = childDocRef.data().school;
         childsList.push({ id: childDocRef.id, name: name, school: school });
-      }
+      }));
       setChildList(childsList);
       setIsLoading(false);
     } catch (error) {

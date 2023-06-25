@@ -12,8 +12,15 @@ import {
   FlatList,
   SafeAreaView,
 } from "react-native";
-import { auth, db } from "../FireBaseConsts";
-import { collection, getDocs, query, where, getDoc, doc } from "firebase/firestore";
+import { db, auth } from "../FireBaseConsts";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  getDoc,
+  doc,
+} from "firebase/firestore";
 import HeaderIcons from "./HeaderIcons";
 
 const MyCommunity = ({ navigation }) => {
@@ -35,16 +42,24 @@ const MyCommunity = ({ navigation }) => {
       const querySnapshot = await getDocs(q);
       const userDocRef = querySnapshot.docs[0];
       const children = userDocRef.data().children;
+      let mySchools = [];
+      await Promise.all(
+        children.map(async (childId) => {
+          const childDocRef = await getDoc(doc(db, "Children", childId));
+          const childSchoolId = childDocRef.data().school;
+          if (!mySchools.includes(childSchoolId)) {
+            mySchools.push(childSchoolId);
+          }
+        })
+      );
       const schools = [];
-      for (const child of children) {
-        const childDocRef = await getDoc(doc(db, "Children", child));
-        const childData = childDocRef.data();
-        const schoolDocRef = await getDoc(doc(db, "School", childData.school));
-        const school = schoolDocRef.data();
-        if (!schools.some((s) => s.id === school.id)) {
-          schools.push(school);
-        }
-      }
+      await Promise.all(
+        mySchools.map(async (schoolId) => {
+          const schoolDocRef = await getDoc(doc(db, "School", schoolId));
+          const schoolData = schoolDocRef.data();
+          schools.push({ id: schoolId, ...schoolData });
+        })
+      );
       setSchoolsList(schools);
       setIsLoading(false);
     } catch (error) {

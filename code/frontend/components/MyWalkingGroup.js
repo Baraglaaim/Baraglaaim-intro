@@ -60,7 +60,7 @@ const MyWalkingGroup = ({ navigation }) => {
         return;
       }
       const userGroups = [];
-      for (const group of groups) {
+      await Promise.all( groups.map(async (group) => {
         const groupDocRef = doc(db, "Groups", group);
         const groupDoc = await getDoc(groupDocRef);
         const groupData = groupDoc.data();
@@ -70,9 +70,7 @@ const MyWalkingGroup = ({ navigation }) => {
         groupData.schoolName = schoolName;
         groupData.id = groupDoc.id;
         userGroups.push(groupData);
-      }
-      console.log("userGroups");
-      console.log(userGroups);
+      }))
       setGroupsList(userGroups);
       setIsLoading(false);
     } catch (error) {

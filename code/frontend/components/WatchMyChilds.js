@@ -49,7 +49,7 @@ const WatchMyChilds = ({ navigation }) => {
       const children = userDocRef.data().children;
 
       let kidsData = [];
-      for (const childId of children) {
+      await Promise.all( children.map(async (childId) => {
         const childDocRef = await getDoc(doc(db, "Children", childId));
         const childDocData = childDocRef.data();
         const schoolDocRef = await getDoc(
@@ -66,7 +66,7 @@ const WatchMyChilds = ({ navigation }) => {
         childDocData.class = classDocRef.data().name;
         childDocData.id = childId;
         kidsData.push(childDocData);
-      }
+      }));
 
       setKidsList(kidsData);
     } catch (error) {
