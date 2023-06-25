@@ -64,7 +64,7 @@ const GroupProfile = ({ navigation, route }) => {
       const managerDoc = await getDoc(doc(db, "Users", group.busManager));
       setManager(managerDoc.data());
       let childrenDocs = [];
-      for (const child of group.children) {
+      await Promise.all(group.children.map(async (child) => {
         const childDoc = await getDoc(doc(db, "Children", child));
         const parentDoc = await getDoc(
           doc(db, "Users", childDoc.data().parent)
@@ -74,7 +74,7 @@ const GroupProfile = ({ navigation, route }) => {
           parentPhone: parentDoc.data().phone,
         };
         childrenDocs.push(childData);
-      }
+      }));
       setChildren(childrenDocs);
       const currentUser = auth.currentUser;
       const q = query(

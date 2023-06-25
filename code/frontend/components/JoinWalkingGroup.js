@@ -60,14 +60,16 @@ const JoinWalkingGroup = ({ navigation }) => {
         return;
       }
       const schoolList = [];
-      for (const child of childs) {
-        const childDoc = doc(db, "Children", child);
-        const childDocRef = await getDoc(childDoc);
-        const school = childDocRef.data().school;
-        if (!schoolList.includes(school)) {
-          schoolList.push(school);
-        }
-      }
+      await Promise.all(
+        childs.map(async (child) => {
+          const childDoc = doc(db, "Children", child);
+          const childDocRef = await getDoc(childDoc);
+          const school = childDocRef.data().school;
+          if (!schoolList.includes(school)) {
+            schoolList.push(school);
+          }
+        })
+      );
       const q2 = query(
         collection(db, "Groups"),
         where("school", "in", schoolList)
@@ -75,7 +77,7 @@ const JoinWalkingGroup = ({ navigation }) => {
       const groupsCollection = await getDocs(q2);
       const groupsSnapshot = groupsCollection.docs;
       const groupsData = [];
-      for (const groupDoc of groupsSnapshot) {
+      await Promise.all( groupsSnapshot.map(async (groupDoc) => {
         const managerID = groupDoc.data().busManager;
         const managerDocRef = doc(db, "Users", managerID);
         const managerDoc = await getDoc(managerDocRef);
@@ -93,7 +95,7 @@ const JoinWalkingGroup = ({ navigation }) => {
         });
         let haveChildToJoin = false;
         const kidsToJoin = [];
-        for (const child of childs) {
+        await Promise.all( childs.map(async (child) => {
           const childDoc = doc(db, "Children", child);
           const childDocRef = await getDoc(childDoc);
           const school = childDocRef.data().school;
@@ -103,7 +105,7 @@ const JoinWalkingGroup = ({ navigation }) => {
               kidsToJoin.push({ id: child, name: childDocRef.data().name });
             }
           }
-        }
+        }));
         const groupItem = {
           groupID: groupID,
           name: name,
@@ -119,7 +121,7 @@ const JoinWalkingGroup = ({ navigation }) => {
           kidsToJoin: kidsToJoin,
         };
         groupsData.push(groupItem);
-      }
+      }));
       setGroupsList(groupsData);
       setIsLoading(false);
     } catch (error) {
@@ -139,7 +141,6 @@ const JoinWalkingGroup = ({ navigation }) => {
       groupID: groupID,
       childrenToJoin: kidsToJoin,
     });
-    
   };
 
   const renderGroup = ({ item, index }) => {
@@ -167,7 +168,10 @@ const JoinWalkingGroup = ({ navigation }) => {
                 color="orange"
                 width={220}
                 press={() =>
-                  handleGroupPress({ groupID: item.groupID, kidsToJoin: item.kidsToJoin })
+                  handleGroupPress({
+                    groupID: item.groupID,
+                    kidsToJoin: item.kidsToJoin,
+                  })
                 }
               />
             </View>
@@ -182,7 +186,10 @@ const JoinWalkingGroup = ({ navigation }) => {
             color="orange"
             width={220}
             press={() =>
-              handleGroupPress({ groupID: item.groupID, kidsToJoin: item.kidsToJoin })
+              handleGroupPress({
+                groupID: item.groupID,
+                kidsToJoin: item.kidsToJoin,
+              })
             }
           />
         )}
