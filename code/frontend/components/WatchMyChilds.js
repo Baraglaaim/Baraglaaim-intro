@@ -23,7 +23,6 @@ import HeaderIcons from "./HeaderIcons";
 import Buttons from "./Buttons";
 import { Ionicons } from "@expo/vector-icons";
 
-
 const WatchMyChilds = ({ navigation }) => {
   const [kidsList, setKidsList] = useState([]);
 
@@ -49,24 +48,26 @@ const WatchMyChilds = ({ navigation }) => {
       const children = userDocRef.data().children;
 
       let kidsData = [];
-      await Promise.all( children.map(async (childId) => {
-        const childDocRef = await getDoc(doc(db, "Children", childId));
-        const childDocData = childDocRef.data();
-        const schoolDocRef = await getDoc(
-          doc(db, "School", childDocData.school)
-        );
-        const classesCollectionRef = collection(
-          doc(db, "School", childDocData.school),
-          "Classes"
-        );
-        const classDocRef = await getDoc(
-          doc(classesCollectionRef, childDocData.class)
-        );
-        childDocData.school = schoolDocRef.data().name;
-        childDocData.class = classDocRef.data().name;
-        childDocData.id = childId;
-        kidsData.push(childDocData);
-      }));
+      await Promise.all(
+        children.map(async (childId) => {
+          const childDocRef = await getDoc(doc(db, "Children", childId));
+          const childDocData = childDocRef.data();
+          const schoolDocRef = await getDoc(
+            doc(db, "School", childDocData.school)
+          );
+          const classesCollectionRef = collection(
+            doc(db, "School", childDocData.school),
+            "Classes"
+          );
+          const classDocRef = await getDoc(
+            doc(classesCollectionRef, childDocData.class)
+          );
+          childDocData.school = schoolDocRef.data().name;
+          childDocData.class = classDocRef.data().name;
+          childDocData.id = childId;
+          kidsData.push(childDocData);
+        })
+      );
 
       setKidsList(kidsData);
     } catch (error) {
@@ -117,22 +118,31 @@ const WatchMyChilds = ({ navigation }) => {
       });
 
       // Remove the child from the "Groups" collection
-      const groupsQuerySnapshot = await getDocs(collection(db, "Groups"));
-      const groupsPromises = [];
-      groupsQuerySnapshot.forEach((groupDoc) => {
-        const groupData = groupDoc.data();
-        const updatedGroupChildren = groupData.children.filter(
-          (childId) => childId !== id
-        );
-        if (updatedGroupChildren.length !== groupData.children.length) {
-          const groupDocRef = doc(db, "Groups", groupDoc.id);
-          const updatePromise = updateDoc(groupDocRef, {
-            children: updatedGroupChildren,
-          });
-          groupsPromises.push(updatePromise);
-        }
-      });
-      await Promise.all(groupsPromises);
+      const userGroups = userDocData.groups;
+      await Promise.all(
+        userGroups.map(async (groupId) => {
+          const groupDoc = await getDoc(doc(db, "Groups", groupId));
+          const groupData = groupDoc.data();
+          const updatedGroupChildren = groupData.children.filter(
+            (childId) => childId !== id
+          );
+          if (updatedGroupChildren.length !== groupData.children.length) {
+            const groupDocRef = doc(db, "Groups", groupDoc.id);
+            await updateDoc(groupDocRef, {
+              children: updatedGroupChildren,
+            });
+            if (!updatedChildren.some((childId) => {
+              return updatedGroupChildren.includes(childId)
+            })) {
+              userDocData.groups = userDocData.groups.filter((groupId) => groupId !== groupDoc.id);
+              await updateDoc(doc(db, "Users", userDocId), {
+                groups: userDocData.groups,
+              });
+            }
+
+          }
+        })
+      );
 
       // Fetch and update the kids' data after deleting the child
       fetchKidsList();
@@ -140,7 +150,10 @@ const WatchMyChilds = ({ navigation }) => {
       Alert.alert("התראה", "הילד נמחק בהצלחה", [
         {
           text: "אישור",
-          onPress: () => navigation.navigate("HomeScreen"), // Navigate to HomeScreen
+          onPress: () =>
+            navigation.navigate("HomeScreen", {
+              username: userDocData.username,
+            }),
         },
       ]);
     } catch (error) {
@@ -227,10 +240,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#AED1EC",
   },
   kidsListContent: {
-      flex: 1,
-      // justifyContent: "center",
-      marginTop: 30,
-      width: "100%", // Add this line
+    flex: 1,
+    // justifyContent: "center",
+    marginTop: 30,
+    width: "100%", // Add this line
   },
   kidContainer: {
     alignItems: "center",

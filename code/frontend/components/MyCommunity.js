@@ -68,9 +68,9 @@ const MyCommunity = ({ navigation }) => {
     }
   }
 
-  const SchoolItem = (school) => {
+  const SchoolItem = ({school}) => {
     return (
-      <View>
+      <View key={school.id}>
         <TouchableOpacity
           style={styles.schoolItem}
           onPress={() => handleSchoolPress(school)}
@@ -105,7 +105,7 @@ const MyCommunity = ({ navigation }) => {
           <Text style={[styles.title, {alignItems: "center" }]}>הקהילות שלי</Text>
           <ScrollView style={styles.schoolList}>
             {schoolsList.map((school) => (
-              <SchoolItem {...school}/>
+               <SchoolItem key={school.id} school={school} />
             ))}
           </ScrollView>
         </View>

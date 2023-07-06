@@ -1,0 +1,18 @@
+{
+  "build": {
+    "Manchi": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "Manchi2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "Manchi3": {
+      "developmentClient": true
+    },
+    "production": {}
+  }
+}
